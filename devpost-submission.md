@@ -132,18 +132,19 @@ Detailed recording plan: `docs/DEMO_SCRIPT.md`
 - The verifier checks manifest integrity and provenance fields but does not cryptographically authenticate package origin.
 - The Google Cloud budget is an alert, not a hard spending cap.
 
-## TODO Official Form Fields
+## Official Form Fields
 
 - Submitter Type: `Individuals`
 - Submitter country of residence: `India`
 - Category: `Fortified Enterprise Fleet`
 - Organization name: `Not applicable, individual submission`
-- Project start date: `2026-08-29`
+- Project start date: `08-29-26`
 - Code repository: `https://github.com/himanshu748/atlas`
 - Reproducible testing instructions in README: `Yes`
-- Hosted project URL: optional, leave blank or use the private deployment URL with the authentication note
+- Hosted project URL: leave blank because the verified deployment is private
+- Private testing instructions: `Use the public repository Quickstart for anonymous local testing. Cloud Run deployment proof is shown in the public demo video.`
 - Google SDK: `Agent Development Kit (ADK)`
-- Google Cloud service dropdown: `Cloud Run`
+- Google Cloud service dropdowns: `Cloud Run`, `Firestore`, `Pub/Sub`
 - Architecture diagram upload: `docs/architecture.png`
 - Google AI models: `Gemini 3.5 Flash through Vertex AI`
 - Startup Prize fields: leave blank unless entering on behalf of an incorporated organization
