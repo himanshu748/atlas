@@ -1,0 +1,541 @@
+<template>
+  <style>
+    @font-face {
+      font-family: "Space Grotesk";
+      src: url("assets/fonts/SpaceGrotesk-400.woff2") format("woff2");
+      font-weight: 400;
+      font-style: normal;
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: "Space Grotesk";
+      src: url("assets/fonts/SpaceGrotesk-700.woff2") format("woff2");
+      font-weight: 700;
+      font-style: normal;
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: "JetBrains Mono";
+      src: url("assets/fonts/JetBrainsMono-400.woff2") format("woff2");
+      font-weight: 400;
+      font-style: normal;
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: "JetBrains Mono";
+      src: url("assets/fonts/JetBrainsMono-700.woff2") format("woff2");
+      font-weight: 700;
+      font-style: normal;
+      font-display: swap;
+    }
+
+    #root {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      container-type: size;
+      color: #f0f3f1;
+      font-family: "Space Grotesk", sans-serif;
+    }
+
+    [class~="09-verify-independently-ground"] {
+      position: absolute;
+      inset: 0;
+      background: #0b0e0f;
+    }
+
+    [class~="09-verify-independently-stage"] {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+    }
+
+    [class~="09-verify-independently-terminal"] {
+      position: absolute;
+      top: 7cqh;
+      left: 5cqw;
+      width: 90cqw;
+      height: 66cqh;
+      overflow: hidden;
+      border: 1px solid #283031;
+      background: #111516;
+      transform-origin: 50% 50%;
+      will-change: transform, border-radius, background-color;
+    }
+
+    [class~="09-verify-independently-chip-content"],
+    [class~="09-verify-independently-terminal-ui"] {
+      position: absolute;
+      inset: 0;
+    }
+
+    [class~="09-verify-independently-chip-content"] {
+      display: grid;
+      place-items: center;
+      color: #0b0e0f;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 43cqw;
+      font-weight: 700;
+      line-height: 0.8;
+    }
+
+    [class~="09-verify-independently-terminal-ui"] {
+      display: grid;
+      grid-template-rows: 10% 17% 15% 15% 15% 10% 18%;
+      min-width: 0;
+      min-height: 0;
+      background: #111516;
+    }
+
+    [class~="09-verify-independently-header"] {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 2.2cqw;
+      border-bottom: 1px solid #283031;
+      color: #a7b0ad;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 0.72cqw;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      line-height: 1;
+      text-transform: uppercase;
+    }
+
+    [class~="09-verify-independently-header-left"],
+    [class~="09-verify-independently-header-right"] {
+      display: flex;
+      align-items: center;
+      gap: 0.8cqw;
+      white-space: nowrap;
+    }
+
+    [class~="09-verify-independently-header-mark"] {
+      width: 1.9cqw;
+      height: 2px;
+      background: #63e6a6;
+    }
+
+    [class~="09-verify-independently-header-right"] {
+      color: #63e6a6;
+    }
+
+    [class~="09-verify-independently-command-line"] {
+      display: flex;
+      align-items: center;
+      min-width: 0;
+      padding: 0 2.2cqw;
+      border-bottom: 1px solid #283031;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 1.45cqw;
+      font-weight: 400;
+      line-height: 1;
+    }
+
+    [class~="09-verify-independently-prompt"] {
+      flex: 0 0 auto;
+      margin-right: 1cqw;
+      color: #63e6a6;
+      font-weight: 700;
+    }
+
+    [class~="09-verify-independently-text-wrap"] {
+      display: inline-flex;
+      align-items: baseline;
+      min-width: 52cqw;
+      white-space: nowrap;
+    }
+
+    [class~="09-verify-independently-command"] {
+      color: #f0f3f1;
+    }
+
+    [class~="09-verify-independently-cursor"] {
+      display: inline-block;
+      width: 0.45cqw;
+      margin-left: 0.2cqw;
+      color: #63e6a6;
+    }
+
+    [class~="09-verify-independently-check-row"] {
+      display: grid;
+      grid-template-columns: 8.4cqw 1px minmax(0, 1fr) auto;
+      align-items: center;
+      column-gap: 1.6cqw;
+      min-width: 0;
+      padding: 0 2.2cqw;
+      border-bottom: 1px solid #283031;
+      transform-origin: 0 50%;
+      will-change: transform, opacity;
+    }
+
+    [class~="09-verify-independently-check-index"] {
+      color: #63e6a6;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 0.72cqw;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+
+    [class~="09-verify-independently-row-rule"] {
+      width: 1px;
+      height: 34%;
+      background: #283031;
+    }
+
+    [class~="09-verify-independently-check-copy"] {
+      min-width: 0;
+      color: #f0f3f1;
+      font-size: 1.72cqw;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      line-height: 1;
+      white-space: nowrap;
+    }
+
+    [class~="09-verify-independently-check-state"] {
+      color: #a7b0ad;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 0.72cqw;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    [class~="09-verify-independently-check-state"]::before {
+      content: "/";
+      margin-right: 0.6cqw;
+      color: #63e6a6;
+    }
+
+    [class~="09-verify-independently-gap-row"] {
+      display: grid;
+      grid-template-columns: 8.4cqw 1px minmax(0, 1fr) auto;
+      align-items: center;
+      column-gap: 1.6cqw;
+      min-width: 0;
+      padding: 0 2.2cqw;
+      background: #0b0e0f;
+      transform-origin: 0 50%;
+      will-change: transform, opacity;
+    }
+
+    [class~="09-verify-independently-gap-label"] {
+      color: #a7b0ad;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 0.72cqw;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+
+    [class~="09-verify-independently-gap-copy"] {
+      color: #f0f3f1;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 1.4cqw;
+      font-weight: 400;
+      line-height: 1;
+      white-space: nowrap;
+    }
+
+    [class~="09-verify-independently-gap-state"] {
+      display: flex;
+      align-items: center;
+      gap: 0.6cqw;
+      color: #63e6a6;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 0.72cqw;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    [class~="09-verify-independently-gap-state"]::before {
+      content: "";
+      width: 0.55cqw;
+      height: 0.55cqw;
+      border: 1px solid #63e6a6;
+    }
+
+    [class~="09-verify-independently-result"] {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-width: 0;
+      padding: 0 2.2cqw;
+      overflow: hidden;
+      background: #63e6a6;
+      color: #0b0e0f;
+      transform-origin: 50% 100%;
+      will-change: transform, opacity;
+    }
+
+    [class~="09-verify-independently-result-title"] {
+      font-family: "JetBrains Mono", monospace;
+      font-size: 2.45cqw;
+      font-weight: 700;
+      letter-spacing: 0.02em;
+      line-height: 0.9;
+      white-space: nowrap;
+    }
+
+    [class~="09-verify-independently-result-detail"] {
+      font-family: "Space Grotesk", sans-serif;
+      font-size: 1.45cqw;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      line-height: 1;
+      white-space: nowrap;
+    }
+
+    [class~="09-verify-independently-result-title"],
+    [class~="09-verify-independently-result-detail"] {
+      will-change: transform, opacity;
+    }
+  </style>
+
+  <div data-hf-id="hf-e0mr" id="root" data-composition-id="09-verify-independently" data-duration="9.08" data-width="1920" data-height="1080">
+    <div data-hf-id="hf-i2zf" class="clip 09-verify-independently-ground" data-start="0" data-duration="9.08" data-track-index="0" aria-hidden="true"></div>
+
+    <section data-hf-id="hf-chha" class="clip 09-verify-independently-stage" data-start="0" data-duration="9.08" data-track-index="1" aria-label="Standalone package verifier">
+      <div data-hf-id="hf-nwhu" class="09-verify-independently-terminal">
+        <div data-hf-id="hf-vhlr" class="09-verify-independently-chip-content" aria-hidden="true">$</div>
+
+        <div data-hf-id="hf-21lx" class="09-verify-independently-terminal-ui">
+          <header data-hf-id="hf-qvhp" class="09-verify-independently-header">
+            <div data-hf-id="hf-ymex" class="09-verify-independently-header-left">
+              <span data-hf-id="hf-qnif" class="09-verify-independently-header-mark" aria-hidden="true"></span>
+              <span data-hf-id="hf-1g90">standalone verifier</span>
+            </div>
+            <div data-hf-id="hf-542s" class="09-verify-independently-header-right">
+              <span data-hf-id="hf-9ju2">standalone</span>
+              <span data-hf-id="hf-jdai">/</span>
+              <span data-hf-id="hf-v1df">no atlas imports</span>
+            </div>
+          </header>
+
+          <div data-hf-id="hf-g9ws" class="09-verify-independently-command-line">
+            <span data-hf-id="hf-o77q" class="09-verify-independently-prompt" aria-hidden="true">$</span>
+            <span data-hf-id="hf-q39n" class="09-verify-independently-text-wrap">
+              <span data-hf-id="hf-7vi9" id="09-verify-independently-command" class="09-verify-independently-command"></span>
+              <span data-hf-id="hf-frql" id="09-verify-independently-cursor" class="09-verify-independently-cursor" aria-hidden="true">▋</span>
+            </span>
+          </div>
+
+          <div data-hf-id="hf-rn2w" id="09-verify-independently-check-root" class="09-verify-independently-check-row">
+            <span data-hf-id="hf-2szh" class="09-verify-independently-check-index">check 01</span>
+            <span data-hf-id="hf-46bn" class="09-verify-independently-row-rule" aria-hidden="true"></span>
+            <span data-hf-id="hf-l99k" class="09-verify-independently-check-copy">root hash re-derived</span>
+            <span data-hf-id="hf-w0dl" class="09-verify-independently-check-state">verified</span>
+          </div>
+
+          <div data-hf-id="hf-jb44" id="09-verify-independently-check-screen" class="09-verify-independently-check-row">
+            <span data-hf-id="hf-3zwk" class="09-verify-independently-check-index">check 02</span>
+            <span data-hf-id="hf-qzk3" class="09-verify-independently-row-rule" aria-hidden="true"></span>
+            <span data-hf-id="hf-48zu" class="09-verify-independently-check-copy">all 28 artifacts screened</span>
+            <span data-hf-id="hf-hkgt" class="09-verify-independently-check-state">verified</span>
+          </div>
+
+          <div data-hf-id="hf-nekx" id="09-verify-independently-check-provenance" class="09-verify-independently-check-row">
+            <span data-hf-id="hf-3llj" class="09-verify-independently-check-index">check 03</span>
+            <span data-hf-id="hf-ql92" class="09-verify-independently-row-rule" aria-hidden="true"></span>
+            <span data-hf-id="hf-um1d" class="09-verify-independently-check-copy">identity labels present</span>
+            <span data-hf-id="hf-8m9e" class="09-verify-independently-check-state">checked</span>
+          </div>
+
+          <div data-hf-id="hf-vhub" id="09-verify-independently-gap" class="09-verify-independently-gap-row">
+            <span data-hf-id="hf-zzg1" class="09-verify-independently-gap-label">gap register</span>
+            <span data-hf-id="hf-q6y1" class="09-verify-independently-row-rule" aria-hidden="true"></span>
+            <span data-hf-id="hf-864o" class="09-verify-independently-gap-copy">retained in the manifest</span>
+            <span data-hf-id="hf-gt9h" class="09-verify-independently-gap-state">visible</span>
+          </div>
+
+          <div data-hf-id="hf-sd0m" id="09-verify-independently-result" class="09-verify-independently-result">
+            <span data-hf-id="hf-ndkb" id="09-verify-independently-result-title" class="09-verify-independently-result-title">PACKAGE VERIFIED</span>
+            <span data-hf-id="hf-wxnp" id="09-verify-independently-result-detail" class="09-verify-independently-result-detail">integrity · screening · identity labels</span>
+          </div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+  <script>
+    (() => {
+      const FRAME_ID = "09-verify-independently";
+      const DURATION = 8.68;
+      const root = document.querySelector('[data-composition-id="09-verify-independently"]');
+      const byId = (id) => root.ownerDocument.getElementById(id);
+      const terminal = root.querySelector('[class~="09-verify-independently-terminal"]');
+      const chipContent = root.querySelector('[class~="09-verify-independently-chip-content"]');
+      const terminalUi = root.querySelector('[class~="09-verify-independently-terminal-ui"]');
+      const commandEl = byId("09-verify-independently-command");
+      const cursorEl = byId("09-verify-independently-cursor");
+
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+      window.__timelines[FRAME_ID] = tl;
+
+      const durationGuard = { p: 0 };
+      tl.to(durationGuard, { p: 1, duration: DURATION, ease: "none" }, 0);
+
+      tl.fromTo(
+        terminal,
+        {
+          scale: 0.035,
+          borderRadius: 166,
+          backgroundColor: "#63e6a6"
+        },
+        {
+          scale: 1,
+          borderRadius: 0,
+          backgroundColor: "#111516",
+          duration: 0.9,
+          ease: "power2.inOut"
+        },
+        0.04
+      );
+
+      tl.fromTo(
+        chipContent,
+        { opacity: 1 },
+        { opacity: 0, duration: 0.36, ease: "power1.in" },
+        0.04
+      );
+
+      tl.fromTo(
+        terminalUi,
+        { opacity: 0 },
+        { opacity: 1, duration: 0.36, ease: "power1.out" },
+        0.58
+      );
+
+      const COMMAND_SEQUENCE = [
+        { t: 0.00, text: "" },
+        { t: 0.08, text: "py" },
+        { t: 0.18, text: "python" },
+        { t: 0.31, text: "python " },
+        { t: 0.44, text: "python scripts" },
+        { t: 0.58, text: "python scripts/" },
+        { t: 0.71, text: "python scripts/verify_" },
+        { t: 0.88, text: "python scripts/verify_manfi" },
+        { t: 1.03, text: "python scripts/verify_man" },
+        { t: 1.18, text: "python scripts/verify_manifest.py" },
+        { t: 1.32, text: "python scripts/verify_manifest.py " },
+        { t: 1.50, text: "python scripts/verify_manifest.py manifest.json" }
+      ];
+
+      const commandAt = (time) => {
+        for (let i = COMMAND_SEQUENCE.length - 1; i >= 0; i -= 1) {
+          if (time >= COMMAND_SEQUENCE[i].t) return COMMAND_SEQUENCE[i].text;
+        }
+        return "";
+      };
+
+      const commandDriver = { t: 0 };
+      let lastCommand = "";
+      tl.to(
+        commandDriver,
+        {
+          t: 1.56,
+          duration: 1.56,
+          ease: "none",
+          onUpdate: () => {
+            const nextCommand = commandAt(commandDriver.t);
+            if (nextCommand !== lastCommand) {
+              commandEl.textContent = nextCommand;
+              lastCommand = nextCommand;
+            }
+          }
+        },
+        1.02
+      );
+
+      const blinkDriver = { p: 0, t: 0 };
+      tl.to(
+        blinkDriver,
+        {
+          p: Math.PI * 2 * 12,
+          t: DURATION,
+          duration: DURATION,
+          ease: "none",
+          onUpdate: () => {
+            cursorEl.style.opacity = blinkDriver.t >= 6.274
+              ? "0.18"
+              : (Math.sin(blinkDriver.p) > 0 ? "1" : "0");
+          }
+        },
+        0
+      );
+
+      const CHECKS = [
+        { id: "09-verify-independently-check-root", body: "root hash re-derived", hold: 0.58 },
+        { id: "09-verify-independently-check-screen", body: "all 28 artifacts screened", hold: 0.68 },
+        { id: "09-verify-independently-check-provenance", body: "identity labels present", hold: 0.78 }
+      ];
+      const BASE_DURATION = 0.6;
+      const SEC_PER_CHAR = 0.03;
+      const WINDOW_START = 2.76;
+      const WINDOW_DURATION = 2.56;
+      const rawTotal = CHECKS.reduce(
+        (total, entry) => total + BASE_DURATION + entry.body.length * SEC_PER_CHAR + entry.hold,
+        0
+      );
+      const timingScale = WINDOW_DURATION / rawTotal;
+      let cumulative = 0;
+      const CHECK_TIMELINE = CHECKS.map((entry) => {
+        const rawDuration = BASE_DURATION + entry.body.length * SEC_PER_CHAR + entry.hold;
+        const start = WINDOW_START + cumulative * timingScale;
+        cumulative += rawDuration;
+        return { ...entry, start };
+      });
+
+      CHECK_TIMELINE.forEach((entry) => {
+        const row = byId(entry.id);
+        tl.fromTo(
+          row,
+          { scale: 0, opacity: 0, y: 10 },
+          { scale: 1, opacity: 1, y: 0, duration: 0.56, ease: "power3.out" },
+          entry.start
+        );
+      });
+
+      tl.fromTo(
+        byId("09-verify-independently-gap"),
+        { scale: 0, opacity: 0, y: 8 },
+        { scale: 1, opacity: 1, y: 0, duration: 0.54, ease: "power3.out" },
+        5.58
+      );
+
+      const result = byId("09-verify-independently-result");
+      const resultTitle = byId("09-verify-independently-result-title");
+      const resultDetail = byId("09-verify-independently-result-detail");
+
+      tl.fromTo(
+        result,
+        { scaleY: 0, opacity: 0 },
+        { scaleY: 1, opacity: 1, duration: 0.58, ease: "power3.out" },
+        6.274
+      );
+      tl.fromTo(
+        resultTitle,
+        { x: -24, opacity: 0 },
+        { x: 0, opacity: 1, duration: 0.48, ease: "power3.out" },
+        6.48
+      );
+      tl.fromTo(
+        resultDetail,
+        { x: 24, opacity: 0 },
+        { x: 0, opacity: 1, duration: 0.48, ease: "power3.out" },
+        6.82
+      );
+    })();
+  </script>
+</template>

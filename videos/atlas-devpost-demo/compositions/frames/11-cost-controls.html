@@ -1,0 +1,663 @@
+<template>
+  <div data-hf-id="hf-knzy" id="root" data-composition-id="11-cost-controls" data-duration="12.9" data-width="1920" data-height="1080">
+    <div data-hf-id="hf-hyty" class="clip 11-cost-controls-ground" data-hf="11-cost-controls-ground" data-start="0" data-duration="12.9" data-track-index="0"></div>
+
+    <section data-hf-id="hf-6bbm" class="clip 11-cost-controls-scene" data-hf="11-cost-controls-scene" data-start="0" data-duration="12.9" data-track-index="1" aria-label="ATLAS cost-control proof">
+      <div data-hf-id="hf-wpiv" data-hf="11-cost-controls-top-rule"></div>
+
+      <div data-hf-id="hf-iijq" data-hf="11-cost-controls-kicker">
+        <span data-hf-id="hf-6k0f" data-hf="11-cost-controls-kicker-mark"></span>
+        operational proof / spend bounded
+      </div>
+      <div data-hf-id="hf-4mfb" data-hf="11-cost-controls-frame-index">11 / COST GUARDRAILS</div>
+
+      <h1 data-hf-id="hf-rb62" data-hf="11-cost-controls-title">
+        cost controls <span data-hf-id="hf-10x1">stay on</span>
+      </h1>
+
+      <div data-hf-id="hf-x2hj" data-hf="11-cost-controls-stage">
+        <div data-hf-id="hf-b15u" data-hf="11-cost-controls-center-axis"></div>
+
+        <div data-hf-id="hf-76u2" data-hf="11-cost-controls-left-slot" data-layout-allow-overlap="" aria-hidden="true">
+          <span data-hf-id="hf-sy9f" data-layout-allow-overlap="" data-layout-allow-occlusion="">/ CLOUD RUN</span>
+          <span data-hf-id="hf-i48i" data-layout-allow-overlap="" data-layout-allow-occlusion="">RUNTIME</span>
+        </div>
+        <div data-hf-id="hf-82o3" data-hf="11-cost-controls-right-slot" data-layout-allow-overlap="" aria-hidden="true">
+          <span data-hf-id="hf-mptr" data-layout-allow-overlap="" data-layout-allow-occlusion="">/ CLOUD SCHEDULER</span>
+          <span data-hf-id="hf-w6gl" data-layout-allow-overlap="" data-layout-allow-occlusion="">AUTOMATION</span>
+        </div>
+
+        <div data-hf-id="hf-bqop" data-hf="11-cost-controls-left-shell">
+          <article data-hf-id="hf-fceq" data-hf="11-cost-controls-left-card" aria-label="Bounded Cloud Run runtime">
+            <header data-hf-id="hf-jhoh" data-hf="11-cost-controls-card-header-left">
+              <span data-hf-id="hf-qnzr" data-layout-allow-overlap="">/ CLOUD RUN</span>
+              <span data-hf-id="hf-4a3a" data-layout-allow-overlap="">RUNTIME</span>
+            </header>
+
+            <figure data-hf-id="hf-qv3t" data-hf="11-cost-controls-runtime-capture">
+              <img data-hf-id="hf-4cxi" src="assets/image_005.png" alt="Google Cloud Run runtime settings showing revision maximum instances 1 and concurrency 1" width="420" height="430" loading="eager" decoding="sync">
+            </figure>
+
+            <div data-hf-id="hf-n89v" data-hf="11-cost-controls-runtime-facts">
+              <div data-hf-id="hf-gvvg" data-hf="11-cost-controls-fact-zero">
+                <span data-hf-id="hf-i5uz">scales to</span>
+                <strong data-hf-id="hf-tfbs">zero</strong>
+              </div>
+              <div data-hf-id="hf-k0t9" data-hf="11-cost-controls-fact-revision">
+                <span data-hf-id="hf-6ika">revision max</span>
+                <strong data-hf-id="hf-em01">1</strong>
+              </div>
+              <div data-hf-id="hf-t8eb" data-hf="11-cost-controls-fact-concurrency">
+                <span data-hf-id="hf-zatw">concurrency</span>
+                <strong data-hf-id="hf-394l">1</strong>
+              </div>
+            </div>
+          </article>
+        </div>
+
+        <div data-hf-id="hf-9dji" data-hf="11-cost-controls-right-shell">
+          <article data-hf-id="hf-lwwh" data-hf="11-cost-controls-right-card" aria-label="Paused weekly Cloud Scheduler sweep">
+            <header data-hf-id="hf-swmk" data-hf="11-cost-controls-card-header-right">
+              <span data-hf-id="hf-n88r" data-layout-allow-overlap="">/ CLOUD SCHEDULER</span>
+              <span data-hf-id="hf-e04h" data-layout-allow-overlap="">AUTOMATION</span>
+            </header>
+
+            <figure data-hf-id="hf-n34m" data-hf="11-cost-controls-scheduler-capture">
+              <img data-hf-id="hf-kuns" src="assets/image_002.png" alt="Google Cloud Scheduler showing atlas-weekly-sweep paused with no prior run" width="944" height="234" loading="eager" decoding="sync">
+            </figure>
+
+            <div data-hf-id="hf-p3lv" data-hf="11-cost-controls-scheduler-proof">
+              <div data-hf-id="hf-dp58" data-hf="11-cost-controls-job-name">atlas-weekly-sweep</div>
+              <div data-hf-id="hf-qh4y" data-hf="11-cost-controls-scheduler-state">
+                <strong data-hf-id="hf-und4">PAUSED</strong>
+                <span data-hf-id="hf-6w39">Has not run yet</span>
+              </div>
+            </div>
+          </article>
+        </div>
+
+        <div data-hf-id="hf-bcf9" data-hf="11-cost-controls-badge-bounded">BOUNDED</div>
+        <div data-hf-id="hf-0c71" data-hf="11-cost-controls-badge-paused">PAUSED</div>
+      </div>
+
+      <div data-hf-id="hf-9gjl" data-hf="11-cost-controls-bottom-rule"></div>
+    </section>
+  </div>
+
+  <style>
+    @font-face {
+      font-family: "Space Grotesk";
+      src: url("assets/fonts/SpaceGrotesk-400.woff2") format("woff2");
+      font-style: normal;
+      font-weight: 400;
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: "Space Grotesk";
+      src: url("assets/fonts/SpaceGrotesk-700.woff2") format("woff2");
+      font-style: normal;
+      font-weight: 700;
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: "JetBrains Mono";
+      src: url("assets/fonts/JetBrainsMono-400.woff2") format("woff2");
+      font-style: normal;
+      font-weight: 400;
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: "JetBrains Mono";
+      src: url("assets/fonts/JetBrainsMono-700.woff2") format("woff2");
+      font-style: normal;
+      font-weight: 700;
+      font-display: swap;
+    }
+
+    #root {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      container-type: size;
+      color: #f0f3f1;
+      font-family: "Space Grotesk";
+      font-synthesis: none;
+    }
+
+    #root *,
+    #root *::before,
+    #root *::after {
+      box-sizing: border-box;
+    }
+
+    #root [data-hf="11-cost-controls-ground"] {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      background: #0b0e0f;
+    }
+
+    #root [data-hf="11-cost-controls-scene"] {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      color: #f0f3f1;
+    }
+
+    #root [data-hf="11-cost-controls-top-rule"] {
+      position: absolute;
+      top: 4.35cqh;
+      left: 5.5cqw;
+      right: 5.5cqw;
+      height: 1px;
+      background: #283031;
+      transform-origin: left center;
+    }
+
+    #root [data-hf="11-cost-controls-kicker"],
+    #root [data-hf="11-cost-controls-frame-index"] {
+      position: absolute;
+      top: 5.6cqh;
+      font-family: "JetBrains Mono";
+      font-size: 0.72cqw;
+      font-weight: 400;
+      line-height: 1;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+
+    #root [data-hf="11-cost-controls-kicker"] {
+      left: 5.5cqw;
+      color: #63e6a6;
+    }
+
+    #root [data-hf="11-cost-controls-kicker-mark"] {
+      display: inline-block;
+      width: 1.85cqw;
+      height: 2px;
+      margin-right: 0.7cqw;
+      vertical-align: 0.18em;
+      background: #63e6a6;
+      transform-origin: left center;
+    }
+
+    #root [data-hf="11-cost-controls-frame-index"] {
+      right: 5.5cqw;
+      color: #727c79;
+      text-align: right;
+    }
+
+    #root [data-hf="11-cost-controls-title"] {
+      position: absolute;
+      top: 9.6cqh;
+      left: 5.5cqw;
+      width: 89cqw;
+      margin: 0;
+      color: #f0f3f1;
+      font-family: "Space Grotesk";
+      font-size: 4.65cqw;
+      font-weight: 700;
+      line-height: 0.92;
+      letter-spacing: -0.035em;
+      text-transform: lowercase;
+      white-space: nowrap;
+      transform-origin: left center;
+    }
+
+    #root [data-hf="11-cost-controls-title"] span {
+      color: #63e6a6;
+    }
+
+    #root [data-hf="11-cost-controls-stage"] {
+      position: absolute;
+      top: 27cqh;
+      left: 5.5cqw;
+      width: 89cqw;
+      height: 49.5cqh;
+      perspective: 1800px;
+      transform-style: preserve-3d;
+    }
+
+    #root [data-hf="11-cost-controls-center-axis"] {
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      left: 50%;
+      width: 1px;
+      background: #283031;
+      transform-origin: center top;
+    }
+
+    #root [data-hf="11-cost-controls-left-slot"],
+    #root [data-hf="11-cost-controls-right-slot"] {
+      position: absolute;
+      top: 0;
+      width: calc((100% - 6.7cqw) / 2);
+      height: 100%;
+      padding: 1.45cqh 1.35cqw;
+      border-top: 1px solid #283031;
+      border-bottom: 1px solid #283031;
+      color: #727c79;
+      font-family: "JetBrains Mono";
+      font-size: 0.68cqw;
+      font-weight: 400;
+      line-height: 1;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+
+    #root [data-hf="11-cost-controls-left-slot"] {
+      left: 0;
+    }
+
+    #root [data-hf="11-cost-controls-right-slot"] {
+      right: 0;
+    }
+
+    #root [data-hf="11-cost-controls-left-slot"] span:last-child,
+    #root [data-hf="11-cost-controls-right-slot"] span:last-child {
+      float: right;
+    }
+
+    #root [data-hf="11-cost-controls-left-shell"],
+    #root [data-hf="11-cost-controls-right-shell"] {
+      position: absolute;
+      top: 0;
+      width: calc((100% - 6.7cqw) / 2);
+      height: 100%;
+      transform-style: preserve-3d;
+      will-change: transform, opacity;
+    }
+
+    #root [data-hf="11-cost-controls-left-shell"] {
+      left: 0;
+      transform-origin: right center;
+    }
+
+    #root [data-hf="11-cost-controls-right-shell"] {
+      right: 0;
+      transform-origin: left center;
+    }
+
+    #root [data-hf="11-cost-controls-left-card"],
+    #root [data-hf="11-cost-controls-right-card"] {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      border-top: 1px solid #63e6a6;
+      border-bottom: 1px solid #283031;
+      background: #111516;
+      transform-style: preserve-3d;
+      will-change: transform;
+    }
+
+    #root [data-hf="11-cost-controls-left-card"] {
+      border-right: 1px solid #283031;
+      transform-origin: right center;
+    }
+
+    #root [data-hf="11-cost-controls-right-card"] {
+      border-left: 1px solid #283031;
+      transform-origin: left center;
+    }
+
+    #root [data-hf="11-cost-controls-card-header-left"],
+    #root [data-hf="11-cost-controls-card-header-right"] {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 5.3cqh;
+      padding: 1.55cqh 1.35cqw 0;
+      border-bottom: 1px solid #283031;
+      color: #a7b0ad;
+      font-family: "JetBrains Mono";
+      font-size: 0.68cqw;
+      font-weight: 400;
+      line-height: 1;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+
+    #root [data-hf="11-cost-controls-card-header-left"] span:last-child,
+    #root [data-hf="11-cost-controls-card-header-right"] span:last-child {
+      float: right;
+      color: #76807d;
+    }
+
+    #root [data-hf="11-cost-controls-runtime-capture"],
+    #root [data-hf="11-cost-controls-scheduler-capture"] {
+      position: absolute;
+      margin: 0;
+      overflow: hidden;
+      background: #0b0e0f;
+      outline: 1px solid #283031;
+      outline-offset: -1px;
+    }
+
+    #root [data-hf="11-cost-controls-runtime-capture"] {
+      top: 7.3cqh;
+      left: 1.35cqw;
+      width: 20cqw;
+      height: 36.2cqh;
+    }
+
+    #root [data-hf="11-cost-controls-scheduler-capture"] {
+      top: 7.3cqh;
+      left: 1.35cqw;
+      width: 38.15cqw;
+      height: 18.3cqh;
+    }
+
+    #root [data-hf="11-cost-controls-runtime-capture"] img,
+    #root [data-hf="11-cost-controls-scheduler-capture"] img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      object-position: center;
+    }
+
+    #root [data-hf="11-cost-controls-runtime-facts"] {
+      position: absolute;
+      top: 10.7cqh;
+      left: 22.7cqw;
+      width: 16.3cqw;
+    }
+
+    #root [data-hf="11-cost-controls-fact-zero"],
+    #root [data-hf="11-cost-controls-fact-revision"],
+    #root [data-hf="11-cost-controls-fact-concurrency"] {
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      min-height: 8.2cqh;
+      padding: 1.55cqh 0 1.2cqh;
+      border-top: 1px solid #283031;
+      color: #a7b0ad;
+      font-family: "Space Grotesk";
+      font-size: 1.42cqw;
+      font-weight: 400;
+      line-height: 1.05;
+      letter-spacing: -0.02em;
+      white-space: nowrap;
+    }
+
+    #root [data-hf="11-cost-controls-fact-zero"] strong,
+    #root [data-hf="11-cost-controls-fact-revision"] strong,
+    #root [data-hf="11-cost-controls-fact-concurrency"] strong {
+      margin-left: 0.5cqw;
+      color: #63e6a6;
+      font-size: 2.25cqw;
+      font-weight: 700;
+      line-height: 0.8;
+      letter-spacing: -0.04em;
+    }
+
+    #root [data-hf="11-cost-controls-scheduler-proof"] {
+      position: absolute;
+      top: 28.7cqh;
+      left: 1.35cqw;
+      right: 1.35cqw;
+      padding-top: 1.7cqh;
+      border-top: 1px solid #283031;
+    }
+
+    #root [data-hf="11-cost-controls-job-name"] {
+      color: #f0f3f1;
+      font-family: "Space Grotesk";
+      font-size: 2.05cqw;
+      font-weight: 700;
+      line-height: 1;
+      letter-spacing: -0.03em;
+      white-space: nowrap;
+    }
+
+    #root [data-hf="11-cost-controls-scheduler-state"] {
+      display: flex;
+      align-items: center;
+      gap: 1.1cqw;
+      margin-top: 2.4cqh;
+      color: #a7b0ad;
+      font-family: "JetBrains Mono";
+      font-size: 1.4cqw;
+      font-weight: 400;
+      line-height: 1;
+      letter-spacing: 0.1em;
+    }
+
+    #root [data-hf="11-cost-controls-scheduler-state"] strong {
+      display: inline-block;
+      padding: 1.05cqh 0.9cqw;
+      border: 1px solid #63e6a6;
+      color: #63e6a6;
+      font-family: "JetBrains Mono";
+      font-size: 1.4cqw;
+      font-weight: 700;
+      line-height: 1;
+      letter-spacing: 0.14em;
+    }
+
+    #root [data-hf="11-cost-controls-scheduler-state"] span {
+      color: #a7b0ad;
+      font-family: "Space Grotesk";
+      font-size: 1.4cqw;
+      letter-spacing: -0.01em;
+      white-space: nowrap;
+    }
+
+    #root [data-hf="11-cost-controls-badge-bounded"],
+    #root [data-hf="11-cost-controls-badge-paused"] {
+      position: absolute;
+      top: 41.8cqh;
+      z-index: 4;
+      padding: 1.2cqh 0.9cqw;
+      background: #63e6a6;
+      color: #0b0e0f;
+      font-family: "JetBrains Mono";
+      font-size: 0.76cqw;
+      font-weight: 700;
+      line-height: 1;
+      letter-spacing: 0.14em;
+      text-align: center;
+      transform-origin: center center;
+    }
+
+    #root [data-hf="11-cost-controls-badge-bounded"] {
+      left: calc(50% - 5.8cqw);
+      width: 6.8cqw;
+    }
+
+    #root [data-hf="11-cost-controls-badge-paused"] {
+      left: calc(50% + 0.8cqw);
+      width: 5.5cqw;
+    }
+
+    #root [data-hf="11-cost-controls-bottom-rule"] {
+      position: absolute;
+      top: 80.3cqh;
+      left: 5.5cqw;
+      right: 5.5cqw;
+      height: 1px;
+      background: #283031;
+      transform-origin: left center;
+    }
+  </style>
+
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+  <script>
+    (() => {
+      const select = (name) => `[data-hf="11-cost-controls-${name}"]`;
+      const tl = gsap.timeline({ paused: true });
+
+      tl.fromTo(
+        select("top-rule"),
+        { scaleX: 0, opacity: 0 },
+        { scaleX: 1, opacity: 1, duration: 0.8, ease: "power3.out" },
+        0.02,
+      );
+      tl.fromTo(
+        select("kicker"),
+        { y: -20, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.65, ease: "power3.out" },
+        0.08,
+      );
+      tl.fromTo(
+        select("kicker-mark"),
+        { scaleX: 0, opacity: 0 },
+        { scaleX: 1, opacity: 1, duration: 0.5, ease: "power3.out" },
+        0.18,
+      );
+      tl.fromTo(
+        select("frame-index"),
+        { y: -16, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.6, ease: "power3.out" },
+        0.14,
+      );
+      tl.fromTo(
+        select("title"),
+        { y: -54, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.86, ease: "power3.out" },
+        0.06,
+      );
+
+      tl.fromTo(
+        select("center-axis"),
+        { scaleY: 0, opacity: 0 },
+        { scaleY: 1, opacity: 1, duration: 1.05, ease: "power3.out" },
+        0.62,
+      );
+      tl.fromTo(
+        select("left-slot"),
+        { y: 22, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.95, ease: "power2.out" },
+        0.78,
+      );
+      tl.fromTo(
+        select("right-slot"),
+        { y: 22, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.95, ease: "power2.out" },
+        1.02,
+      );
+      tl.fromTo(
+        select("bottom-rule"),
+        { scaleX: 0, opacity: 0 },
+        { scaleX: 1, opacity: 1, duration: 0.8, ease: "power3.out" },
+        1.55,
+      );
+
+      tl.fromTo(
+        select("left-shell"),
+        { x: -390, scale: 0.88, opacity: 0 },
+        { x: 0, scale: 1, opacity: 1, duration: 1.08, ease: "power3.out" },
+        2.725,
+      );
+      tl.fromTo(
+        select("left-card"),
+        { rotateY: 22 },
+        { rotateY: 12, duration: 1.08, ease: "power3.out" },
+        2.725,
+      );
+      tl.fromTo(
+        select("right-shell"),
+        { x: 390, scale: 0.88, opacity: 0 },
+        { x: 0, scale: 1, opacity: 1, duration: 1.08, ease: "power3.out" },
+        2.92,
+      );
+      tl.fromTo(
+        select("right-card"),
+        { rotateY: -22 },
+        { rotateY: -12, duration: 1.08, ease: "power3.out" },
+        2.92,
+      );
+
+      tl.fromTo(
+        select("runtime-capture"),
+        { y: 18, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.72, ease: "power2.out" },
+        3.22,
+      );
+      tl.fromTo(
+        select("scheduler-capture"),
+        { y: 18, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.72, ease: "power2.out" },
+        3.42,
+      );
+      tl.fromTo(
+        select("fact-zero"),
+        { x: -24, opacity: 0 },
+        { x: 0, opacity: 1, duration: 0.64, ease: "power2.out" },
+        3.72,
+      );
+      tl.fromTo(
+        select("fact-revision"),
+        { x: -24, opacity: 0 },
+        { x: 0, opacity: 1, duration: 0.64, ease: "power2.out" },
+        4.88,
+      );
+      tl.fromTo(
+        select("fact-concurrency"),
+        { x: -24, opacity: 0 },
+        { x: 0, opacity: 1, duration: 0.64, ease: "power2.out" },
+        5.98,
+      );
+      tl.fromTo(
+        select("scheduler-proof"),
+        { y: 20, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.68, ease: "power2.out" },
+        6.72,
+      );
+      tl.fromTo(
+        select("scheduler-state"),
+        { x: 22, opacity: 0 },
+        { x: 0, opacity: 1, duration: 0.62, ease: "power2.out" },
+        7.44,
+      );
+
+      tl.to(
+        select("left-shell"),
+        { y: -5, duration: 0.55, ease: "sine.inOut" },
+        6.62,
+      );
+      tl.to(
+        select("right-shell"),
+        { y: 5, duration: 0.55, ease: "sine.inOut" },
+        6.62,
+      );
+      tl.to(
+        select("left-shell"),
+        { y: 0, duration: 0.82, ease: "sine.inOut" },
+        7.17,
+      );
+      tl.to(
+        select("right-shell"),
+        { y: 0, duration: 0.82, ease: "sine.inOut" },
+        7.17,
+      );
+
+      tl.fromTo(
+        select("badge-bounded"),
+        { scale: 0.72, opacity: 0 },
+        { scale: 1, opacity: 1, duration: 0.64, ease: "back.out(1.7)" },
+        8.22,
+      );
+      tl.fromTo(
+        select("badge-paused"),
+        { scale: 0.72, opacity: 0 },
+        { scale: 1, opacity: 1, duration: 0.64, ease: "back.out(1.7)" },
+        8.54,
+      );
+
+      window.__timelines = window.__timelines || {};
+      window.__timelines["11-cost-controls"] = tl;
+    })();
+  </script>
+</template>

@@ -1,0 +1,497 @@
+<template>
+  <style>
+    @font-face {
+      font-family: "Space Grotesk";
+      src: url("assets/fonts/SpaceGrotesk-400.woff2") format("woff2");
+      font-style: normal;
+      font-weight: 400;
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: "Space Grotesk";
+      src: url("assets/fonts/SpaceGrotesk-700.woff2") format("woff2");
+      font-style: normal;
+      font-weight: 700;
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: "JetBrains Mono";
+      src: url("assets/fonts/JetBrainsMono-400.woff2") format("woff2");
+      font-style: normal;
+      font-weight: 400;
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: "JetBrains Mono";
+      src: url("assets/fonts/JetBrainsMono-700.woff2") format("woff2");
+      font-style: normal;
+      font-weight: 700;
+      font-display: swap;
+    }
+
+    #root {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      container-type: size;
+      color: #f0f3f1;
+      font-family: "Space Grotesk", sans-serif;
+    }
+
+    .f05-ground {
+      position: absolute;
+      inset: 0;
+      z-index: 0;
+      overflow: hidden;
+      background: #0b0e0f;
+    }
+
+    .f05-side-field {
+      position: absolute;
+      top: 25.5cqh;
+      width: 43cqw;
+      height: 52cqh;
+      z-index: 1;
+      background: rgba(99, 230, 166, 0.018);
+      pointer-events: none;
+    }
+
+    .f05-side-field-left {
+      left: 4cqw;
+      border-left: 1px solid rgba(99, 230, 166, 0.08);
+    }
+
+    .f05-side-field-right {
+      right: 4cqw;
+      border-right: 1px solid rgba(99, 230, 166, 0.08);
+    }
+
+    .f05-axis {
+      position: absolute;
+      left: calc(50% - 0.5px);
+      top: 3.8cqh;
+      width: 1px;
+      height: 78.2cqh;
+      z-index: 2;
+      background: #283031;
+      transform-origin: 50% 0%;
+      pointer-events: none;
+    }
+
+    .f05-scene {
+      position: absolute;
+      inset: 0;
+      z-index: 3;
+      perspective: 1700px;
+      overflow: hidden;
+    }
+
+    .f05-title {
+      position: absolute;
+      top: 4.6cqh;
+      left: 6cqw;
+      width: 88cqw;
+      margin: 0;
+      color: #f0f3f1;
+      font-size: 6.15cqw;
+      font-weight: 700;
+      line-height: 0.86;
+      letter-spacing: -0.04em;
+      text-align: center;
+      text-transform: lowercase;
+      text-wrap: balance;
+      transform-origin: 50% 0%;
+    }
+
+    .f05-title-accent {
+      color: #63e6a6;
+    }
+
+    .f05-stage {
+      position: absolute;
+      top: 28cqh;
+      left: 6cqw;
+      width: 88cqw;
+      height: 46cqh;
+      display: flex;
+      gap: 4cqw;
+      z-index: 4;
+      transform-style: preserve-3d;
+    }
+
+    .f05-panel-shell {
+      position: relative;
+      flex: 1 1 0;
+      min-width: 0;
+      height: 100%;
+      transform-style: preserve-3d;
+      transform-origin: 50% 50%;
+      will-change: transform, opacity;
+    }
+
+    .f05-panel-shell::before {
+      content: "";
+      position: absolute;
+      z-index: 0;
+      pointer-events: none;
+    }
+
+    .f05-panel-shell-left::before {
+      inset: 12px -16px -16px 16px;
+      border-right: 1px solid rgba(99, 230, 166, 0.16);
+      border-bottom: 1px solid rgba(99, 230, 166, 0.08);
+    }
+
+    .f05-panel-shell-right::before {
+      inset: 12px 16px -16px -16px;
+      border-left: 1px solid rgba(99, 230, 166, 0.16);
+      border-bottom: 1px solid rgba(99, 230, 166, 0.08);
+    }
+
+    .f05-panel-card {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+      height: 100%;
+      box-sizing: border-box;
+      display: grid;
+      grid-template-rows: auto auto 1fr auto;
+      padding: 2.35cqw 2.55cqw 2.2cqw;
+      overflow: hidden;
+      border: 1px solid #283031;
+      background: #111516;
+      transform-style: preserve-3d;
+      will-change: transform;
+    }
+
+    .f05-panel-eyebrow,
+    .f05-panel-foot,
+    .f05-badge {
+      font-family: "JetBrains Mono", monospace;
+      text-transform: uppercase;
+      letter-spacing: 0.14em;
+    }
+
+    .f05-panel-eyebrow {
+      margin: 0;
+      color: #a7b0ad;
+      font-size: 0.82cqw;
+      font-weight: 700;
+      line-height: 1.4;
+    }
+
+    .f05-panel-rule {
+      width: 100%;
+      height: 1px;
+      margin-top: 1.15cqh;
+      background: #283031;
+      transform-origin: 0% 50%;
+    }
+
+    .f05-panel-copy {
+      align-self: center;
+      min-width: 0;
+      padding-top: 1.2cqh;
+    }
+
+    .f05-panel-value {
+      margin: 0;
+      color: #f0f3f1;
+      font-size: 3.45cqw;
+      font-weight: 700;
+      line-height: 0.92;
+      letter-spacing: -0.035em;
+      text-transform: lowercase;
+    }
+
+    .f05-panel-detail {
+      max-width: 24cqw;
+      margin: 1.5cqh 0 0;
+      color: #a7b0ad;
+      font-size: 1.62cqw;
+      font-weight: 400;
+      line-height: 1.2;
+      letter-spacing: -0.015em;
+      text-transform: none;
+    }
+
+    .f05-panel-foot {
+      margin: 0;
+      color: #63e6a6;
+      font-size: 0.72cqw;
+      font-weight: 400;
+      line-height: 1.4;
+    }
+
+    .f05-badge {
+      position: absolute;
+      z-index: 9;
+      box-sizing: border-box;
+      display: grid;
+      place-items: center;
+      height: 5cqh;
+      border: 1px solid #283031;
+      background: #0b0e0f;
+      color: #f0f3f1;
+      font-size: 1.4cqw;
+      font-weight: 700;
+      line-height: 1;
+      white-space: nowrap;
+      transform-origin: 50% 50%;
+      will-change: transform, opacity;
+    }
+
+    .f05-badge-gemini {
+      top: 50.8cqh;
+      right: 49.5cqw;
+      width: 22cqw;
+      color: #a7b0ad;
+      text-transform: lowercase;
+      letter-spacing: 0.1em;
+    }
+
+    .f05-badge-verdict {
+      top: 61.4cqh;
+      left: 50%;
+      width: 28cqw;
+      height: 7.1cqh;
+      margin-left: -14cqw;
+      border-color: #63e6a6;
+      background: #63e6a6;
+      color: #0b0e0f;
+      font-size: 1.58cqw;
+      letter-spacing: 0.17em;
+    }
+
+    .f05-badge-failed {
+      top: 74.8cqh;
+      left: 49.5cqw;
+      width: 18cqw;
+      color: #63e6a6;
+      border-color: rgba(99, 230, 166, 0.4);
+    }
+  </style>
+
+  <div data-hf-id="hf-cf6m" id="root" data-composition-id="05-insufficient-means-insufficient" data-duration="11.32" data-width="1920" data-height="1080">
+    <div data-hf-id="hf-a3k3" class="clip f05-ground" data-start="0" data-duration="11.32" data-track-index="0" aria-hidden="true"></div>
+
+    <div data-hf-id="hf-vwtz" class="f05-side-field f05-side-field-left" aria-hidden="true"></div>
+    <div data-hf-id="hf-d7sa" class="f05-side-field f05-side-field-right" aria-hidden="true"></div>
+    <div data-hf-id="hf-ke9a" class="f05-axis" aria-hidden="true"></div>
+
+    <section data-hf-id="hf-7640" class="f05-scene">
+      <h1 data-hf-id="hf-ov72" class="f05-title">
+        a bucket list is<br data-hf-id="hf-x5px">
+        <span data-hf-id="hf-cbxh" class="f05-title-accent">not</span> recovery testing
+      </h1>
+
+      <div data-hf-id="hf-ef2e" class="f05-stage">
+        <article data-hf-id="hf-n4az" class="f05-panel-shell f05-panel-shell-left">
+          <div data-hf-id="hf-cbgc" class="f05-panel-card f05-panel-card-left">
+            <p data-hf-id="hf-d3w6" class="f05-panel-eyebrow f05-left-eyebrow">Observed</p>
+            <div data-hf-id="hf-fjju" class="f05-panel-rule f05-left-rule" aria-hidden="true"></div>
+            <div data-hf-id="hf-o55g" class="f05-panel-copy">
+              <p data-hf-id="hf-yofc" class="f05-panel-value f05-left-value">2</p>
+              <p data-hf-id="hf-8rbj" class="f05-panel-detail f05-left-detail">Cloud Storage<br data-hf-id="hf-rsrt">buckets</p>
+            </div>
+            <p data-hf-id="hf-ura5" class="f05-panel-foot f05-left-foot">observed evidence</p>
+          </div>
+        </article>
+
+        <article data-hf-id="hf-zb2u" class="f05-panel-shell f05-panel-shell-right">
+          <div data-hf-id="hf-jq4z" class="f05-panel-card f05-panel-card-right">
+            <p data-hf-id="hf-16ug" class="f05-panel-eyebrow f05-right-eyebrow">Required</p>
+            <div data-hf-id="hf-bo8d" class="f05-panel-rule f05-right-rule" aria-hidden="true"></div>
+            <div data-hf-id="hf-z9d8" class="f05-panel-copy">
+              <p data-hf-id="hf-rthc" class="f05-panel-value f05-right-value">tested</p>
+              <p data-hf-id="hf-9bw8" class="f05-panel-detail f05-right-detail">recovery<br data-hf-id="hf-szow">procedures</p>
+            </div>
+            <p data-hf-id="hf-2enx" class="f05-panel-foot f05-right-foot" data-layout-allow-occlusion="">control requirement</p>
+          </div>
+        </article>
+      </div>
+
+      <div data-hf-id="hf-b735" class="f05-badge f05-badge-gemini">gemini-3.5-flash</div>
+      <div data-hf-id="hf-9arr" class="f05-badge f05-badge-verdict">INSUFFICIENT</div>
+      <div data-hf-id="hf-ssxo" class="f05-badge f05-badge-failed">A1.3 NOT MET</div>
+    </section>
+  </div>
+
+  <script>
+    (() => {
+      const compositionId = "05-insufficient-means-insufficient";
+      const root = document.querySelector('[data-composition-id="05-insufficient-means-insufficient"]');
+      const one = (selector) => root.querySelector(selector);
+
+      const title = one(".f05-title");
+      const axis = one(".f05-axis");
+      const leftField = one(".f05-side-field-left");
+      const rightField = one(".f05-side-field-right");
+      const leftShell = one(".f05-panel-shell-left");
+      const rightShell = one(".f05-panel-shell-right");
+      const leftCard = one(".f05-panel-card-left");
+      const rightCard = one(".f05-panel-card-right");
+      const leftEyebrow = one(".f05-left-eyebrow");
+      const rightEyebrow = one(".f05-right-eyebrow");
+      const leftRule = one(".f05-left-rule");
+      const rightRule = one(".f05-right-rule");
+      const leftValue = one(".f05-left-value");
+      const leftDetail = one(".f05-left-detail");
+      const leftFoot = one(".f05-left-foot");
+      const rightValue = one(".f05-right-value");
+      const rightDetail = one(".f05-right-detail");
+      const rightFoot = one(".f05-right-foot");
+      const geminiBadge = one(".f05-badge-gemini");
+      const verdictBadge = one(".f05-badge-verdict");
+      const failedBadge = one(".f05-badge-failed");
+      const durationAnchor = { progress: 0 };
+
+      const tl = gsap.timeline({ paused: true });
+
+      tl.to(durationAnchor, { progress: 1, duration: 10.92, ease: "none" }, 0);
+
+      tl.fromTo(
+        title,
+        { y: -82, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.92, ease: "power3.out" },
+        0.08,
+      );
+      tl.fromTo(
+        axis,
+        { scaleY: 0, opacity: 0 },
+        { scaleY: 1, opacity: 1, duration: 1.28, ease: "power3.out" },
+        0.18,
+      );
+
+      tl.fromTo(
+        leftField,
+        { scaleX: 0.86, opacity: 0 },
+        { scaleX: 1, opacity: 1, duration: 1.9, ease: "power3.out", transformOrigin: "100% 50%" },
+        1.68,
+      );
+      tl.fromTo(
+        rightField,
+        { scaleX: 0.86, opacity: 0 },
+        { scaleX: 1, opacity: 1, duration: 1.9, ease: "power3.out", transformOrigin: "0% 50%" },
+        1.68,
+      );
+
+      tl.fromTo(
+        leftShell,
+        { x: -460, rotateY: 20, scale: 0.86, opacity: 0 },
+        { x: 0, rotateY: 12, scale: 1, opacity: 1, duration: 1.14, ease: "power3.out" },
+        2.082,
+      );
+      tl.fromTo(
+        rightShell,
+        { x: 460, rotateY: -20, scale: 0.86, opacity: 0 },
+        { x: 0, rotateY: -12, scale: 1, opacity: 1, duration: 1.14, ease: "power3.out" },
+        2.282,
+      );
+
+      tl.fromTo(
+        leftEyebrow,
+        { y: 18, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.58, ease: "power2.out" },
+        2.72,
+      );
+      tl.fromTo(
+        rightEyebrow,
+        { y: 18, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.58, ease: "power2.out" },
+        2.92,
+      );
+      tl.fromTo(
+        leftRule,
+        { scaleX: 0, opacity: 0 },
+        { scaleX: 1, opacity: 1, duration: 0.72, ease: "power2.out" },
+        2.82,
+      );
+      tl.fromTo(
+        rightRule,
+        { scaleX: 0, opacity: 0 },
+        { scaleX: 1, opacity: 1, duration: 0.72, ease: "power2.out" },
+        3.02,
+      );
+
+      tl.fromTo(
+        leftValue,
+        { y: 28, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.64, ease: "power2.out" },
+        3.3,
+      );
+      tl.fromTo(
+        leftDetail,
+        { y: 24, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.64, ease: "power2.out" },
+        3.82,
+      );
+      tl.fromTo(
+        leftFoot,
+        { y: 16, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.54, ease: "power2.out" },
+        4.2,
+      );
+
+      tl.fromTo(
+        rightValue,
+        { y: 28, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.64, ease: "power2.out" },
+        4.58,
+      );
+      tl.fromTo(
+        rightDetail,
+        { y: 24, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.64, ease: "power2.out" },
+        5.16,
+      );
+      tl.fromTo(
+        rightFoot,
+        { y: 16, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.54, ease: "power2.out" },
+        5.72,
+      );
+
+      tl.to(leftCard, { y: -5, duration: 0.55, ease: "sine.inOut" }, 3.42);
+      tl.to(rightCard, { y: 5, duration: 0.55, ease: "sine.inOut" }, 3.42);
+      tl.to(leftCard, { y: 4, duration: 0.7, ease: "sine.inOut" }, 3.97);
+      tl.to(rightCard, { y: -4, duration: 0.7, ease: "sine.inOut" }, 3.97);
+      tl.to(leftCard, { y: -3, duration: 0.7, ease: "sine.inOut" }, 4.67);
+      tl.to(rightCard, { y: 3, duration: 0.7, ease: "sine.inOut" }, 4.67);
+      tl.to(leftCard, { y: 3, duration: 0.7, ease: "sine.inOut" }, 5.37);
+      tl.to(rightCard, { y: -3, duration: 0.7, ease: "sine.inOut" }, 5.37);
+      tl.to(leftCard, { y: 0, duration: 0.7, ease: "sine.inOut" }, 6.07);
+      tl.to(rightCard, { y: 0, duration: 0.7, ease: "sine.inOut" }, 6.07);
+
+      tl.fromTo(
+        geminiBadge,
+        { x: -52, y: 14, scale: 0.68, opacity: 0 },
+        { x: 0, y: 0, scale: 1, opacity: 1, duration: 0.7, ease: "back.out(1.8)" },
+        6.84,
+      );
+      tl.fromTo(
+        verdictBadge,
+        { y: 28, scale: 0.62, opacity: 0 },
+        { y: 0, scale: 1, opacity: 1, duration: 0.78, ease: "back.out(1.9)" },
+        7.62,
+      );
+      tl.fromTo(
+        failedBadge,
+        { x: 52, y: 14, scale: 0.68, opacity: 0 },
+        { x: 0, y: 0, scale: 1, opacity: 1, duration: 0.72, ease: "back.out(1.8)" },
+        8.7,
+      );
+
+      tl.to(leftShell, { rotateY: 10, duration: 0.82, ease: "power2.out" }, 9.48);
+      tl.to(rightShell, { rotateY: -10, duration: 0.82, ease: "power2.out" }, 9.48);
+
+      window.__timelines = window.__timelines || {};
+      window.__timelines[compositionId] = tl;
+    })();
+  </script>
+</template>

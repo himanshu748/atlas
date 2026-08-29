@@ -1,0 +1,767 @@
+<template>
+  <style>
+    @font-face {
+      font-family: "Space Grotesk";
+      src: url("assets/fonts/SpaceGrotesk-400.woff2") format("woff2");
+      font-style: normal;
+      font-weight: 400;
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: "Space Grotesk";
+      src: url("assets/fonts/SpaceGrotesk-700.woff2") format("woff2");
+      font-style: normal;
+      font-weight: 700;
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: "JetBrains Mono";
+      src: url("assets/fonts/JetBrainsMono-400.woff2") format("woff2");
+      font-style: normal;
+      font-weight: 400;
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: "JetBrains Mono";
+      src: url("assets/fonts/JetBrainsMono-700.woff2") format("woff2");
+      font-style: normal;
+      font-weight: 700;
+      font-display: swap;
+    }
+
+    #root {
+      position: relative;
+      width: 1920px;
+      height: 1080px;
+      overflow: hidden;
+      container-type: size;
+      color: #f0f3f1;
+      font-family: "Space Grotesk", sans-serif;
+    }
+
+    #root,
+    #root * {
+      box-sizing: border-box;
+    }
+
+    #root .clip {
+      position: absolute;
+    }
+
+    [class~="04-evidence-with-custody-ground"] {
+      inset: 0;
+      background: #0b0e0f;
+    }
+
+    [class~="04-evidence-with-custody-ground"]::before,
+    [class~="04-evidence-with-custody-ground"]::after {
+      content: "";
+      position: absolute;
+      top: 0;
+      bottom: 0;
+      width: 1px;
+      background: #283031;
+    }
+
+    [class~="04-evidence-with-custody-ground"]::before {
+      left: 104px;
+    }
+
+    [class~="04-evidence-with-custody-ground"]::after {
+      right: 104px;
+    }
+
+    [class~="04-evidence-with-custody-scene"] {
+      inset: 0 0 auto 0;
+      height: 896px;
+      overflow: hidden;
+      isolation: isolate;
+      perspective: 1400px;
+    }
+
+    [class~="04-evidence-with-custody-scene"]::before {
+      content: "";
+      position: absolute;
+      z-index: 19;
+      inset: 0 0 auto;
+      height: 53px;
+      background: #0b0e0f;
+      pointer-events: none;
+    }
+
+    [class~="04-evidence-with-custody-top-rule"] {
+      position: absolute;
+      z-index: 20;
+      top: 52px;
+      left: 104px;
+      right: 104px;
+      height: 1px;
+      background: #283031;
+    }
+
+    [class~="04-evidence-with-custody-chrome"] {
+      position: absolute;
+      z-index: 21;
+      top: 24px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 14px;
+      line-height: 1;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: #727c79;
+    }
+
+    [class~="04-evidence-with-custody-chrome-left"] {
+      left: 104px;
+    }
+
+    [class~="04-evidence-with-custody-chrome-right"] {
+      right: 104px;
+      text-align: right;
+    }
+
+    [class~="04-evidence-with-custody-world"] {
+      position: absolute;
+      z-index: 2;
+      top: 64px;
+      left: 104px;
+      width: 1712px;
+      height: 1840px;
+      transform-origin: 50% 50%;
+      will-change: transform;
+    }
+
+    [class~="04-evidence-with-custody-surface"] {
+      position: relative;
+      width: 100%;
+      height: 1840px;
+      transform-origin: 50% 70%;
+      will-change: transform, opacity;
+    }
+
+    [class~="04-evidence-with-custody-surface"]::before {
+      content: "";
+      position: absolute;
+      top: 26px;
+      bottom: 0;
+      left: 34px;
+      width: 1px;
+      background: #283031;
+    }
+
+    [class~="04-evidence-with-custody-record-head"] {
+      position: absolute;
+      top: 34px;
+      left: 88px;
+      right: 42px;
+      height: 300px;
+      border-bottom: 1px solid #283031;
+    }
+
+    [class~="04-evidence-with-custody-index"] {
+      margin: 0;
+      font-family: "Space Grotesk", sans-serif;
+      font-size: 150px;
+      font-weight: 700;
+      line-height: 0.84;
+      letter-spacing: -0.055em;
+      color: #63e6a6;
+    }
+
+    [class~="04-evidence-with-custody-title"] {
+      margin: 24px 0 0;
+      max-width: 1060px;
+      font-family: "Space Grotesk", sans-serif;
+      font-size: 73px;
+      font-weight: 700;
+      line-height: 0.96;
+      letter-spacing: -0.035em;
+      text-transform: lowercase;
+      color: #f0f3f1;
+    }
+
+    [class~="04-evidence-with-custody-head-meta"] {
+      position: absolute;
+      top: 9px;
+      right: 0;
+      width: 300px;
+      font-family: "JetBrains Mono", monospace;
+      text-align: right;
+      text-transform: uppercase;
+    }
+
+    [class~="04-evidence-with-custody-head-meta-label"] {
+      display: block;
+      font-size: 14px;
+      line-height: 1.2;
+      letter-spacing: 0.14em;
+      color: #727c79;
+    }
+
+    [class~="04-evidence-with-custody-head-meta-value"] {
+      display: block;
+      margin-top: 14px;
+      font-size: 27px;
+      line-height: 1.25;
+      letter-spacing: -0.03em;
+      text-transform: none;
+      color: #a7b0ad;
+    }
+
+    [class~="04-evidence-with-custody-row"] {
+      position: absolute;
+      left: 88px;
+      right: 42px;
+      height: 128px;
+      display: grid;
+      grid-template-columns: 226px minmax(0, 1fr) 116px;
+      align-items: center;
+      border-top: 1px solid #283031;
+      overflow: hidden;
+      will-change: transform, opacity;
+    }
+
+    [id="04-evidence-with-custody-source"] { top: 392px; }
+    [id="04-evidence-with-custody-bucket-a"] { top: 560px; }
+    [id="04-evidence-with-custody-bucket-b"] { top: 728px; }
+    [id="04-evidence-with-custody-artifact"] { top: 1008px; }
+    [id="04-evidence-with-custody-collector"] { top: 1176px; }
+    [id="04-evidence-with-custody-bytes"] { top: 1344px; }
+    [id="04-evidence-with-custody-armor"] { top: 1512px; }
+
+    [class~="04-evidence-with-custody-row-label"] {
+      position: relative;
+      z-index: 2;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 14px;
+      font-weight: 700;
+      line-height: 1.25;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: #727c79;
+    }
+
+    [class~="04-evidence-with-custody-row-value"] {
+      position: relative;
+      z-index: 2;
+      min-width: 0;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 29px;
+      font-weight: 400;
+      line-height: 1.2;
+      letter-spacing: -0.035em;
+      color: #f0f3f1;
+    }
+
+    [class~="04-evidence-with-custody-row-num"] {
+      position: relative;
+      z-index: 2;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 14px;
+      line-height: 1;
+      letter-spacing: 0.14em;
+      text-align: right;
+      color: #727c79;
+    }
+
+    [class~="04-evidence-with-custody-bucket-mark"] {
+      color: #63e6a6;
+    }
+
+    [class~="04-evidence-with-custody-filename"] {
+      font-size: 27px;
+    }
+
+    [class~="04-evidence-with-custody-armor-row"] {
+      height: 142px;
+      border-bottom: 1px solid #283031;
+    }
+
+    [class~="04-evidence-with-custody-armor-fill"] {
+      position: absolute;
+      z-index: 1;
+      inset: 0;
+      background: #63e6a6;
+      transform-origin: 0 50%;
+      will-change: transform;
+    }
+
+    [class~="04-evidence-with-custody-armor-value"] {
+      font-family: "Space Grotesk", sans-serif;
+      font-size: 72px;
+      font-weight: 700;
+      line-height: 0.9;
+      letter-spacing: -0.05em;
+      text-transform: lowercase;
+      color: #63e6a6;
+    }
+
+    [class~="04-evidence-with-custody-progress"] {
+      position: absolute;
+      z-index: 18;
+      top: 96px;
+      right: 102px;
+      width: 2px;
+      height: 676px;
+      background: #283031;
+      overflow: hidden;
+    }
+
+    [class~="04-evidence-with-custody-progress-fill"] {
+      width: 100%;
+      height: 100%;
+      background: #63e6a6;
+      transform-origin: 50% 0;
+      will-change: transform;
+    }
+
+    [class~="04-evidence-with-custody-receipt"] {
+      position: absolute;
+      z-index: 12;
+      top: 126px;
+      left: 226px;
+      width: 1468px;
+      height: 626px;
+      overflow: hidden;
+      border: 1px solid #63e6a6;
+      background: #111516;
+      transform-origin: 50% 44%;
+      will-change: transform, opacity;
+    }
+
+    [class~="04-evidence-with-custody-receipt-head"] {
+      height: 94px;
+      display: grid;
+      grid-template-columns: 170px 1fr auto;
+      align-items: center;
+      padding: 0 42px;
+      background: #63e6a6;
+      color: #0b0e0f;
+    }
+
+    [class~="04-evidence-with-custody-receipt-id"] {
+      font-family: "Space Grotesk", sans-serif;
+      font-size: 56px;
+      font-weight: 700;
+      line-height: 0.9;
+      letter-spacing: -0.05em;
+    }
+
+    [class~="04-evidence-with-custody-receipt-kicker"] {
+      font-family: "JetBrains Mono", monospace;
+      font-size: 16px;
+      font-weight: 700;
+      line-height: 1;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+
+    [class~="04-evidence-with-custody-receipt-pass"] {
+      font-family: "Space Grotesk", sans-serif;
+      font-size: 43px;
+      font-weight: 700;
+      line-height: 0.9;
+      letter-spacing: -0.04em;
+      text-transform: lowercase;
+    }
+
+    [class~="04-evidence-with-custody-receipt-body"] {
+      padding: 34px 42px 30px;
+    }
+
+    [class~="04-evidence-with-custody-receipt-file-label"],
+    [class~="04-evidence-with-custody-field-label"],
+    [class~="04-evidence-with-custody-hash-label"] {
+      display: block;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 14px;
+      font-weight: 700;
+      line-height: 1.2;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      color: #727c79;
+    }
+
+    [class~="04-evidence-with-custody-receipt-file"] {
+      padding-bottom: 26px;
+      border-bottom: 1px solid #283031;
+    }
+
+    [class~="04-evidence-with-custody-receipt-file-value"] {
+      display: block;
+      margin-top: 12px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 31px;
+      line-height: 1.2;
+      letter-spacing: -0.04em;
+      color: #f0f3f1;
+      white-space: nowrap;
+    }
+
+    [class~="04-evidence-with-custody-fields"] {
+      display: grid;
+      grid-template-columns: 1.62fr 0.72fr 0.5fr;
+      margin-top: 25px;
+      border-bottom: 1px solid #283031;
+    }
+
+    [class~="04-evidence-with-custody-field"] {
+      min-width: 0;
+      min-height: 105px;
+      padding: 0 28px 23px 0;
+    }
+
+    [class~="04-evidence-with-custody-field"] + [class~="04-evidence-with-custody-field"] {
+      padding-left: 28px;
+      border-left: 1px solid #283031;
+    }
+
+    [class~="04-evidence-with-custody-field-value"] {
+      display: block;
+      margin-top: 12px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 24px;
+      line-height: 1.3;
+      letter-spacing: -0.035em;
+      color: #f0f3f1;
+    }
+
+    [class~="04-evidence-with-custody-bytes-value"] {
+      font-family: "Space Grotesk", sans-serif;
+      font-size: 36px;
+      font-weight: 700;
+      line-height: 1.3;
+      letter-spacing: -0.04em;
+      color: #63e6a6;
+    }
+
+    [class~="04-evidence-with-custody-receipt-file-label"],
+    [class~="04-evidence-with-custody-field-label"],
+    [class~="04-evidence-with-custody-hash-label"] {
+      color: #76807d;
+    }
+
+    [class~="04-evidence-with-custody-hash"] {
+      position: relative;
+      margin-top: 25px;
+      padding-right: 220px;
+    }
+
+    [class~="04-evidence-with-custody-hash-value"] {
+      display: block;
+      margin-top: 12px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 30px;
+      line-height: 1.15;
+      letter-spacing: -0.035em;
+      color: #63e6a6;
+    }
+
+    [class~="04-evidence-with-custody-seal"] {
+      position: absolute;
+      right: 0;
+      bottom: 0;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 14px;
+      font-weight: 700;
+      line-height: 1.2;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: #a7b0ad;
+    }
+
+    [class~="04-evidence-with-custody-seal-mark"] {
+      display: grid;
+      width: 38px;
+      height: 38px;
+      place-items: center;
+      border: 1px solid #63e6a6;
+      color: #63e6a6;
+    }
+
+    [class~="04-evidence-with-custody-caption-guard"] {
+      position: absolute;
+      z-index: 30;
+      top: 895px;
+      left: 0;
+      right: 0;
+      height: 1px;
+      background: #283031;
+    }
+  </style>
+
+  <div data-hf-id="hf-lsp8" id="root" data-composition-id="04-evidence-with-custody" data-width="1920" data-height="1080" data-duration="13.62">
+    <div data-hf-id="hf-4cj3" class="clip 04-evidence-with-custody-ground" data-start="0" data-duration="13.62" data-track-index="0"></div>
+
+    <section data-hf-id="hf-20bn" class="clip 04-evidence-with-custody-scene" data-start="0" data-duration="13.62" data-track-index="1">
+      <div data-hf-id="hf-k4ze" class="04-evidence-with-custody-top-rule"></div>
+      <div data-hf-id="hf-znfu" class="04-evidence-with-custody-chrome 04-evidence-with-custody-chrome-left" data-layout-allow-overlap="">Evidence record / live cloud inventory</div>
+      <div data-hf-id="hf-i6yu" class="04-evidence-with-custody-chrome 04-evidence-with-custody-chrome-right" data-layout-allow-overlap="">No. 04 / chain of custody</div>
+
+      <div data-hf-id="hf-44z3" id="04-evidence-with-custody-world" class="04-evidence-with-custody-world" data-layout-allow-overflow="">
+        <article data-hf-id="hf-2f8j" id="04-evidence-with-custody-surface" class="04-evidence-with-custody-surface">
+          <header data-hf-id="hf-fnwy" id="04-evidence-with-custody-head" class="04-evidence-with-custody-record-head">
+            <h1 data-hf-id="hf-fi69" class="04-evidence-with-custody-index">A1.3</h1>
+            <p data-hf-id="hf-ovmw" class="04-evidence-with-custody-title">recovery testing</p>
+            <div data-hf-id="hf-7qwa" class="04-evidence-with-custody-head-meta">
+              <span data-hf-id="hf-yshj" class="04-evidence-with-custody-head-meta-label">Evidence class</span>
+              <span data-hf-id="hf-b294" class="04-evidence-with-custody-head-meta-value">Cloud Asset<br data-hf-id="hf-x5px">inventory</span>
+            </div>
+          </header>
+
+          <div data-hf-id="hf-frx1" id="04-evidence-with-custody-source" class="04-evidence-with-custody-row">
+            <span data-hf-id="hf-vctv" class="04-evidence-with-custody-row-label">source</span>
+            <span data-hf-id="hf-84y9" class="04-evidence-with-custody-row-value">gcp.asset</span>
+            <span data-hf-id="hf-x3ib" class="04-evidence-with-custody-row-num">01 / 07</span>
+          </div>
+
+          <div data-hf-id="hf-st16" id="04-evidence-with-custody-bucket-a" class="04-evidence-with-custody-row">
+            <span data-hf-id="hf-69o4" class="04-evidence-with-custody-row-label">bucket / 01</span>
+            <span data-hf-id="hf-835c" class="04-evidence-with-custody-row-value 04-evidence-with-custody-bucket-mark">atlas-agentic-hack-2026-v2-atlas-evidence</span>
+            <span data-hf-id="hf-3tq4" class="04-evidence-with-custody-row-num">02 / 07</span>
+          </div>
+
+          <div data-hf-id="hf-oux5" id="04-evidence-with-custody-bucket-b" class="04-evidence-with-custody-row">
+            <span data-hf-id="hf-52r1" class="04-evidence-with-custody-row-label">bucket / 02</span>
+            <span data-hf-id="hf-941a" class="04-evidence-with-custody-row-value 04-evidence-with-custody-bucket-mark">atlas-agentic-hack-2026-v2_cloudbuild</span>
+            <span data-hf-id="hf-p1ed" class="04-evidence-with-custody-row-num">03 / 07</span>
+          </div>
+
+          <div data-hf-id="hf-2jp4" id="04-evidence-with-custody-artifact" class="04-evidence-with-custody-row">
+            <span data-hf-id="hf-2bh8" class="04-evidence-with-custody-row-label">artifact</span>
+            <span data-hf-id="hf-5o69" class="04-evidence-with-custody-row-value 04-evidence-with-custody-filename">a1-3-cloud-asset-buckets-2026-08-29.json</span>
+            <span data-hf-id="hf-6e86" class="04-evidence-with-custody-row-num">04 / 07</span>
+          </div>
+
+          <div data-hf-id="hf-hogr" id="04-evidence-with-custody-collector" class="04-evidence-with-custody-row">
+            <span data-hf-id="hf-l899" class="04-evidence-with-custody-row-label">collector</span>
+            <span data-hf-id="hf-ucdw" class="04-evidence-with-custody-row-value">hunter/infra</span>
+            <span data-hf-id="hf-zm5b" class="04-evidence-with-custody-row-num">05 / 07</span>
+          </div>
+
+          <div data-hf-id="hf-o7r7" id="04-evidence-with-custody-bytes" class="04-evidence-with-custody-row">
+            <span data-hf-id="hf-r88u" class="04-evidence-with-custody-row-label">object size</span>
+            <span data-hf-id="hf-9m6z" class="04-evidence-with-custody-row-value">436 bytes</span>
+            <span data-hf-id="hf-h1c8" class="04-evidence-with-custody-row-num">06 / 07</span>
+          </div>
+
+          <div data-hf-id="hf-a4tv" id="04-evidence-with-custody-armor" class="04-evidence-with-custody-row 04-evidence-with-custody-armor-row">
+            <span data-hf-id="hf-zdqd" id="04-evidence-with-custody-armor-fill" class="04-evidence-with-custody-armor-fill"></span>
+            <span data-hf-id="hf-ca35" class="04-evidence-with-custody-row-label 04-evidence-with-custody-armor-copy">Armor result</span>
+            <span data-hf-id="hf-r6ys" class="04-evidence-with-custody-row-value 04-evidence-with-custody-armor-value 04-evidence-with-custody-armor-copy">pass</span>
+            <span data-hf-id="hf-wta8" class="04-evidence-with-custody-row-num 04-evidence-with-custody-armor-copy">07 / 07</span>
+          </div>
+        </article>
+      </div>
+
+      <div data-hf-id="hf-4i3k" class="04-evidence-with-custody-progress" aria-hidden="true">
+        <div data-hf-id="hf-s5ce" id="04-evidence-with-custody-progress-fill" class="04-evidence-with-custody-progress-fill"></div>
+      </div>
+
+      <article data-hf-id="hf-fuhl" id="04-evidence-with-custody-receipt" class="04-evidence-with-custody-receipt" data-layout-allow-occlusion="">
+        <header data-hf-id="hf-5eqp" class="04-evidence-with-custody-receipt-head">
+          <span data-hf-id="hf-asoy" class="04-evidence-with-custody-receipt-id">A1.3</span>
+          <span data-hf-id="hf-2o5l" class="04-evidence-with-custody-receipt-kicker">Evidence custody receipt</span>
+          <span data-hf-id="hf-6ri4" class="04-evidence-with-custody-receipt-pass">Armor / pass</span>
+        </header>
+
+        <div data-hf-id="hf-2zyf" class="04-evidence-with-custody-receipt-body">
+          <div data-hf-id="hf-ih4k" id="04-evidence-with-custody-receipt-file" class="04-evidence-with-custody-receipt-file">
+            <span data-hf-id="hf-gqwc" class="04-evidence-with-custody-receipt-file-label">durable artifact</span>
+            <span data-hf-id="hf-bmrt" class="04-evidence-with-custody-receipt-file-value">a1-3-cloud-asset-buckets-2026-08-29.json</span>
+          </div>
+
+          <div data-hf-id="hf-tn5h" class="04-evidence-with-custody-fields">
+            <div data-hf-id="hf-jiao" id="04-evidence-with-custody-receipt-collector" class="04-evidence-with-custody-field">
+              <span data-hf-id="hf-pw11" class="04-evidence-with-custody-field-label">collector identity</span>
+              <span data-hf-id="hf-y8fm" class="04-evidence-with-custody-field-value">spiffe://atlas.dev/agent/hunter-infra</span>
+            </div>
+            <div data-hf-id="hf-s5r4" id="04-evidence-with-custody-receipt-source" class="04-evidence-with-custody-field">
+              <span data-hf-id="hf-mckf" class="04-evidence-with-custody-field-label">source</span>
+              <span data-hf-id="hf-ikx1" class="04-evidence-with-custody-field-value">gcp.asset</span>
+            </div>
+            <div data-hf-id="hf-mjos" id="04-evidence-with-custody-receipt-bytes" class="04-evidence-with-custody-field">
+              <span data-hf-id="hf-1g5d" class="04-evidence-with-custody-field-label">bytes</span>
+              <span data-hf-id="hf-935f" class="04-evidence-with-custody-field-value 04-evidence-with-custody-bytes-value">436</span>
+            </div>
+          </div>
+
+          <div data-hf-id="hf-3sqj" id="04-evidence-with-custody-receipt-hash" class="04-evidence-with-custody-hash">
+            <span data-hf-id="hf-ooox" class="04-evidence-with-custody-hash-label">SHA-256 / prefix</span>
+            <span data-hf-id="hf-2a9t" class="04-evidence-with-custody-hash-value">2f4d0d4fc1cc1281</span>
+            <span data-hf-id="hf-0bpc" id="04-evidence-with-custody-seal" class="04-evidence-with-custody-seal">
+              <span data-hf-id="hf-s10h" class="04-evidence-with-custody-seal-mark">✓</span>
+              integrity metadata held
+            </span>
+          </div>
+        </div>
+      </article>
+
+      <div data-hf-id="hf-l9fh" class="04-evidence-with-custody-caption-guard" aria-hidden="true"></div>
+    </section>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+  <script>
+    (function () {
+      const world = document.getElementById("04-evidence-with-custody-world");
+      const surface = document.getElementById("04-evidence-with-custody-surface");
+      const head = document.getElementById("04-evidence-with-custody-head");
+      const armorRow = document.getElementById("04-evidence-with-custody-armor");
+      const armorFill = document.getElementById("04-evidence-with-custody-armor-fill");
+      const armorCopy = Array.from(document.querySelectorAll('[class~="04-evidence-with-custody-armor-copy"]'));
+      const progressFill = document.getElementById("04-evidence-with-custody-progress-fill");
+      const receipt = document.getElementById("04-evidence-with-custody-receipt");
+
+      const cam = { x: 0, y: 0, scale: 1 };
+      function applyCamera() {
+        world.style.transform = `translate(${cam.x}px, ${cam.y}px) scale(${cam.scale})`;
+      }
+      applyCamera();
+
+      const CONTENT = [
+        { id: "04-evidence-with-custody-source", body: "gcp.asset", hold: 0.22 },
+        { id: "04-evidence-with-custody-bucket-a", body: "atlas-agentic-hack-2026-v2-atlas-evidence", hold: 0.18 },
+        { id: "04-evidence-with-custody-bucket-b", body: "atlas-agentic-hack-2026-v2_cloudbuild", hold: 0.18 },
+        { id: "04-evidence-with-custody-artifact", body: "a1-3-cloud-asset-buckets-2026-08-29.json", hold: 0.35 },
+        { id: "04-evidence-with-custody-collector", body: "hunter/infra", hold: 0.48 },
+        { id: "04-evidence-with-custody-bytes", body: "436 bytes", hold: 0.62 }
+      ];
+      const BASE_DURATION = 0.54;
+      const SEC_PER_CHAR = 0.013;
+      let cumulative = 1.45;
+      const SEQUENCE = CONTENT.map(function (entry) {
+        const duration = BASE_DURATION + entry.body.length * SEC_PER_CHAR + entry.hold;
+        const start = cumulative;
+        cumulative += duration;
+        return { id: entry.id, start: start, end: cumulative };
+      });
+
+      const tl = gsap.timeline({ paused: true });
+      const durationDriver = { t: 0 };
+      tl.to(durationDriver, { t: 13.12, duration: 13.12, ease: "none" }, 0);
+
+      tl.fromTo(
+        head,
+        { opacity: 0, y: 58 },
+        { opacity: 1, y: 0, duration: 0.44, ease: "power3.out" },
+        0.08
+      );
+
+      tl.fromTo(
+        progressFill,
+        { scaleY: 0 },
+        { scaleY: 0.78, duration: 7.25, ease: "power3.inOut" },
+        0.78
+      );
+
+      tl.to(
+        cam,
+        {
+          y: -1040,
+          duration: 7.25,
+          ease: "power3.inOut",
+          onUpdate: applyCamera
+        },
+        0.78
+      );
+
+      SEQUENCE.forEach(function (entry) {
+        const row = document.getElementById(entry.id);
+        tl.fromTo(
+          row,
+          { opacity: 0, y: 46 },
+          { opacity: 1, y: 0, duration: 0.46, ease: "power3.out" },
+          entry.start
+        );
+      });
+
+      tl.fromTo(
+        armorRow,
+        { opacity: 0, y: 46 },
+        { opacity: 1, y: 0, duration: 0.42, ease: "power3.out" },
+        8.58
+      );
+      tl.fromTo(
+        armorFill,
+        { scaleX: 0 },
+        { scaleX: 1, duration: 0.48, ease: "power4.out" },
+        8.72
+      );
+      tl.to(
+        armorCopy,
+        { color: "#0b0e0f", duration: 0.2, ease: "none" },
+        8.88
+      );
+
+      tl.to(
+        surface,
+        {
+          scaleX: 0.58,
+          scaleY: 0.035,
+          opacity: 0.18,
+          duration: 0.7,
+          ease: "power3.in"
+        },
+        9.34
+      );
+
+      tl.fromTo(
+        receipt,
+        { opacity: 0, scale: 0.74, y: 88 },
+        { opacity: 1, scale: 1, y: 0, duration: 1.02, ease: "power4.out" },
+        9.78
+      );
+
+      tl.set(surface, { visibility: "hidden" }, 10.8);
+
+      tl.fromTo(
+        document.getElementById("04-evidence-with-custody-receipt-file"),
+        { opacity: 0, y: 30 },
+        { opacity: 1, y: 0, duration: 0.42, ease: "power3.out" },
+        10.22
+      );
+
+      [
+        "04-evidence-with-custody-receipt-collector",
+        "04-evidence-with-custody-receipt-source",
+        "04-evidence-with-custody-receipt-bytes"
+      ].forEach(function (id, index) {
+        tl.fromTo(
+          document.getElementById(id),
+          { opacity: 0, y: 28 },
+          { opacity: 1, y: 0, duration: 0.38, ease: "power3.out" },
+          10.64 + index * 0.24
+        );
+      });
+
+      tl.fromTo(
+        document.getElementById("04-evidence-with-custody-receipt-hash"),
+        { opacity: 0, y: 24 },
+        { opacity: 1, y: 0, duration: 0.44, ease: "power3.out" },
+        11.38
+      );
+      tl.fromTo(
+        document.getElementById("04-evidence-with-custody-seal"),
+        { opacity: 0, scale: 0.84 },
+        { opacity: 1, scale: 1, duration: 0.46, ease: "back.out(1.35)" },
+        11.88
+      );
+
+      window.__timelines = window.__timelines || {};
+      window.__timelines["04-evidence-with-custody"] = tl;
+    })();
+  </script>
+</template>

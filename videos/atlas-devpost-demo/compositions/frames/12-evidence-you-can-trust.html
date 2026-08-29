@@ -1,0 +1,530 @@
+<template>
+  <style>
+    @font-face {
+      font-family: "Space Grotesk";
+      src: url("assets/fonts/SpaceGrotesk-400.woff2") format("woff2");
+      font-style: normal;
+      font-weight: 400;
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: "Space Grotesk";
+      src: url("assets/fonts/SpaceGrotesk-700.woff2") format("woff2");
+      font-style: normal;
+      font-weight: 700;
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: "JetBrains Mono";
+      src: url("assets/fonts/JetBrainsMono-400.woff2") format("woff2");
+      font-style: normal;
+      font-weight: 400;
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: "JetBrains Mono";
+      src: url("assets/fonts/JetBrainsMono-700.woff2") format("woff2");
+      font-style: normal;
+      font-weight: 700;
+      font-display: swap;
+    }
+
+    #root {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      container-type: size;
+      color: #f0f3f1;
+      font-family: "Space Grotesk", sans-serif;
+    }
+
+    [class~="12-evidence-you-can-trust-ground"] {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      background: #0b0e0f;
+    }
+
+    [class~="12-evidence-you-can-trust-scene"] {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      isolation: isolate;
+    }
+
+    [class~="12-evidence-you-can-trust-swap-zone"] {
+      position: absolute;
+      z-index: 2;
+      top: 18.5cqh;
+      left: 25cqw;
+      width: 50cqw;
+      height: 24cqh;
+      overflow: visible;
+    }
+
+    [class~="12-evidence-you-can-trust-word-layer"],
+    [class~="12-evidence-you-can-trust-assembly-layer"] {
+      position: absolute;
+      inset: 0;
+      transform-origin: 50% 50%;
+      will-change: transform, opacity;
+    }
+
+    [class~="12-evidence-you-can-trust-word-layer"] {
+      z-index: 1;
+      display: grid;
+      place-items: center;
+    }
+
+    [class~="12-evidence-you-can-trust-sequence-wrap"] {
+      position: relative;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 42cqw;
+      height: 15cqw;
+      white-space: nowrap;
+    }
+
+    [class~="12-evidence-you-can-trust-sequence-word"] {
+      color: #f0f3f1;
+      font-size: 13cqw;
+      font-weight: 700;
+      letter-spacing: -0.055em;
+      line-height: 0.88;
+      text-align: center;
+      text-transform: lowercase;
+    }
+
+    [class~="12-evidence-you-can-trust-cursor"] {
+      display: inline-block;
+      width: 0.72cqw;
+      height: 9.3cqw;
+      margin-top: 0.5cqw;
+      margin-left: 0.68cqw;
+      background: #63e6a6;
+    }
+
+    [class~="12-evidence-you-can-trust-assembly-layer"] {
+      z-index: 2;
+    }
+
+    [class~="12-evidence-you-can-trust-assembly"] {
+      position: absolute;
+      inset: 0;
+      display: block;
+      width: 100%;
+      height: 100%;
+      overflow: visible;
+    }
+
+    [class~="12-evidence-you-can-trust-assembly"] line {
+      fill: none;
+      stroke: #63e6a6;
+      stroke-linecap: square;
+      stroke-linejoin: miter;
+      vector-effect: non-scaling-stroke;
+      will-change: opacity;
+    }
+
+    [class~="12-evidence-you-can-trust-outer-line"] {
+      stroke-width: 8;
+    }
+
+    [class~="12-evidence-you-can-trust-inner-line"] {
+      stroke-width: 2;
+      opacity: 0.72;
+    }
+
+    [class~="12-evidence-you-can-trust-spoke-line"] {
+      stroke-width: 2;
+      opacity: 0.54;
+    }
+
+    [class~="12-evidence-you-can-trust-core"] {
+      fill: #63e6a6;
+      transform-box: fill-box;
+      transform-origin: 50% 50%;
+      will-change: transform, opacity;
+    }
+
+    [class~="12-evidence-you-can-trust-wordmask"] {
+      position: absolute;
+      top: 28.5%;
+      left: 35.4%;
+      width: 55%;
+      height: 48%;
+      overflow: hidden;
+    }
+
+    [class~="12-evidence-you-can-trust-wordmark"] {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      color: #f0f3f1;
+      filter: url("#12-evidence-you-can-trust-wordmark-streak");
+      font-size: 6.1cqw;
+      font-weight: 700;
+      letter-spacing: -0.055em;
+      line-height: 0.9;
+      white-space: nowrap;
+      will-change: transform, opacity;
+    }
+
+    [class~="12-evidence-you-can-trust-tagline"] {
+      position: absolute;
+      z-index: 3;
+      top: 53.9cqh;
+      left: 13cqw;
+      width: 74cqw;
+      color: #a7b0ad;
+      font-size: 1.45cqw;
+      font-weight: 400;
+      letter-spacing: -0.018em;
+      line-height: 1.3;
+      text-align: center;
+      white-space: nowrap;
+      will-change: transform, opacity;
+    }
+
+    [class~="12-evidence-you-can-trust-tagline"] strong {
+      color: #f0f3f1;
+      font-weight: 700;
+    }
+
+    [class~="12-evidence-you-can-trust-tagline-dot"] {
+      color: #63e6a6;
+      padding: 0 0.48cqw;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 0.9em;
+      font-weight: 700;
+    }
+
+    [class~="12-evidence-you-can-trust-repository"] {
+      position: absolute;
+      z-index: 3;
+      top: 64.2cqh;
+      left: 25.6cqw;
+      display: grid;
+      grid-template-columns: 4.1cqw minmax(0, 1fr);
+      align-items: center;
+      width: 48.8cqw;
+      height: 8.15cqh;
+      overflow: hidden;
+      border-top: 1px solid #283031;
+      border-bottom: 1px solid #283031;
+      background: #111516;
+      clip-path: inset(0 100% 0 0);
+      will-change: clip-path;
+    }
+
+    [class~="12-evidence-you-can-trust-repository-slash"] {
+      display: grid;
+      align-self: stretch;
+      place-items: center;
+      border-right: 1px solid #283031;
+      color: #63e6a6;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 1.65cqw;
+      font-weight: 700;
+    }
+
+    [class~="12-evidence-you-can-trust-repository-url"] {
+      padding-left: 1.75cqw;
+      color: #f0f3f1;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 1.55cqw;
+      font-weight: 700;
+      letter-spacing: -0.025em;
+      line-height: 1;
+      white-space: nowrap;
+    }
+  </style>
+
+  <section data-hf-id="hf-a0mo" id="root" data-composition-id="12-evidence-you-can-trust" data-duration="9.64" aria-label="ATLAS evidence and public repository close" data-width="1920" data-height="1080">
+    <div data-hf-id="hf-zgf1" class="12-evidence-you-can-trust-ground clip" data-start="0" data-duration="9.64" data-track-index="0" aria-hidden="true"></div>
+
+    <div data-hf-id="hf-4nvg" class="12-evidence-you-can-trust-scene clip" data-start="0" data-duration="9.64" data-track-index="1">
+      <svg data-hf-id="hf-p3r6" width="0" height="0" aria-hidden="true" style="position: absolute">
+        <filter data-hf-id="hf-ddg8" id="12-evidence-you-can-trust-wordmark-streak" x="-50%" y="-50%" width="200%" height="200%">
+          <fegaussianblur data-hf-id="hf-aucc" id="12-evidence-you-can-trust-wordmark-blur" in="SourceGraphic" stdDeviation="22 0" />
+        </filter>
+      </svg>
+
+      <div data-hf-id="hf-6nmk" class="12-evidence-you-can-trust-swap-zone">
+        <div data-hf-id="hf-sele" id="12-evidence-you-can-trust-word-layer" class="12-evidence-you-can-trust-word-layer">
+          <div data-hf-id="hf-dz98" class="12-evidence-you-can-trust-sequence-wrap">
+            <span data-hf-id="hf-mkhi" id="12-evidence-you-can-trust-sequence-word" class="12-evidence-you-can-trust-sequence-word">evidence</span>
+            <span data-hf-id="hf-2jsc" id="12-evidence-you-can-trust-cursor" class="12-evidence-you-can-trust-cursor" aria-hidden="true"></span>
+          </div>
+        </div>
+
+        <div data-hf-id="hf-ew3m" id="12-evidence-you-can-trust-assembly-layer" class="12-evidence-you-can-trust-assembly-layer">
+          <svg data-hf-id="hf-aiok" class="12-evidence-you-can-trust-assembly" viewBox="0 0 960 240" role="img" aria-label="ATLAS hex mark assembled from proof lines">
+            <g data-hf-id="hf-jl9y" aria-hidden="true">
+              <line data-hf-id="hf-5euz" id="12-evidence-you-can-trust-outer-0" class="12-evidence-you-can-trust-outer-line" x1="224" y1="70" x2="736" y2="70" />
+              <line data-hf-id="hf-jm2u" id="12-evidence-you-can-trust-outer-1" class="12-evidence-you-can-trust-outer-line" x1="180" y1="90" x2="780" y2="90" />
+              <line data-hf-id="hf-hi6r" id="12-evidence-you-can-trust-outer-2" class="12-evidence-you-can-trust-outer-line" x1="144" y1="110" x2="816" y2="110" />
+              <line data-hf-id="hf-ra48" id="12-evidence-you-can-trust-outer-3" class="12-evidence-you-can-trust-outer-line" x1="180" y1="130" x2="780" y2="130" />
+              <line data-hf-id="hf-0a8n" id="12-evidence-you-can-trust-outer-4" class="12-evidence-you-can-trust-outer-line" x1="224" y1="150" x2="736" y2="150" />
+              <line data-hf-id="hf-u656" id="12-evidence-you-can-trust-outer-5" class="12-evidence-you-can-trust-outer-line" x1="280" y1="170" x2="680" y2="170" />
+            </g>
+
+            <g data-hf-id="hf-wc7u" aria-hidden="true">
+              <line data-hf-id="hf-tl1h" id="12-evidence-you-can-trust-inner-0" class="12-evidence-you-can-trust-inner-line" x1="212.72" y1="118.56" x2="212.72" y2="118.56" />
+              <line data-hf-id="hf-oom4" id="12-evidence-you-can-trust-inner-1" class="12-evidence-you-can-trust-inner-line" x1="212.72" y1="118.56" x2="212.72" y2="118.56" />
+              <line data-hf-id="hf-6c87" id="12-evidence-you-can-trust-inner-2" class="12-evidence-you-can-trust-inner-line" x1="212.72" y1="118.56" x2="212.72" y2="118.56" />
+              <line data-hf-id="hf-gskm" id="12-evidence-you-can-trust-inner-3" class="12-evidence-you-can-trust-inner-line" x1="212.72" y1="118.56" x2="212.72" y2="118.56" />
+              <line data-hf-id="hf-mxwh" id="12-evidence-you-can-trust-inner-4" class="12-evidence-you-can-trust-inner-line" x1="212.72" y1="118.56" x2="212.72" y2="118.56" />
+              <line data-hf-id="hf-wmbc" id="12-evidence-you-can-trust-inner-5" class="12-evidence-you-can-trust-inner-line" x1="212.72" y1="118.56" x2="212.72" y2="118.56" />
+            </g>
+
+            <g data-hf-id="hf-wqiv" aria-hidden="true">
+              <line data-hf-id="hf-tbjp" id="12-evidence-you-can-trust-spoke-0" class="12-evidence-you-can-trust-spoke-line" x1="212.72" y1="118.56" x2="212.72" y2="118.56" />
+              <line data-hf-id="hf-febw" id="12-evidence-you-can-trust-spoke-1" class="12-evidence-you-can-trust-spoke-line" x1="212.72" y1="118.56" x2="212.72" y2="118.56" />
+              <line data-hf-id="hf-hpxz" id="12-evidence-you-can-trust-spoke-2" class="12-evidence-you-can-trust-spoke-line" x1="212.72" y1="118.56" x2="212.72" y2="118.56" />
+              <line data-hf-id="hf-6x5i" id="12-evidence-you-can-trust-spoke-3" class="12-evidence-you-can-trust-spoke-line" x1="212.72" y1="118.56" x2="212.72" y2="118.56" />
+              <line data-hf-id="hf-rpzl" id="12-evidence-you-can-trust-spoke-4" class="12-evidence-you-can-trust-spoke-line" x1="212.72" y1="118.56" x2="212.72" y2="118.56" />
+              <line data-hf-id="hf-4xm0" id="12-evidence-you-can-trust-spoke-5" class="12-evidence-you-can-trust-spoke-line" x1="212.72" y1="118.56" x2="212.72" y2="118.56" />
+            </g>
+
+            <circle data-hf-id="hf-yd4b" id="12-evidence-you-can-trust-core" class="12-evidence-you-can-trust-core" cx="212.72" cy="118.56" r="7" />
+          </svg>
+
+          <div data-hf-id="hf-dlz4" class="12-evidence-you-can-trust-wordmask">
+            <div data-hf-id="hf-ts99" id="12-evidence-you-can-trust-wordmark" class="12-evidence-you-can-trust-wordmark">ATLAS</div>
+          </div>
+        </div>
+      </div>
+
+      <div data-hf-id="hf-re0z" id="12-evidence-you-can-trust-tagline" class="12-evidence-you-can-trust-tagline">
+        <strong data-hf-id="hf-21nv">evidence</strong> you can trust<span data-hf-id="hf-edi4" class="12-evidence-you-can-trust-tagline-dot">·</span><strong data-hf-id="hf-4h7j">gaps</strong> you can see<span data-hf-id="hf-tt5g" class="12-evidence-you-can-trust-tagline-dot">·</span>claims you can <strong data-hf-id="hf-4d0j">verify</strong>
+      </div>
+
+      <div data-hf-id="hf-urty" id="12-evidence-you-can-trust-repository" class="12-evidence-you-can-trust-repository">
+        <span data-hf-id="hf-gy2r" class="12-evidence-you-can-trust-repository-slash" aria-hidden="true">/</span>
+        <span data-hf-id="hf-5jx0" class="12-evidence-you-can-trust-repository-url">github.com/himanshu748/atlas</span>
+      </div>
+    </div>
+  </section>
+
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+  <script>
+    (() => {
+      const FRAME_ID = "12-evidence-you-can-trust";
+      const DURATION = 9.64;
+      const root = document.querySelector('[data-composition-id="12-evidence-you-can-trust"]');
+      const byId = (id) => root.ownerDocument.getElementById(id);
+
+      const wordLayer = byId("12-evidence-you-can-trust-word-layer");
+      const assemblyLayer = byId("12-evidence-you-can-trust-assembly-layer");
+      const sequenceWord = byId("12-evidence-you-can-trust-sequence-word");
+      const cursor = byId("12-evidence-you-can-trust-cursor");
+      const wordmark = byId("12-evidence-you-can-trust-wordmark");
+      const core = byId("12-evidence-you-can-trust-core");
+      const tagline = byId("12-evidence-you-can-trust-tagline");
+      const repository = byId("12-evidence-you-can-trust-repository");
+      const blurNode = byId("12-evidence-you-can-trust-wordmark-blur");
+
+      window.__timelines = window.__timelines || {};
+      const tl = gsap.timeline({ paused: true });
+      window.__timelines[FRAME_ID] = tl;
+
+      const durationGuard = { p: 0 };
+      tl.to(durationGuard, { p: 1, duration: DURATION, ease: "none" }, 0);
+
+      const TEXT_SEQUENCE = [
+        { t: 0, text: "evidence" },
+        { t: 1.05, text: "gaps" },
+        { t: 2.09, text: "verify" }
+      ];
+
+      const textAt = (time) => {
+        for (let i = TEXT_SEQUENCE.length - 1; i >= 0; i -= 1) {
+          if (time >= TEXT_SEQUENCE[i].t) return TEXT_SEQUENCE[i].text;
+        }
+        return TEXT_SEQUENCE[0].text;
+      };
+
+      const sequenceDriver = { t: 0 };
+      let lastText = "evidence";
+      tl.to(
+        sequenceDriver,
+        {
+          t: 3.126,
+          duration: 3.126,
+          ease: "none",
+          onUpdate: () => {
+            const nextText = textAt(sequenceDriver.t);
+            if (nextText !== lastText) {
+              sequenceWord.textContent = nextText;
+              lastText = nextText;
+            }
+          }
+        },
+        0
+      );
+
+      const blinkDriver = { p: 0 };
+      tl.to(
+        blinkDriver,
+        {
+          p: Math.PI * 2 * 5,
+          duration: 3.126,
+          ease: "none",
+          onUpdate: () => {
+            cursor.style.opacity = Math.sin(blinkDriver.p) > 0 ? "1" : "0";
+          }
+        },
+        0
+      );
+
+      tl.to(
+        wordLayer,
+        {
+          scale: 0.7,
+          opacity: 0,
+          duration: 0.42,
+          ease: "power2.in"
+        },
+        3.126
+      );
+
+      tl.fromTo(
+        assemblyLayer,
+        { scale: 0.7, opacity: 0 },
+        {
+          scale: 1,
+          opacity: 1,
+          duration: 0.62,
+          ease: "back.out(1.4)"
+        },
+        3.386
+      );
+
+      const OUTER_TARGETS = [
+        { x1: 212.72, y1: 10, x2: 305.44, y2: 61.92 },
+        { x1: 305.44, y1: 61.92, x2: 305.44, y2: 175.2 },
+        { x1: 305.44, y1: 175.2, x2: 212.72, y2: 227.12 },
+        { x1: 212.72, y1: 227.12, x2: 120, y2: 175.2 },
+        { x1: 120, y1: 175.2, x2: 120, y2: 61.92 },
+        { x1: 120, y1: 61.92, x2: 212.72, y2: 10 }
+      ];
+
+      OUTER_TARGETS.forEach((target, index) => {
+        tl.to(
+          byId(`12-evidence-you-can-trust-outer-${index}`),
+          {
+            attr: target,
+            strokeWidth: 4,
+            duration: 1.04,
+            ease: "power3.inOut"
+          },
+          3.74 + index * 0.05
+        );
+      });
+
+      const INNER_TARGETS = [
+        { x1: 212.72, y1: 44.22, x2: 274.94, y2: 79.62 },
+        { x1: 274.94, y1: 79.62, x2: 274.94, y2: 157.5 },
+        { x1: 274.94, y1: 157.5, x2: 212.72, y2: 192.9 },
+        { x1: 212.72, y1: 192.9, x2: 150.5, y2: 157.5 },
+        { x1: 150.5, y1: 157.5, x2: 150.5, y2: 79.62 },
+        { x1: 150.5, y1: 79.62, x2: 212.72, y2: 44.22 }
+      ];
+
+      INNER_TARGETS.forEach((target, index) => {
+        tl.fromTo(
+          byId(`12-evidence-you-can-trust-inner-${index}`),
+          {
+            attr: { x1: 212.72, y1: 118.56, x2: 212.72, y2: 118.56 },
+            opacity: 0
+          },
+          {
+            attr: target,
+            opacity: 0.72,
+            duration: 0.72,
+            ease: "power3.out"
+          },
+          4.44 + index * 0.035
+        );
+      });
+
+      const SPOKE_TARGETS = [
+        { x1: 212.72, y1: 118.56, x2: 212.72, y2: 44.22 },
+        { x1: 212.72, y1: 118.56, x2: 274.94, y2: 79.62 },
+        { x1: 212.72, y1: 118.56, x2: 274.94, y2: 157.5 },
+        { x1: 212.72, y1: 118.56, x2: 212.72, y2: 192.9 },
+        { x1: 212.72, y1: 118.56, x2: 150.5, y2: 157.5 },
+        { x1: 212.72, y1: 118.56, x2: 150.5, y2: 79.62 }
+      ];
+
+      SPOKE_TARGETS.forEach((target, index) => {
+        tl.fromTo(
+          byId(`12-evidence-you-can-trust-spoke-${index}`),
+          {
+            attr: { x1: 212.72, y1: 118.56, x2: 212.72, y2: 118.56 },
+            opacity: 0
+          },
+          {
+            attr: target,
+            opacity: 0.54,
+            duration: 0.74,
+            ease: "power3.out"
+          },
+          4.72 + index * 0.04
+        );
+      });
+
+      tl.fromTo(
+        core,
+        { scale: 0, opacity: 0 },
+        { scale: 1, opacity: 1, duration: 0.56, ease: "back.out(1.8)" },
+        5.04
+      );
+
+      const blurProxy = { v: 22 };
+      const writeBlur = () => {
+        blurNode.setAttribute("stdDeviation", `${blurProxy.v} 0`);
+      };
+      writeBlur();
+
+      tl.fromTo(
+        wordmark,
+        { x: -210, opacity: 0 },
+        { x: 0, opacity: 1, duration: 0.58, ease: "power4.out" },
+        5
+      );
+
+      tl.to(
+        blurProxy,
+        {
+          v: 0,
+          duration: 0.58,
+          ease: "power4.out",
+          onUpdate: writeBlur
+        },
+        5
+      );
+
+      tl.fromTo(
+        tagline,
+        { y: 16, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.42, ease: "power3.out" },
+        6.162
+      );
+
+      tl.fromTo(
+        repository,
+        { clipPath: "inset(0 100% 0 0)" },
+        { clipPath: "inset(0 0% 0 0)", duration: 0.62, ease: "power4.out" },
+        6.46
+      );
+    })();
+  </script>
+</template>

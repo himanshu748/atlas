@@ -1,0 +1,418 @@
+<template>
+  <style>
+    @font-face {
+      font-family: "Space Grotesk";
+      src: url("assets/fonts/SpaceGrotesk-400.woff2") format("woff2");
+      font-style: normal;
+      font-weight: 400;
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: "Space Grotesk";
+      src: url("assets/fonts/SpaceGrotesk-700.woff2") format("woff2");
+      font-style: normal;
+      font-weight: 700;
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: "JetBrains Mono";
+      src: url("assets/fonts/JetBrainsMono-400.woff2") format("woff2");
+      font-style: normal;
+      font-weight: 400;
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: "JetBrains Mono";
+      src: url("assets/fonts/JetBrainsMono-700.woff2") format("woff2");
+      font-style: normal;
+      font-weight: 700;
+      font-display: swap;
+    }
+
+    #root {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      container-type: size;
+      color: #f0f3f1;
+      font-family: "Space Grotesk", sans-serif;
+      isolation: isolate;
+    }
+
+    [class~="03-live-ledger-bg"] {
+      position: absolute;
+      inset: 0;
+      background: #0b0e0f;
+      z-index: 0;
+    }
+
+    [class~="03-live-ledger-content"] {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      z-index: 1;
+    }
+
+    [class~="03-live-ledger-rail"] {
+      position: absolute;
+      left: 5.5208cqw;
+      top: 4.4444cqh;
+      width: 88.9583cqw;
+      height: 4.4444cqh;
+      display: flex;
+      align-items: center;
+      gap: 1.0417cqw;
+      border-top: 1px solid #283031;
+      border-bottom: 1px solid #283031;
+      color: #63e6a6;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 0.8333cqw;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      line-height: 1;
+      text-transform: uppercase;
+      white-space: nowrap;
+      z-index: 6;
+    }
+
+    [class~="03-live-ledger-rail-stub"] {
+      width: 1.875cqw;
+      height: 2px;
+      flex: 0 0 auto;
+      background: #63e6a6;
+      transform-origin: 0 50%;
+    }
+
+    [class~="03-live-ledger-surface"] {
+      position: absolute;
+      left: 13.5417cqw;
+      top: 11.1111cqh;
+      width: 72.9167cqw;
+      height: 69.8148cqh;
+      overflow: hidden;
+      border: 1px solid #283031;
+      background: #111516;
+      transform-origin: 50% 50%;
+      will-change: transform, opacity;
+      z-index: 2;
+    }
+
+    [class~="03-live-ledger-capture"] {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      object-fit: fill;
+      display: block;
+      user-select: none;
+    }
+
+    [class~="03-live-ledger-coverage-well"] {
+      position: absolute;
+      left: 4%;
+      top: 37.0968%;
+      width: 96%;
+      height: 30.3226%;
+      overflow: hidden;
+      background: #0b0e0f;
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    [class~="03-live-ledger-coverage-context"] {
+      --dof: 0px;
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      opacity: 1;
+      filter: blur(var(--dof));
+      will-change: filter, opacity;
+    }
+
+    [class~="03-live-ledger-coverage-capture"] {
+      position: absolute;
+      left: -4.1667%;
+      top: -122.45%;
+      width: 104.1667%;
+      height: 329.79%;
+      max-width: none;
+      object-fit: fill;
+      display: block;
+    }
+
+    [class~="03-live-ledger-source-pin"] {
+      position: absolute;
+      border-top: 1px solid #63e6a6;
+      border-left: 1px solid #63e6a6;
+      opacity: 0;
+      transform-origin: 0 50%;
+      z-index: 4;
+    }
+
+    [class~="03-live-ledger-pin-controls"] {
+      left: 11.8261%;
+      top: 28.5484%;
+      width: 8.8696%;
+      height: 5.8065%;
+    }
+
+    [class~="03-live-ledger-pin-readiness"] {
+      left: 4.2609%;
+      top: 16.129%;
+      width: 14.7826%;
+      height: 11.6129%;
+    }
+
+    [class~="03-live-ledger-proof"] {
+      position: absolute;
+      height: 12.037cqh;
+      display: flex;
+      align-items: center;
+      padding: 0 1.5625cqw;
+      border-top: 1px solid #63e6a6;
+      border-bottom: 1px solid #283031;
+      background: #111516;
+      transform-origin: 0 0;
+      will-change: transform, opacity;
+      z-index: 5;
+    }
+
+    [class~="03-live-ledger-proof"]::before {
+      content: "";
+      position: absolute;
+      left: 0;
+      top: -1px;
+      width: 2px;
+      height: 1.8519cqh;
+      background: #63e6a6;
+    }
+
+    [class~="03-live-ledger-proof-controls"] {
+      left: 23.4375cqw;
+      top: 42.5926cqh;
+      width: 21.875cqw;
+    }
+
+    [class~="03-live-ledger-proof-readiness"] {
+      left: 53.125cqw;
+      top: 43.5185cqh;
+      width: 20.8333cqw;
+    }
+
+    [class~="03-live-ledger-proof-word"] {
+      display: flex;
+      align-items: baseline;
+      gap: 0.8333cqw;
+      width: 100%;
+      color: #727c79;
+      line-height: 1;
+      transform-origin: 0 50%;
+    }
+
+    [class~="03-live-ledger-proof-value"] {
+      flex: 0 0 auto;
+      font-family: "Space Grotesk", sans-serif;
+      font-size: 3.6458cqw;
+      font-weight: 700;
+      letter-spacing: -0.04em;
+    }
+
+    [class~="03-live-ledger-proof-label"] {
+      flex: 0 0 auto;
+      font-family: "Space Grotesk", sans-serif;
+      font-size: 1.4063cqw;
+      font-weight: 400;
+      letter-spacing: -0.02em;
+      text-transform: lowercase;
+    }
+  </style>
+
+  <div data-hf-id="hf-tn67" id="root" data-composition-id="03-live-ledger" data-duration="9.1" data-width="1920" data-height="1080">
+    <div data-hf-id="hf-pk7c" class="clip 03-live-ledger-bg" data-start="0" data-duration="9.1" data-track-index="0"></div>
+
+    <div data-hf-id="hf-f46l" class="clip 03-live-ledger-content" data-start="0" data-duration="9.1" data-track-index="1">
+      <div data-hf-id="hf-zlwt" class="03-live-ledger-rail">
+        <span data-hf-id="hf-bug7" class="03-live-ledger-rail-stub"></span>
+        <span data-hf-id="hf-assd" class="03-live-ledger-rail-label">DEPLOYED CLOUD LEDGER</span>
+      </div>
+
+      <div data-hf-id="hf-2yqb" class="03-live-ledger-surface" data-layout-allow-overflow="">
+        <img data-hf-id="hf-hhz0" class="03-live-ledger-capture" src="assets/image_006.png" alt="Fleet Command cloud ledger showing readiness, autonomy and control coverage" draggable="false">
+
+        <div data-hf-id="hf-qrec" class="03-live-ledger-coverage-well">
+          <div data-hf-id="hf-khev" class="03-live-ledger-coverage-context" data-depth="1">
+            <img data-hf-id="hf-7sst" class="03-live-ledger-coverage-capture" src="assets/image_006.png" alt="" draggable="false">
+          </div>
+        </div>
+
+        <div data-hf-id="hf-888t" class="03-live-ledger-source-pin 03-live-ledger-pin-controls"></div>
+        <div data-hf-id="hf-fjyt" class="03-live-ledger-source-pin 03-live-ledger-pin-readiness"></div>
+      </div>
+
+      <div data-hf-id="hf-8xm1" class="03-live-ledger-proof 03-live-ledger-proof-controls">
+        <div data-hf-id="hf-yn3m" class="03-live-ledger-proof-word" data-word="controls">
+          <span data-hf-id="hf-98sz" class="03-live-ledger-proof-value">2 / 64</span>
+          <span data-hf-id="hf-ih6v" class="03-live-ledger-proof-label">controls</span>
+        </div>
+      </div>
+
+      <div data-hf-id="hf-5wn5" class="03-live-ledger-proof 03-live-ledger-proof-readiness">
+        <div data-hf-id="hf-3644" class="03-live-ledger-proof-word" data-word="readiness">
+          <span data-hf-id="hf-34cg" class="03-live-ledger-proof-value">3%</span>
+          <span data-hf-id="hf-rmdr" class="03-live-ledger-proof-label">readiness</span>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+    <script>
+      (() => {
+        const root = document.querySelector('[data-composition-id="03-live-ledger"]');
+        const select = (name) => root.getElementsByClassName(`03-live-ledger-${name}`)[0];
+        const selectAll = (name) => Array.from(root.getElementsByClassName(`03-live-ledger-${name}`));
+
+        const rail = select("rail");
+        const railStub = select("rail-stub");
+        const surface = select("surface");
+        const coverageContext = select("coverage-context");
+        const pinControls = select("pin-controls");
+        const pinReadiness = select("pin-readiness");
+        const proofControls = select("proof-controls");
+        const proofReadiness = select("proof-readiness");
+        const proofWords = selectAll("proof-word");
+
+        const tl = gsap.timeline({ paused: true });
+
+        tl.fromTo(
+          surface,
+          { x: -56, scale: 1.018, opacity: 0.72 },
+          { x: 0, scale: 1, opacity: 1, duration: 0.92, ease: "power3.out" },
+          0
+        );
+        tl.fromTo(
+          rail,
+          { x: -24, opacity: 0 },
+          { x: 0, opacity: 1, duration: 0.54, ease: "power2.out" },
+          0.08
+        );
+        tl.fromTo(
+          railStub,
+          { scaleX: 0 },
+          { scaleX: 1, duration: 0.5, ease: "power2.out" },
+          0.2
+        );
+
+        tl.to(
+          coverageContext,
+          { "--dof": "5px", opacity: 0.48, duration: 0.76, ease: "power2.inOut" },
+          2.209
+        );
+        tl.fromTo(
+          pinControls,
+          { scaleX: 0, opacity: 0 },
+          { scaleX: 1, opacity: 1, duration: 0.42, ease: "power2.out" },
+          2.36
+        );
+        tl.fromTo(
+          proofControls,
+          { x: -18, y: -108, scale: 0.28, opacity: 0 },
+          { x: 0, y: 0, scale: 1, opacity: 1, duration: 0.78, ease: "power3.out" },
+          2.53
+        );
+
+        tl.to(
+          proofControls,
+          { x: -28, y: 12, scale: 0.82, opacity: 0.42, duration: 0.48, ease: "power2.inOut" },
+          3.82
+        );
+        tl.fromTo(
+          pinReadiness,
+          { scaleX: 0, opacity: 0 },
+          { scaleX: 1, opacity: 1, duration: 0.42, ease: "power2.out" },
+          3.92
+        );
+        tl.fromTo(
+          proofReadiness,
+          { x: -690, y: -224, scale: 0.35, opacity: 0 },
+          { x: 0, y: 0, scale: 1, opacity: 1, duration: 0.82, ease: "power3.out" },
+          4.05
+        );
+
+        const ASR_DURATION = 5.601 - 2.209;
+        const ATTACK_DUR = 0.16;
+        const RELEASE = 0.42;
+        const REST_LEVEL = 0.12;
+        const MAX_BLUR = 38;
+        const MAX_SCALE_BOOST = 0.16;
+        const timings = {
+          controls: { start: 0.38, end: 1.22 },
+          readiness: { start: 2.02, end: 2.9 }
+        };
+        const restRgb = { r: 114, g: 124, b: 121 };
+        const activeRgb = { r: 99, g: 230, b: 166 };
+        const driver = { t: 0 };
+
+        const envelope = (time, start, end) => {
+          if (time < start) return 0;
+          if (time < end) return Math.min((time - start) / ATTACK_DUR, 1);
+          const releaseEnd = end + RELEASE;
+          if (time < releaseEnd) {
+            return 1 - ((time - end) / RELEASE) * (1 - REST_LEVEL);
+          }
+          return REST_LEVEL;
+        };
+
+        const lerpChannel = (a, b, amount) => Math.round(a + (b - a) * amount);
+        tl.to(
+          driver,
+          {
+            t: ASR_DURATION,
+            duration: ASR_DURATION,
+            ease: "none",
+            onUpdate: () => {
+              proofWords.forEach((element) => {
+                const timing = timings[element.dataset.word];
+                if (!timing) return;
+                const env = envelope(driver.t, timing.start, timing.end);
+                const r = lerpChannel(restRgb.r, activeRgb.r, env);
+                const g = lerpChannel(restRgb.g, activeRgb.g, env);
+                const b = lerpChannel(restRgb.b, activeRgb.b, env);
+                element.style.color = `rgb(${r}, ${g}, ${b})`;
+                element.style.textShadow = `0 0 ${MAX_BLUR * env}px rgba(99, 230, 166, ${0.76 * env})`;
+                element.style.transform = `scale(${1 + MAX_SCALE_BOOST * env})`;
+              });
+            }
+          },
+          2.209
+        );
+
+        tl.to(
+          coverageContext,
+          { "--dof": "0px", opacity: 1, duration: 0.52, ease: "power2.inOut" },
+          5.601
+        );
+        tl.to(
+          proofControls,
+          { x: -20, y: -112, scale: 0.34, opacity: 0.86, duration: 0.52, ease: "power2.inOut" },
+          5.601
+        );
+        tl.to(
+          proofReadiness,
+          { x: -690, y: -224, scale: 0.35, opacity: 0.86, duration: 0.52, ease: "power2.inOut" },
+          5.601
+        );
+
+        const inspectionHold = { t: 0 };
+        tl.to(inspectionHold, { t: 1, duration: 2.479, ease: "none" }, 6.121);
+
+        window.__timelines = window.__timelines || {};
+        window.__timelines["03-live-ledger"] = tl;
+      })();
+    </script>
+  </div>
+</template>

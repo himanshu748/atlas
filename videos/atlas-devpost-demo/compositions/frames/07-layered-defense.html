@@ -1,0 +1,810 @@
+<template>
+  <style>
+    @font-face {
+      font-family: "Space Grotesk";
+      src: url("assets/fonts/SpaceGrotesk-400.woff2") format("woff2");
+      font-style: normal;
+      font-weight: 400;
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: "Space Grotesk";
+      src: url("assets/fonts/SpaceGrotesk-700.woff2") format("woff2");
+      font-style: normal;
+      font-weight: 700;
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: "JetBrains Mono";
+      src: url("assets/fonts/JetBrainsMono-400.woff2") format("woff2");
+      font-style: normal;
+      font-weight: 400;
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: "JetBrains Mono";
+      src: url("assets/fonts/JetBrainsMono-700.woff2") format("woff2");
+      font-style: normal;
+      font-weight: 700;
+      font-display: swap;
+    }
+
+    #root {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      container-type: size;
+      color: #f0f3f1;
+      font-family: "Space Grotesk", sans-serif;
+      font-synthesis: none;
+      isolation: isolate;
+    }
+
+    [class~="07-layered-defense-ground"] {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      background: #0b0e0f;
+      z-index: 0;
+    }
+
+    [class~="07-layered-defense-ground-rule"] {
+      position: absolute;
+      background: #283031;
+      opacity: 0.58;
+    }
+
+    [class~="07-layered-defense-ground-rule"][data-axis="x"] {
+      left: 5.5cqw;
+      right: 5.5cqw;
+      height: 1px;
+    }
+
+    [class~="07-layered-defense-ground-rule"][data-axis="x"][data-line="one"] {
+      top: 7.2cqh;
+    }
+
+    [class~="07-layered-defense-ground-rule"][data-axis="x"][data-line="two"] {
+      top: 68.5cqh;
+    }
+
+    [class~="07-layered-defense-ground-rule"][data-axis="y"] {
+      top: 7.2cqh;
+      bottom: 17cqh;
+      left: 53.1cqw;
+      width: 1px;
+    }
+
+    [class~="07-layered-defense-catalogue"] {
+      position: absolute;
+      top: 3.7cqh;
+      right: 5.5cqw;
+      color: #76807d;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 0.72cqw;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      line-height: 1;
+      text-transform: uppercase;
+    }
+
+    [class~="07-layered-defense-content"] {
+      position: absolute;
+      inset: 0;
+      z-index: 2;
+      perspective: 1500px;
+    }
+
+    [class~="07-layered-defense-kicker"] {
+      color: #63e6a6;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 0.72cqw;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      line-height: 1.2;
+      text-transform: uppercase;
+    }
+
+    [class~="07-layered-defense-fixture"] {
+      position: absolute;
+      top: 10.4cqh;
+      left: 5.5cqw;
+      width: 45.7cqw;
+      height: 25.2cqh;
+      box-sizing: border-box;
+      border: 1px solid #283031;
+      background: #111516;
+      padding: 2.3cqw 2.45cqw;
+      overflow: hidden;
+      z-index: 4;
+    }
+
+    [class~="07-layered-defense-fixture-accent"] {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 0.2cqw;
+      height: 100%;
+      background: #63e6a6;
+      transform-origin: center top;
+    }
+
+    [class~="07-layered-defense-fixture-file"] {
+      margin-top: 3.55cqh;
+      max-width: 39.5cqw;
+      color: #f0f3f1;
+      font-size: 2.08cqw;
+      font-weight: 700;
+      letter-spacing: -0.025em;
+      line-height: 1.06;
+      white-space: nowrap;
+    }
+
+    [class~="07-layered-defense-fixture-meta"] {
+      position: absolute;
+      right: 2.45cqw;
+      bottom: 2.2cqh;
+      left: 2.45cqw;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-top: 1px solid #283031;
+      padding-top: 1.35cqh;
+      color: #a7b0ad;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 0.76cqw;
+      font-weight: 400;
+      letter-spacing: 0.12em;
+      line-height: 1;
+      text-transform: uppercase;
+    }
+
+    [class~="07-layered-defense-fixture-id"] {
+      color: #76807d;
+    }
+
+    [class~="07-layered-defense-statement"] {
+      position: absolute;
+      top: 10.1cqh;
+      left: 57.2cqw;
+      width: 37.3cqw;
+      z-index: 4;
+    }
+
+    [class~="07-layered-defense-statement-rule"] {
+      width: 1.9cqw;
+      height: 2px;
+      margin-top: 1.75cqh;
+      background: #63e6a6;
+      transform-origin: left center;
+    }
+
+    [class~="07-layered-defense-statement-copy"] {
+      margin-top: 2.3cqh;
+      color: #f0f3f1;
+      font-size: 5.18cqw;
+      font-weight: 700;
+      letter-spacing: -0.045em;
+      line-height: 0.88;
+      text-transform: lowercase;
+    }
+
+    [class~="07-layered-defense-statement-line"] {
+      display: block;
+      white-space: nowrap;
+    }
+
+    [class~="07-layered-defense-statement-line"][data-accent="true"] {
+      color: #63e6a6;
+    }
+
+    [class~="07-layered-defense-fixture-id"] {
+      color: #76807d;
+    }
+
+    [class~="07-layered-defense-route"] {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100cqw;
+      height: 83cqh;
+      overflow: visible;
+      z-index: 1;
+      pointer-events: none;
+    }
+
+    [class~="07-layered-defense-route"] path {
+      fill: none;
+      stroke-width: 2;
+      stroke-linecap: square;
+      stroke-linejoin: miter;
+      vector-effect: non-scaling-stroke;
+    }
+
+    [id="07-layered-defense-path-managed"] {
+      stroke: #76807d;
+    }
+
+    [id="07-layered-defense-path-policy"],
+    [id="07-layered-defense-path-block"] {
+      stroke: #63e6a6;
+    }
+
+    [class~="07-layered-defense-traveler"] {
+      position: absolute;
+      top: 34.55cqh;
+      left: 20.62cqw;
+      width: 1.45cqw;
+      height: 1.45cqw;
+      box-sizing: border-box;
+      border: 2px solid #63e6a6;
+      background: #0b0e0f;
+      z-index: 5;
+    }
+
+    [class~="07-layered-defense-stage"] {
+      position: absolute;
+      top: 46.4cqh;
+      height: 17.2cqh;
+      box-sizing: border-box;
+      border-top: 1px solid #283031;
+      border-bottom: 1px solid #283031;
+      background: #111516;
+      z-index: 3;
+    }
+
+    [class~="07-layered-defense-managed"] {
+      left: 5.5cqw;
+      width: 29.5cqw;
+      padding: 2.05cqw 2.15cqw;
+    }
+
+    [class~="07-layered-defense-stage-title"] {
+      color: #f0f3f1;
+      font-size: 1.42cqw;
+      font-weight: 700;
+      letter-spacing: -0.015em;
+      line-height: 1.08;
+    }
+
+    [class~="07-layered-defense-managed-result"] {
+      position: absolute;
+      right: 2.15cqw;
+      bottom: 2.15cqh;
+      left: 2.15cqw;
+      display: flex;
+      align-items: baseline;
+      justify-content: space-between;
+      border-top: 1px solid #283031;
+      padding-top: 1.35cqh;
+      color: #a7b0ad;
+    }
+
+    [class~="07-layered-defense-managed-result"] span:first-child {
+      font-family: "JetBrains Mono", monospace;
+      font-size: 0.72cqw;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+
+    [class~="07-layered-defense-managed-result"] span:last-child {
+      color: #a7b0ad;
+      font-size: 2.32cqw;
+      font-weight: 700;
+      letter-spacing: -0.04em;
+      line-height: 0.9;
+      text-transform: lowercase;
+    }
+
+    [class~="07-layered-defense-deterministic"] {
+      left: 40cqw;
+      width: 32cqw;
+      padding: 2.05cqw 2.15cqw;
+    }
+
+    [class~="07-layered-defense-policy-label"] {
+      margin-top: 2.35cqh;
+      color: #76807d;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 0.72cqw;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      line-height: 1;
+      text-transform: uppercase;
+    }
+
+    [class~="07-layered-defense-policy-wrap"] {
+      display: inline-flex;
+      align-items: baseline;
+      min-width: 27.1cqw;
+      margin-top: 1.05cqh;
+      color: #63e6a6;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 1.4cqw;
+      font-weight: 700;
+      letter-spacing: -0.035em;
+      line-height: 1;
+      white-space: nowrap;
+    }
+
+    [class~="07-layered-defense-policy-cursor"] {
+      display: inline-block;
+      width: 0.52cqw;
+      margin-left: 0.18cqw;
+      color: #63e6a6;
+    }
+
+    [class~="07-layered-defense-blocked"] {
+      left: 76cqw;
+      width: 18.5cqw;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      perspective: 1500px;
+    }
+
+    [class~="07-layered-defense-blocked-word"] {
+      position: relative;
+      min-width: 15.6cqw;
+      color: #63e6a6;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 3.05cqw;
+      font-weight: 700;
+      letter-spacing: -0.07em;
+      line-height: 1;
+      text-align: center;
+      white-space: pre;
+    }
+
+    [class~="07-layered-defense-hacker-char"] {
+      display: inline-block;
+      min-width: 0.58em;
+      transform-origin: bottom;
+      transform-style: preserve-3d;
+    }
+
+    [class~="07-layered-defense-hacker-ghost"] {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    [class~="07-layered-defense-confidence"] {
+      margin-top: 1.65cqh;
+      color: #f0f3f1;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 1.4cqw;
+      font-weight: 700;
+      letter-spacing: 0.04em;
+      line-height: 1;
+      white-space: nowrap;
+    }
+
+    [class~="07-layered-defense-audit"] {
+      position: absolute;
+      top: 70.2cqh;
+      left: 5.5cqw;
+      width: 89cqw;
+      height: 10.65cqh;
+      display: grid;
+      grid-template-columns: 36fr 28fr 15fr 10fr;
+      box-sizing: border-box;
+      border-top: 1px solid #63e6a6;
+      border-bottom: 1px solid #283031;
+      background: #111516;
+      overflow: hidden;
+      z-index: 5;
+    }
+
+    [class~="07-layered-defense-audit-lock"] {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background: #63e6a6;
+      transform-origin: left center;
+    }
+
+    [class~="07-layered-defense-audit-cell"] {
+      position: relative;
+      display: flex;
+      min-width: 0;
+      flex-direction: column;
+      justify-content: center;
+      box-sizing: border-box;
+      padding: 1.35cqh 1.45cqw 1.05cqh;
+      border-left: 1px solid #283031;
+    }
+
+    [class~="07-layered-defense-audit-cell"]:first-of-type {
+      border-left: 0;
+    }
+
+    [class~="07-layered-defense-audit-label"] {
+      margin-bottom: 0.85cqh;
+      color: #76807d;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 0.7cqw;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      line-height: 1;
+      text-transform: uppercase;
+    }
+
+    [class~="07-layered-defense-audit-value"] {
+      min-height: 1.2em;
+      overflow: hidden;
+      color: #f0f3f1;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 1.4cqw;
+      font-weight: 700;
+      letter-spacing: -0.045em;
+      line-height: 1.2;
+      text-overflow: clip;
+      white-space: nowrap;
+    }
+
+    [class~="07-layered-defense-audit-cell"][data-kind="action"] [class~="07-layered-defense-audit-value"],
+    [class~="07-layered-defense-audit-cell"][data-kind="confidence"] [class~="07-layered-defense-audit-value"] {
+      color: #63e6a6;
+    }
+
+    [class~="07-layered-defense-audit-cell"][data-kind="confidence"] [class~="07-layered-defense-audit-value"] {
+      font-family: "Space Grotesk", sans-serif;
+      font-size: 2.2cqw;
+      letter-spacing: -0.04em;
+    }
+  </style>
+
+  <div data-hf-id="hf-2ekn" id="root" data-composition-id="07-layered-defense" data-duration="12.44" data-width="1920" data-height="1080">
+    <div data-hf-id="hf-b06v" class="clip 07-layered-defense-ground" data-start="0" data-duration="12.44" data-track-index="0" aria-hidden="true">
+      <div data-hf-id="hf-0e6l" class="07-layered-defense-ground-rule" data-axis="x" data-line="one"></div>
+      <div data-hf-id="hf-77z7" class="07-layered-defense-ground-rule" data-axis="x" data-line="two"></div>
+      <div data-hf-id="hf-af7w" class="07-layered-defense-ground-rule" data-axis="y"></div>
+      <div data-hf-id="hf-mzz1" class="07-layered-defense-catalogue">SECURITY RECEIPT / 07</div>
+    </div>
+
+    <div data-hf-id="hf-a41d" class="clip 07-layered-defense-content" data-start="0" data-duration="12.44" data-track-index="1">
+      <section data-hf-id="hf-dvf8" class="07-layered-defense-fixture" aria-label="Seeded fixture evidence card">
+        <div data-hf-id="hf-yare" class="07-layered-defense-fixture-accent"></div>
+        <div data-hf-id="hf-659y" class="07-layered-defense-kicker">SEEDED FIXTURE</div>
+        <div data-hf-id="hf-nz89" class="07-layered-defense-fixture-file">cc3-93-northwind-soc2-2026.pdf</div>
+        <div data-hf-id="hf-7f9b" class="07-layered-defense-fixture-meta">
+          <span data-hf-id="hf-20md">evidence record</span>
+          <span data-hf-id="hf-iuz5" class="07-layered-defense-fixture-id">fixture / injection</span>
+        </div>
+      </section>
+
+      <section data-hf-id="hf-j9kb" class="07-layered-defense-statement" aria-label="Layered and explicit">
+        <div data-hf-id="hf-pwgo" class="07-layered-defense-kicker">DEFENSE PATH</div>
+        <div data-hf-id="hf-taxa" class="07-layered-defense-statement-rule"></div>
+        <div data-hf-id="hf-ac1r" class="07-layered-defense-statement-copy" data-layout-allow-overlap="">
+          <span data-hf-id="hf-jglj" class="07-layered-defense-statement-line" data-layout-allow-overlap="">layered</span>
+          <span data-hf-id="hf-10k0" class="07-layered-defense-statement-line" data-accent="true" data-layout-allow-overlap="">and explicit</span>
+        </div>
+      </section>
+
+      <svg data-hf-id="hf-b4u3" class="07-layered-defense-route" viewBox="0 0 1920 896" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+        <path data-hf-id="hf-t164" id="07-layered-defense-path-managed" d="M 410 378 L 410 501" />
+        <path data-hf-id="hf-z4w9" id="07-layered-defense-path-policy" d="M 672 594 L 768 594" />
+        <path data-hf-id="hf-x3n3" id="07-layered-defense-path-block" d="M 1382 594 L 1459 594" />
+      </svg>
+
+      <div data-hf-id="hf-t5vy" class="07-layered-defense-traveler" aria-hidden="true"></div>
+
+      <section data-hf-id="hf-na84" class="07-layered-defense-stage 07-layered-defense-managed" aria-label="Managed Model Armor result">
+        <div data-hf-id="hf-6l0q" class="07-layered-defense-kicker">MANAGED MODEL ARMOR</div>
+        <div data-hf-id="hf-y8xu" class="07-layered-defense-stage-title">managed inspection</div>
+        <div data-hf-id="hf-cgjn" class="07-layered-defense-managed-result">
+          <span data-hf-id="hf-iv22">returned</span>
+          <span data-hf-id="hf-8cui">clean</span>
+        </div>
+      </section>
+
+      <section data-hf-id="hf-j7jy" class="07-layered-defense-stage 07-layered-defense-deterministic" aria-label="Labelled deterministic policy">
+        <div data-hf-id="hf-chb6" class="07-layered-defense-kicker">LABELLED DETERMINISTIC</div>
+        <div data-hf-id="hf-77mq" class="07-layered-defense-stage-title">fixture decision</div>
+        <div data-hf-id="hf-ity5" class="07-layered-defense-policy-label">policy</div>
+        <div data-hf-id="hf-fjzn" class="07-layered-defense-policy-wrap">
+          <span data-hf-id="hf-isrn" class="07-layered-defense-policy-text"></span><span data-hf-id="hf-2nul" class="07-layered-defense-policy-cursor">_</span>
+        </div>
+      </section>
+
+      <section data-hf-id="hf-qpg5" class="07-layered-defense-stage 07-layered-defense-blocked" aria-label="Blocked with confidence 0.97">
+        <div data-hf-id="hf-nr8o" class="07-layered-defense-blocked-word" data-target="BLOCKED"></div>
+        <div data-hf-id="hf-quv6" class="07-layered-defense-confidence">0.97 CONFIDENCE</div>
+      </section>
+
+      <section data-hf-id="hf-vvr6" class="07-layered-defense-audit" aria-label="Combined security audit receipt">
+        <div data-hf-id="hf-k9m0" class="07-layered-defense-audit-lock" aria-hidden="true"></div>
+        <div data-hf-id="hf-zqre" class="07-layered-defense-audit-cell" data-kind="backend">
+          <div data-hf-id="hf-s7ls" class="07-layered-defense-audit-label">backend</div>
+          <div data-hf-id="hf-6thl" class="07-layered-defense-audit-value">model-armor+deterministic</div>
+        </div>
+        <div data-hf-id="hf-iec4" class="07-layered-defense-audit-cell" data-kind="policy">
+          <div data-hf-id="hf-3vw2" class="07-layered-defense-audit-label">policy</div>
+          <div data-hf-id="hf-46nf" class="07-layered-defense-audit-value">prompt-injection.override</div>
+        </div>
+        <div data-hf-id="hf-wrug" class="07-layered-defense-audit-cell" data-kind="action">
+          <div data-hf-id="hf-4wpe" class="07-layered-defense-audit-label">action</div>
+          <div data-hf-id="hf-snej" class="07-layered-defense-audit-value">QUARANTINED</div>
+        </div>
+        <div data-hf-id="hf-awuu" class="07-layered-defense-audit-cell" data-kind="confidence">
+          <div data-hf-id="hf-iun4" class="07-layered-defense-audit-label">confidence</div>
+          <div data-hf-id="hf-xuxb" class="07-layered-defense-audit-value">0.97</div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+  <script>
+    (() => {
+      const root = document.querySelector('[data-composition-id="07-layered-defense"]');
+      if (!root || !window.gsap) return;
+
+      const q = (selector) => root.querySelector(selector);
+      const qa = (selector) => Array.from(root.querySelectorAll(selector));
+      const tl = window.gsap.timeline({ paused: true });
+      const durationClock = { t: 0 };
+
+      window.__timelines = window.__timelines || {};
+      window.__timelines["07-layered-defense"] = tl;
+
+      tl.to(durationClock, { t: 12.04, duration: 12.04, ease: "none" }, 0);
+
+      const fixture = q('[class~="07-layered-defense-fixture"]');
+      const fixtureAccent = q('[class~="07-layered-defense-fixture-accent"]');
+      const fixtureFile = q('[class~="07-layered-defense-fixture-file"]');
+      const fixtureMeta = q('[class~="07-layered-defense-fixture-meta"]');
+      const statementRule = q('[class~="07-layered-defense-statement-rule"]');
+      const statementLines = qa('[class~="07-layered-defense-statement-line"]');
+
+      tl.fromTo(
+        fixture,
+        { opacity: 0, x: "-2.1cqw" },
+        { opacity: 1, x: "0cqw", duration: 0.52, ease: "power3.out" },
+        0.05
+      );
+      tl.fromTo(
+        fixtureAccent,
+        { scaleY: 0 },
+        { scaleY: 1, duration: 0.46, ease: "power2.out" },
+        0.22
+      );
+      tl.fromTo(
+        statementRule,
+        { opacity: 0, scaleX: 0 },
+        { opacity: 1, scaleX: 1, duration: 0.4, ease: "power2.out" },
+        0.18
+      );
+      tl.fromTo(
+        statementLines[0],
+        { opacity: 0, y: "2.2cqh" },
+        { opacity: 1, y: "0cqh", duration: 0.62, ease: "power3.out" },
+        0.34
+      );
+      tl.fromTo(
+        statementLines[1],
+        { opacity: 0, y: "2.2cqh" },
+        { opacity: 1, y: "0cqh", duration: 0.68, ease: "power3.out" },
+        0.9
+      );
+      tl.fromTo(
+        fixtureFile,
+        { opacity: 0, y: "1.4cqh" },
+        { opacity: 1, y: "0cqh", duration: 0.54, ease: "power2.out" },
+        0.72
+      );
+      tl.fromTo(
+        fixtureMeta,
+        { opacity: 0, y: "1.1cqh" },
+        { opacity: 1, y: "0cqh", duration: 0.48, ease: "power2.out" },
+        1.55
+      );
+
+      const managedPath = q('[id="07-layered-defense-path-managed"]');
+      const policyPath = q('[id="07-layered-defense-path-policy"]');
+      const blockPath = q('[id="07-layered-defense-path-block"]');
+      [managedPath, policyPath, blockPath].forEach((path) => {
+        const length = path.getTotalLength();
+        path.style.strokeDasharray = `${length}`;
+        path.style.strokeDashoffset = `${length}`;
+      });
+
+      const traveler = q('[class~="07-layered-defense-traveler"]');
+      const managedStage = q('[class~="07-layered-defense-managed"]');
+      const managedResult = q('[class~="07-layered-defense-managed-result"]');
+
+      tl.fromTo(
+        traveler,
+        { opacity: 0, scale: 0.55 },
+        { opacity: 1, scale: 1, duration: 0.28, ease: "power2.out" },
+        2.64
+      );
+      tl.to(
+        managedPath,
+        { strokeDashoffset: 0, duration: 0.62, ease: "power2.out" },
+        2.66
+      );
+      tl.fromTo(
+        managedStage,
+        { opacity: 0, y: "2cqh" },
+        { opacity: 1, y: "0cqh", duration: 0.54, ease: "power3.out" },
+        2.83
+      );
+      tl.to(
+        traveler,
+        { y: "10.7cqh", scale: 0.78, duration: 0.8, ease: "power2.inOut" },
+        2.82
+      );
+      tl.fromTo(
+        managedResult,
+        { opacity: 0, y: "1.1cqh" },
+        { opacity: 1, y: "0cqh", duration: 0.5, ease: "power2.out" },
+        4.52
+      );
+      tl.to(
+        policyPath,
+        { strokeDashoffset: 0, duration: 0.64, ease: "power2.out" },
+        5.22
+      );
+
+      const deterministicStage = q('[class~="07-layered-defense-deterministic"]');
+      const policyText = q('[class~="07-layered-defense-policy-text"]');
+      const policyCursor = q('[class~="07-layered-defense-policy-cursor"]');
+
+      tl.fromTo(
+        deterministicStage,
+        { opacity: 0, y: "2cqh" },
+        { opacity: 1, y: "0cqh", duration: 0.56, ease: "power3.out" },
+        6.14
+      );
+
+      const policyStates = [
+        { t: 0, text: "" },
+        { t: 0.16, text: "prompt-" },
+        { t: 0.37, text: "prompt-injec" },
+        { t: 0.6, text: "prompt-injectoin." },
+        { t: 0.83, text: "prompt-injection." },
+        { t: 1.18, text: "prompt-injection.override" }
+      ];
+      const policyDriver = { t: 0 };
+      const textAt = (time) => {
+        for (let index = policyStates.length - 1; index >= 0; index -= 1) {
+          if (time >= policyStates[index].t) return policyStates[index].text;
+        }
+        return "";
+      };
+
+      tl.to(
+        policyDriver,
+        {
+          t: 1.42,
+          duration: 1.42,
+          ease: "none",
+          onUpdate: () => {
+            policyText.textContent = textAt(policyDriver.t);
+          }
+        },
+        6.31
+      );
+
+      const cursorDriver = { p: 0 };
+      tl.to(
+        cursorDriver,
+        {
+          p: Math.PI * 8,
+          duration: 3.2,
+          ease: "none",
+          onUpdate: () => {
+            policyCursor.style.opacity = Math.sin(cursorDriver.p) >= 0 ? "1" : "0";
+          }
+        },
+        6.3
+      );
+
+      tl.to(
+        blockPath,
+        { strokeDashoffset: 0, duration: 0.58, ease: "power2.out" },
+        7.48
+      );
+
+      const blockedStage = q('[class~="07-layered-defense-blocked"]');
+      const blockedWrap = q('[class~="07-layered-defense-blocked-word"]');
+      const confidence = q('[class~="07-layered-defense-confidence"]');
+      const targetWord = blockedWrap.dataset.target;
+      const ghost = document.createElement("div");
+      ghost.className = "07-layered-defense-hacker-ghost";
+      ghost.textContent = targetWord;
+      blockedWrap.appendChild(ghost);
+
+      const glyphs = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%&*";
+      const pseudoGlyph = (seed) => {
+        const hash = ((seed * 9301 + 49297) % 233280) / 233280;
+        return glyphs[Math.floor(hash * glyphs.length)];
+      };
+
+      const blockedChars = Array.from(targetWord).map((character, index) => {
+        const span = document.createElement("span");
+        span.className = "07-layered-defense-hacker-char";
+        span.dataset.target = character;
+        span.textContent = pseudoGlyph(index * 1000);
+        span.style.opacity = "0";
+        span.style.transform = "rotateX(90deg)";
+        blockedWrap.appendChild(span);
+        return span;
+      });
+
+      tl.fromTo(
+        blockedStage,
+        { opacity: 0, y: "2cqh" },
+        { opacity: 1, y: "0cqh", duration: 0.46, ease: "power3.out" },
+        7.47
+      );
+
+      blockedChars.forEach((character, index) => {
+        const flipState = { p: 0 };
+        tl.to(
+          flipState,
+          {
+            p: 1,
+            duration: 0.72,
+            ease: "power3.out",
+            onUpdate: () => {
+              const quantized = Math.floor(flipState.p * 24 / 3);
+              character.textContent = flipState.p < 0.62
+                ? pseudoGlyph(index * 1000 + quantized)
+                : character.dataset.target;
+              character.style.transform = `rotateX(${90 - flipState.p * 90}deg)`;
+              character.style.opacity = `${Math.min(1, flipState.p * 2)}`;
+            }
+          },
+          7.62 + index * 0.055
+        );
+      });
+
+      tl.fromTo(
+        confidence,
+        { opacity: 0, y: "1.2cqh" },
+        { opacity: 1, y: "0cqh", duration: 0.44, ease: "power2.out" },
+        8.58
+      );
+
+      const audit = q('[class~="07-layered-defense-audit"]');
+      const auditLock = q('[class~="07-layered-defense-audit-lock"]');
+      const auditValues = qa('[class~="07-layered-defense-audit-value"]');
+
+      tl.fromTo(
+        audit,
+        { opacity: 0, y: "2.1cqh" },
+        { opacity: 1, y: "0cqh", duration: 0.48, ease: "power3.out" },
+        9.56
+      );
+      tl.fromTo(
+        auditLock,
+        { scaleX: 0 },
+        { scaleX: 1, duration: 0.58, ease: "power2.out" },
+        9.62
+      );
+      auditValues.forEach((value, index) => {
+        tl.fromTo(
+          value,
+          { opacity: 0, y: "0.9cqh" },
+          { opacity: 1, y: "0cqh", duration: 0.34, ease: "power2.out" },
+          9.82 + index * 0.18
+        );
+      });
+    })();
+  </script>
+</template>

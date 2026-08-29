@@ -1,0 +1,20 @@
+{
+  "version": 1,
+  "preferences": {
+    "flow": {
+      "value": "automation",
+      "confirmed_in": [
+        "atlas-devpost-demo"
+      ],
+      "updated_at": "2026-08-29T11:45:59.707Z"
+    },
+    "storyboard": {
+      "value": "no",
+      "confirmed_in": [
+        "atlas-devpost-demo"
+      ],
+      "updated_at": "2026-08-29T11:45:59.912Z"
+    }
+  },
+  "sightings": {}
+}

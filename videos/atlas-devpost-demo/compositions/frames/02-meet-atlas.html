@@ -1,0 +1,577 @@
+<template>
+  <style>
+    @font-face {
+      font-family: "Space Grotesk";
+      src: url("assets/fonts/SpaceGrotesk-400.woff2") format("woff2");
+      font-style: normal;
+      font-weight: 400;
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: "Space Grotesk";
+      src: url("assets/fonts/SpaceGrotesk-700.woff2") format("woff2");
+      font-style: normal;
+      font-weight: 700;
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: "JetBrains Mono";
+      src: url("assets/fonts/JetBrainsMono-400.woff2") format("woff2");
+      font-style: normal;
+      font-weight: 400;
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: "JetBrains Mono";
+      src: url("assets/fonts/JetBrainsMono-700.woff2") format("woff2");
+      font-style: normal;
+      font-weight: 700;
+      font-display: swap;
+    }
+
+    #root {
+      position: relative;
+      width: 1920px;
+      height: 1080px;
+      overflow: hidden;
+      container-type: size;
+      isolation: isolate;
+      color: #f0f3f1;
+      font-family: "Space Grotesk";
+    }
+
+    [class~="02-meet-atlas-ground"],
+    [class~="02-meet-atlas-bg"],
+    [class~="02-meet-atlas-veil"],
+    [class~="02-meet-atlas-scene"] {
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    [class~="02-meet-atlas-ground"] {
+      background: #0b0e0f;
+      z-index: 0;
+    }
+
+    [class~="02-meet-atlas-bg"] {
+      z-index: 1;
+      object-fit: cover;
+      object-position: center 41%;
+      filter: grayscale(1) contrast(1.1) brightness(0.82);
+      transform-origin: 50% 42%;
+    }
+
+    [class~="02-meet-atlas-veil"] {
+      z-index: 2;
+      background: #0b0e0f;
+    }
+
+    [class~="02-meet-atlas-scene"] {
+      z-index: 3;
+      overflow: hidden;
+    }
+
+    [class~="02-meet-atlas-kicker"] {
+      position: absolute;
+      top: 70px;
+      left: 106px;
+      display: flex;
+      align-items: center;
+      gap: 18px;
+      color: #63e6a6;
+      font-family: "JetBrains Mono";
+      font-size: 14px;
+      font-weight: 700;
+      line-height: 1;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    [class~="02-meet-atlas-kicker-rule"] {
+      display: block;
+      width: 36px;
+      height: 2px;
+      background: #63e6a6;
+    }
+
+    [class~="02-meet-atlas-kicker-muted"] {
+      color: #a7b0ad;
+      font-weight: 400;
+    }
+
+    [class~="02-meet-atlas-node-stage"] {
+      position: absolute;
+      top: 58px;
+      left: 0;
+      width: 1560px;
+      height: 544px;
+      overflow: visible;
+    }
+
+    [class~="02-meet-atlas-network"] {
+      position: absolute;
+      inset: 0;
+      width: 1560px;
+      height: 544px;
+      overflow: visible;
+      pointer-events: none;
+    }
+
+    [class~="02-meet-atlas-network"] path {
+      fill: none;
+      stroke: #63e6a6;
+      stroke-width: 1;
+      stroke-linecap: square;
+      stroke-linejoin: miter;
+      vector-effect: non-scaling-stroke;
+      opacity: 0.42;
+    }
+
+    [class~="02-meet-atlas-node"] {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      display: grid;
+      grid-template-columns: 36px auto;
+      align-items: center;
+      width: 194px;
+      height: 48px;
+      color: #f0f3f1;
+      background: rgba(11, 14, 15, 0.86);
+      border-top: 1px solid #63e6a6;
+      border-bottom: 1px solid #283031;
+      font-family: "JetBrains Mono";
+      font-size: 13px;
+      font-weight: 700;
+      line-height: 1;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      white-space: nowrap;
+      will-change: transform, opacity;
+    }
+
+    [class~="02-meet-atlas-node-index"] {
+      display: grid;
+      height: 100%;
+      place-items: center;
+      color: #63e6a6;
+      border-right: 1px solid #283031;
+      font-size: 11px;
+      font-weight: 400;
+    }
+
+    [class~="02-meet-atlas-node-label"] {
+      padding-left: 12px;
+    }
+
+    [class~="02-meet-atlas-mark"] {
+      position: absolute;
+      top: 223px;
+      left: 682px;
+      width: 196px;
+      height: 216px;
+      overflow: visible;
+    }
+
+    [class~="02-meet-atlas-mark"] path,
+    [class~="02-meet-atlas-mark"] circle {
+      fill: none;
+      stroke: #63e6a6;
+      stroke-linecap: square;
+      stroke-linejoin: miter;
+    }
+
+    [class~="02-meet-atlas-mark-outer"] {
+      stroke-width: 4;
+    }
+
+    [class~="02-meet-atlas-mark-inner"] {
+      stroke-width: 2;
+      opacity: 0.72;
+    }
+
+    [class~="02-meet-atlas-mark-spokes"] {
+      stroke-width: 2;
+      opacity: 0.54;
+    }
+
+    [class~="02-meet-atlas-mark-core"] {
+      fill: #63e6a6 !important;
+      stroke-width: 0;
+      transform-origin: center;
+    }
+
+    [class~="02-meet-atlas-wordmask"] {
+      position: absolute;
+      top: 262px;
+      left: 918px;
+      width: 390px;
+      height: 126px;
+      overflow: hidden;
+    }
+
+    [class~="02-meet-atlas-wordmark"] {
+      position: absolute;
+      inset: 0;
+      color: #f0f3f1;
+      font-family: "Space Grotesk";
+      font-size: 116px;
+      font-weight: 700;
+      line-height: 1;
+      letter-spacing: -0.055em;
+      white-space: nowrap;
+      will-change: transform, opacity;
+    }
+
+    [class~="02-meet-atlas-wordmark"]::after {
+      content: "";
+      position: absolute;
+      right: 2px;
+      bottom: 5px;
+      width: 74px;
+      height: 5px;
+      background: #63e6a6;
+    }
+
+    [class~="02-meet-atlas-role-count"] {
+      position: absolute;
+      top: 433px;
+      left: 918px;
+      display: flex;
+      align-items: center;
+      gap: 13px;
+      color: #a7b0ad;
+      font-family: "JetBrains Mono";
+      font-size: 14px;
+      font-weight: 400;
+      line-height: 1;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    [class~="02-meet-atlas-role-count"] strong {
+      color: #63e6a6;
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: 0;
+    }
+
+    [class~="02-meet-atlas-proof-rail"] {
+      position: absolute;
+      top: 663px;
+      left: 470px;
+      width: 980px;
+      min-height: 104px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      border-top: 1px solid #283031;
+    }
+
+    [class~="02-meet-atlas-proof"] {
+      position: relative;
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      padding-top: 27px;
+      color: #f0f3f1;
+      font-family: "Space Grotesk";
+      font-size: 29px;
+      font-weight: 400;
+      line-height: 1.1;
+      letter-spacing: -0.02em;
+      white-space: nowrap;
+      will-change: transform, opacity;
+    }
+
+    [class~="02-meet-atlas-proof"] + [class~="02-meet-atlas-proof"] {
+      padding-left: 26px;
+      border-left: 1px solid #283031;
+    }
+
+    [class~="02-meet-atlas-proof-slash"] {
+      color: #63e6a6;
+      font-family: "JetBrains Mono";
+      font-size: 22px;
+      font-weight: 700;
+      line-height: 1.2;
+    }
+
+    [class~="02-meet-atlas-caption-safe"] {
+      position: absolute;
+      top: 896px;
+      left: 0;
+      width: 100%;
+      height: 1px;
+      pointer-events: none;
+    }
+  </style>
+
+  <section data-hf-id="hf-rspv" id="root" data-composition-id="02-meet-atlas" data-duration="8.9" aria-label="ATLAS governed assurance fleet" data-width="1920" data-height="1080">
+    <div data-hf-id="hf-izcp" class="clip 02-meet-atlas-ground" data-start="0" data-duration="8.9" data-track-index="0"></div>
+    <img data-hf-id="hf-6bty" class="clip 02-meet-atlas-bg" data-start="0" data-duration="8.9" data-track-index="1" src="assets/image_001.png" alt="ATLAS assurance fleet architecture" width="2801" height="2019">
+    <div data-hf-id="hf-p8gi" class="clip 02-meet-atlas-veil" data-start="0" data-duration="8.9" data-track-index="2"></div>
+
+    <div data-hf-id="hf-puf1" class="clip 02-meet-atlas-scene" data-start="0" data-duration="8.9" data-track-index="3">
+      <div data-hf-id="hf-qdb6" class="02-meet-atlas-kicker" id="02-meet-atlas-kicker">
+        <span data-hf-id="hf-i6bi" class="02-meet-atlas-kicker-rule"></span>
+        <span data-hf-id="hf-hrd7">governed fleet</span>
+        <span data-hf-id="hf-co61" class="02-meet-atlas-kicker-muted">spiffe scoped / receipt backed</span>
+      </div>
+
+      <div data-hf-id="hf-6fc4" class="02-meet-atlas-node-stage">
+        <svg data-hf-id="hf-dcqz" class="02-meet-atlas-network" viewBox="0 0 1560 544" aria-hidden="true">
+          <path data-hf-id="hf-8vps" d="M780 272 L780 230 L155 230 L155 77" />
+          <path data-hf-id="hf-d1ia" d="M780 272 L780 208 L450 208 L450 77" />
+          <path data-hf-id="hf-6rf8" d="M780 272 L780 185 L1200 185 L1200 77" />
+          <path data-hf-id="hf-onn0" d="M780 272 L780 160 L1490 160 L1490 77" />
+          <path data-hf-id="hf-q4g8" d="M780 272 L105 272" />
+          <path data-hf-id="hf-1e3s" d="M780 272 L365 272" />
+          <path data-hf-id="hf-mulh" d="M780 272 L1440 272" />
+          <path data-hf-id="hf-la4z" d="M780 272 L1675 272" />
+          <path data-hf-id="hf-225g" d="M780 272 L780 390 L370 390 L370 477" />
+          <path data-hf-id="hf-obim" d="M780 272 L795 477" />
+          <path data-hf-id="hf-hau0" d="M780 272 L780 414 L1280 414 L1280 477" />
+        </svg>
+
+        <div data-hf-id="hf-hg18" class="02-meet-atlas-node" data-target-x="-625" data-target-y="-195">
+          <span data-hf-id="hf-tjfs" class="02-meet-atlas-node-index">01</span><span data-hf-id="hf-obo5" class="02-meet-atlas-node-label">orchestrator</span>
+        </div>
+        <div data-hf-id="hf-mf59" class="02-meet-atlas-node" data-target-x="-330" data-target-y="-195">
+          <span data-hf-id="hf-scip" class="02-meet-atlas-node-index">02</span><span data-hf-id="hf-b7zj" class="02-meet-atlas-node-label">hunter / iam</span>
+        </div>
+        <div data-hf-id="hf-c8qu" class="02-meet-atlas-node" data-target-x="420" data-target-y="-195">
+          <span data-hf-id="hf-sqtq" class="02-meet-atlas-node-index">03</span><span data-hf-id="hf-bykg" class="02-meet-atlas-node-label">hunter / sdlc</span>
+        </div>
+        <div data-hf-id="hf-i92s" class="02-meet-atlas-node" data-target-x="710" data-target-y="-195">
+          <span data-hf-id="hf-rjwn" class="02-meet-atlas-node-index">04</span><span data-hf-id="hf-sygg" class="02-meet-atlas-node-label">hunter / infra</span>
+        </div>
+        <div data-hf-id="hf-tf0n" class="02-meet-atlas-node" data-target-x="-675" data-target-y="0">
+          <span data-hf-id="hf-ry7o" class="02-meet-atlas-node-index">05</span><span data-hf-id="hf-a8j0" class="02-meet-atlas-node-label">hunter / hr</span>
+        </div>
+        <div data-hf-id="hf-t1bb" class="02-meet-atlas-node" data-target-x="-415" data-target-y="0">
+          <span data-hf-id="hf-qral" class="02-meet-atlas-node-index">06</span><span data-hf-id="hf-kz2o" class="02-meet-atlas-node-label">hunter / vendor</span>
+        </div>
+        <div data-hf-id="hf-v3ok" class="02-meet-atlas-node" data-target-x="660" data-target-y="0">
+          <span data-hf-id="hf-r5lm" class="02-meet-atlas-node-index">07</span><span data-hf-id="hf-ab8p" class="02-meet-atlas-node-label">control judge</span>
+        </div>
+        <div data-hf-id="hf-ej2m" class="02-meet-atlas-node" data-target-x="895" data-target-y="0">
+          <span data-hf-id="hf-wbkz" class="02-meet-atlas-node-index">08</span><span data-hf-id="hf-6w3d" class="02-meet-atlas-node-label">chaser</span>
+        </div>
+        <div data-hf-id="hf-bcjh" class="02-meet-atlas-node" data-target-x="-410" data-target-y="205">
+          <span data-hf-id="hf-wpw0" class="02-meet-atlas-node-index">09</span><span data-hf-id="hf-jsq0" class="02-meet-atlas-node-label">drift sentinel</span>
+        </div>
+        <div data-hf-id="hf-pwir" class="02-meet-atlas-node" data-target-x="15" data-target-y="205">
+          <span data-hf-id="hf-banm" class="02-meet-atlas-node-index">10</span><span data-hf-id="hf-yewp" class="02-meet-atlas-node-label">package assembler</span>
+        </div>
+        <div data-hf-id="hf-fuu6" class="02-meet-atlas-node" data-target-x="500" data-target-y="205">
+          <span data-hf-id="hf-awcl" class="02-meet-atlas-node-index">11</span><span data-hf-id="hf-dcwp" class="02-meet-atlas-node-label">redactor</span>
+        </div>
+      </div>
+
+      <svg data-hf-id="hf-t1iz" class="02-meet-atlas-mark" viewBox="0 0 180 198" role="img" aria-label="ATLAS hex mark">
+        <path data-hf-id="hf-7p8q" class="02-meet-atlas-mark-outer" d="M90 7 L166 51 L166 147 L90 191 L14 147 L14 51 Z" />
+        <path data-hf-id="hf-5z65" class="02-meet-atlas-mark-inner" d="M90 36 L141 66 L141 132 L90 162 L39 132 L39 66 Z" />
+        <path data-hf-id="hf-q7hh" class="02-meet-atlas-mark-spokes" d="M90 36 L90 99 L141 132 M39 132 L90 99 L141 66 M39 66 L90 99 L90 162" />
+        <circle data-hf-id="hf-jby7" class="02-meet-atlas-mark-core" id="02-meet-atlas-mark-core" cx="90" cy="99" r="7" />
+      </svg>
+
+      <div data-hf-id="hf-6s4h" class="02-meet-atlas-wordmask">
+        <div data-hf-id="hf-1nw1" class="02-meet-atlas-wordmark" id="02-meet-atlas-wordmark">ATLAS</div>
+      </div>
+
+      <div data-hf-id="hf-kx12" class="02-meet-atlas-role-count" id="02-meet-atlas-role-count">
+        <strong data-hf-id="hf-qh68">11</strong><span data-hf-id="hf-3tnt">specialized roles / one governed chain</span>
+      </div>
+
+      <div data-hf-id="hf-xcyq" class="02-meet-atlas-proof-rail" id="02-meet-atlas-proof-rail">
+        <div data-hf-id="hf-tq9v" class="02-meet-atlas-proof" data-copy="gather proof">
+          <span data-hf-id="hf-d8tr" class="02-meet-atlas-proof-slash">/</span><span data-hf-id="hf-5k84">gather proof</span>
+        </div>
+        <div data-hf-id="hf-2t7h" class="02-meet-atlas-proof" data-copy="judge controls">
+          <span data-hf-id="hf-1wr3" class="02-meet-atlas-proof-slash">/</span><span data-hf-id="hf-bjka">judge controls</span>
+        </div>
+        <div data-hf-id="hf-sy1z" class="02-meet-atlas-proof" data-copy="package receipts">
+          <span data-hf-id="hf-1ig2" class="02-meet-atlas-proof-slash">/</span><span data-hf-id="hf-3qjs">package receipts</span>
+        </div>
+      </div>
+
+      <div data-hf-id="hf-3soc" class="02-meet-atlas-caption-safe" aria-hidden="true"></div>
+    </div>
+  </section>
+
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+  <script>
+    (() => {
+      const root = document.querySelector('[data-composition-id="02-meet-atlas"]');
+      const background = root.querySelector('[class~="02-meet-atlas-bg"]');
+      const veil = root.querySelector('[class~="02-meet-atlas-veil"]');
+      const kicker = document.getElementById("02-meet-atlas-kicker");
+      const markCore = document.getElementById("02-meet-atlas-mark-core");
+      const wordmark = document.getElementById("02-meet-atlas-wordmark");
+      const roleCount = document.getElementById("02-meet-atlas-role-count");
+      const proofRail = document.getElementById("02-meet-atlas-proof-rail");
+      const markPaths = Array.from(root.querySelectorAll('[class~="02-meet-atlas-mark"] path'));
+      const networkPaths = Array.from(root.querySelectorAll('[class~="02-meet-atlas-network"] path'));
+      const nodes = Array.from(root.querySelectorAll('[class~="02-meet-atlas-node"]'));
+      const proofs = Array.from(root.querySelectorAll('[class~="02-meet-atlas-proof"]'));
+
+      [...markPaths, ...networkPaths].forEach((path) => {
+        const length = path.getTotalLength();
+        path.style.strokeDasharray = `${length}`;
+        path.style.strokeDashoffset = `${length}`;
+      });
+
+      const tl = gsap.timeline({ paused: true });
+      window.__timelines = window.__timelines || {};
+      window.__timelines["02-meet-atlas"] = tl;
+
+      tl.fromTo(
+        background,
+        { opacity: 0, scale: 1.025 },
+        { opacity: 1, scale: 1, duration: 0.82, ease: "power2.out" },
+        0,
+      );
+      tl.fromTo(
+        veil,
+        { opacity: 0.92 },
+        { opacity: 0.42, duration: 0.9, ease: "power1.out" },
+        0,
+      );
+      tl.fromTo(
+        markCore,
+        { scale: 0.35, opacity: 0 },
+        { scale: 1, opacity: 1, duration: 0.32, ease: "back.out(2)" },
+        0.14,
+      );
+
+      const markStarts = [0.18, 0.62, 1.03];
+      const markDurations = [0.72, 0.58, 0.62];
+      markPaths.forEach((path, index) => {
+        tl.to(
+          path,
+          {
+            strokeDashoffset: 0,
+            duration: markDurations[index],
+            ease: "power2.out",
+          },
+          markStarts[index],
+        );
+      });
+
+      tl.fromTo(
+        kicker,
+        { x: -28, opacity: 0 },
+        { x: 0, opacity: 1, duration: 0.56, ease: "power2.out" },
+        1.58,
+      );
+
+      networkPaths.forEach((path, index) => {
+        tl.to(
+          path,
+          {
+            strokeDashoffset: 0,
+            duration: 0.78,
+            ease: "power2.out",
+          },
+          2.08 + index * 0.12,
+        );
+      });
+
+      nodes.forEach((node, index) => {
+        const targetX = Number(node.dataset.targetX);
+        const targetY = Number(node.dataset.targetY);
+        tl.fromTo(
+          node,
+          {
+            xPercent: -50,
+            yPercent: -50,
+            x: targetX * 0.16,
+            y: targetY * 0.16,
+            scale: 0.66,
+            opacity: 0,
+          },
+          {
+            xPercent: -50,
+            yPercent: -50,
+            x: targetX,
+            y: targetY,
+            scale: 1,
+            opacity: 1,
+            duration: 1.72,
+            ease: "power3.out",
+          },
+          2.62 + index * 0.08,
+        );
+      });
+
+      tl.fromTo(
+        roleCount,
+        { y: 18, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.58, ease: "power2.out" },
+        5.02,
+      );
+
+      tl.to(
+        nodes,
+        { opacity: 0.43, scale: 0.96, duration: 0.72, ease: "power2.out" },
+        5.68,
+      );
+      tl.to(
+        networkPaths,
+        { opacity: 0.18, duration: 0.72, ease: "power1.out" },
+        5.68,
+      );
+      tl.fromTo(
+        wordmark,
+        { x: -58, opacity: 0 },
+        { x: 0, opacity: 1, duration: 0.68, ease: "power3.out" },
+        5.7,
+      );
+      tl.fromTo(
+        proofRail,
+        { scaleX: 0.08, opacity: 0, transformOrigin: "50% 0%" },
+        { scaleX: 1, opacity: 1, duration: 0.5, ease: "power2.out" },
+        5.92,
+      );
+
+      const PHRASE_WINDOW_START = 6.14;
+      const PHRASE_WINDOW_DURATION = 1.38;
+      const phraseWeights = proofs.map((proof) => proof.dataset.copy.length);
+      const phraseWeightTotal = phraseWeights.reduce((sum, value) => sum + value, 0);
+      let phraseCursor = 0;
+      const phraseStarts = phraseWeights.map((weight) => {
+        const start = PHRASE_WINDOW_START + (phraseCursor / phraseWeightTotal) * PHRASE_WINDOW_DURATION;
+        phraseCursor += weight;
+        return start;
+      });
+
+      proofs.forEach((proof, index) => {
+        tl.fromTo(
+          proof,
+          { y: 20, opacity: 0 },
+          { y: 0, opacity: 1, duration: 0.46, ease: "power2.out" },
+          phraseStarts[index],
+        );
+      });
+
+      tl.to(
+        markCore,
+        { scale: 1.18, duration: 0.24, ease: "power2.out" },
+        7.44,
+      );
+      tl.to(
+        markCore,
+        { scale: 1, duration: 0.28, ease: "power2.out" },
+        7.68,
+      );
+      tl.to({}, { duration: 0.44 }, 7.96);
+    })();
+  </script>
+</template>

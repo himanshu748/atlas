@@ -1,0 +1,10 @@
+.venv/
+node_modules/
+.npm-cache/
+.thumbnails/
+.waveform-cache/
+renders/
+snapshots/
+capture-attempt/
+capture-rate-limited/
+.hyperframes/frame-packets/

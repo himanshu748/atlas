@@ -1,0 +1,817 @@
+<template>
+  <style>
+    @font-face {
+      font-family: "Space Grotesk";
+      src: url("assets/fonts/SpaceGrotesk-400.woff2") format("woff2");
+      font-style: normal;
+      font-weight: 400;
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: "Space Grotesk";
+      src: url("assets/fonts/SpaceGrotesk-700.woff2") format("woff2");
+      font-style: normal;
+      font-weight: 700;
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: "JetBrains Mono";
+      src: url("assets/fonts/JetBrainsMono-400.woff2") format("woff2");
+      font-style: normal;
+      font-weight: 400;
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: "JetBrains Mono";
+      src: url("assets/fonts/JetBrainsMono-700.woff2") format("woff2");
+      font-style: normal;
+      font-weight: 700;
+      font-display: swap;
+    }
+
+    #root {
+      position: relative;
+      width: 100%;
+      height: 100%;
+      overflow: hidden;
+      container-type: size;
+      isolation: isolate;
+      color: #f0f3f1;
+      font-family: "Space Grotesk", sans-serif;
+      font-synthesis: none;
+    }
+
+    [class~="08-package-shows-gaps-ground"] {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      background: #0b0e0f;
+      z-index: 0;
+    }
+
+    [class~="08-package-shows-gaps-ground-rule"] {
+      position: absolute;
+      background: #283031;
+    }
+
+    [class~="08-package-shows-gaps-ground-rule"][data-axis="x"] {
+      right: 5.5cqw;
+      left: 5.5cqw;
+      height: 1px;
+    }
+
+    [class~="08-package-shows-gaps-ground-rule"][data-line="top"] {
+      top: 6.7cqh;
+    }
+
+    [class~="08-package-shows-gaps-ground-rule"][data-line="bottom"] {
+      top: 82cqh;
+    }
+
+    [class~="08-package-shows-gaps-ground-rule"][data-axis="y"] {
+      top: 6.7cqh;
+      bottom: 18cqh;
+      left: 61cqw;
+      width: 1px;
+      opacity: 0.6;
+    }
+
+    [class~="08-package-shows-gaps-chrome"] {
+      position: absolute;
+      top: 3.25cqh;
+      z-index: 2;
+      color: #727c79;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 0.72cqw;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      line-height: 1;
+      text-transform: uppercase;
+    }
+
+    [class~="08-package-shows-gaps-chrome"][data-side="left"] {
+      left: 5.5cqw;
+    }
+
+    [class~="08-package-shows-gaps-chrome"][data-side="right"] {
+      right: 5.5cqw;
+      text-align: right;
+    }
+
+    [class~="08-package-shows-gaps-content"] {
+      position: absolute;
+      inset: 0;
+      overflow: hidden;
+      z-index: 2;
+    }
+
+    [class~="08-package-shows-gaps-viewport"] {
+      position: absolute;
+      top: 7.7cqh;
+      left: 5.5cqw;
+      width: 89cqw;
+      height: 74.3cqh;
+      overflow: hidden;
+      transform-origin: center 38cqh;
+    }
+
+    [class~="08-package-shows-gaps-world"] {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 119cqh;
+      will-change: transform;
+    }
+
+    [class~="08-package-shows-gaps-intro"] {
+      position: relative;
+      height: 28.5cqh;
+      box-sizing: border-box;
+      padding-top: 2.1cqh;
+    }
+
+    [class~="08-package-shows-gaps-label"] {
+      color: #63e6a6;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 0.72cqw;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      line-height: 1;
+      text-transform: uppercase;
+    }
+
+    [class~="08-package-shows-gaps-package-id"] {
+      margin-top: 2.05cqh;
+      max-width: 78cqw;
+      color: #f0f3f1;
+      font-size: 3.38cqw;
+      font-weight: 700;
+      letter-spacing: -0.035em;
+      line-height: 0.95;
+      white-space: nowrap;
+    }
+
+    [class~="08-package-shows-gaps-signer"] {
+      display: grid;
+      grid-template-columns: 10.5cqw 1fr;
+      align-items: center;
+      width: 74cqw;
+      margin-top: 4.5cqh;
+      padding-top: 2.05cqh;
+      border-top: 1px solid #283031;
+    }
+
+    [class~="08-package-shows-gaps-signer-value"] {
+      color: #a7b0ad;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 1.4cqw;
+      font-weight: 400;
+      letter-spacing: -0.035em;
+      line-height: 1;
+      white-space: nowrap;
+    }
+
+    [class~="08-package-shows-gaps-stream"] {
+      position: relative;
+      width: 100%;
+    }
+
+    [class~="08-package-shows-gaps-stream-head"] {
+      display: grid;
+      grid-template-columns: 16cqw 1fr 11cqw;
+      align-items: center;
+      height: 5cqh;
+      color: #727c79;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 0.72cqw;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      line-height: 1;
+      text-transform: uppercase;
+    }
+
+    [class~="08-package-shows-gaps-stream-head"] span:last-child {
+      text-align: right;
+    }
+
+    [class~="08-package-shows-gaps-artifact-row"],
+    [class~="08-package-shows-gaps-root-row"] {
+      position: relative;
+      display: grid;
+      grid-template-columns: 16cqw 1fr 11cqw;
+      align-items: center;
+      height: 7.35cqh;
+      box-sizing: border-box;
+      border-top: 1px solid #283031;
+      overflow: hidden;
+    }
+
+    [class~="08-package-shows-gaps-row-key"],
+    [class~="08-package-shows-gaps-row-state"] {
+      position: relative;
+      z-index: 2;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 0.78cqw;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      line-height: 1;
+      text-transform: uppercase;
+    }
+
+    [class~="08-package-shows-gaps-row-key"] {
+      color: #a7b0ad;
+    }
+
+    [class~="08-package-shows-gaps-row-state"] {
+      color: #727c79;
+      text-align: right;
+    }
+
+    [class~="08-package-shows-gaps-artifact-line"] {
+      position: relative;
+      z-index: 2;
+      height: 2px;
+      background: #727c79;
+      transform-origin: left center;
+    }
+
+    [class~="08-package-shows-gaps-artifact-row"][data-length="a"] [class~="08-package-shows-gaps-artifact-line"] {
+      width: 68%;
+    }
+
+    [class~="08-package-shows-gaps-artifact-row"][data-length="b"] [class~="08-package-shows-gaps-artifact-line"] {
+      width: 83%;
+    }
+
+    [class~="08-package-shows-gaps-artifact-row"][data-length="c"] [class~="08-package-shows-gaps-artifact-line"] {
+      width: 54%;
+    }
+
+    [class~="08-package-shows-gaps-artifact-row"][data-length="d"] [class~="08-package-shows-gaps-artifact-line"] {
+      width: 75%;
+    }
+
+    [class~="08-package-shows-gaps-root-row"] {
+      height: 10.5cqh;
+      border-top-color: #63e6a6;
+    }
+
+    [class~="08-package-shows-gaps-root-row"] [class~="08-package-shows-gaps-row-key"] {
+      color: #63e6a6;
+      font-size: 1.4cqw;
+      letter-spacing: -0.02em;
+      text-transform: none;
+    }
+
+    [class~="08-package-shows-gaps-root-selector"] {
+      position: absolute;
+      inset: 0;
+      background: #63e6a6;
+      transform-origin: left center;
+      z-index: 1;
+    }
+
+    [class~="08-package-shows-gaps-stat-rail"] {
+      position: absolute;
+      top: 53.6cqh;
+      left: 5.5cqw;
+      width: 89cqw;
+      height: 26.4cqh;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      box-sizing: border-box;
+      border-top: 1px solid #63e6a6;
+      border-bottom: 1px solid #283031;
+      background: #0b0e0f;
+      overflow: visible;
+      z-index: 5;
+      transform-origin: center bottom;
+    }
+
+    [class~="08-package-shows-gaps-sequence"] {
+      position: absolute;
+      right: 0;
+      bottom: 100%;
+      width: 31cqw;
+      min-height: 5.2cqh;
+      display: grid;
+      grid-template-columns: 9cqw 1fr;
+      align-items: center;
+      color: #63e6a6;
+      font-family: "JetBrains Mono", monospace;
+      line-height: 1.2;
+    }
+
+    [class~="08-package-shows-gaps-sequence-label"] {
+      display: flex;
+      min-height: 1.1cqw;
+      align-items: center;
+      color: #727c79;
+      font-size: 0.72cqw;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      line-height: 1.35;
+      text-transform: uppercase;
+    }
+
+    [class~="08-package-shows-gaps-sequence-body"] {
+      display: flex;
+      min-height: 1.8cqw;
+      align-items: center;
+      justify-content: flex-end;
+      color: #63e6a6;
+      font-size: 1.4cqw;
+      font-weight: 700;
+      letter-spacing: -0.035em;
+      line-height: 1.2;
+      text-align: right;
+      white-space: nowrap;
+    }
+
+    [class~="08-package-shows-gaps-sequence-track"] {
+      position: absolute;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      height: 2px;
+      background: #283031;
+      overflow: hidden;
+    }
+
+    [class~="08-package-shows-gaps-sequence-fill"] {
+      width: 100%;
+      height: 100%;
+      background: #63e6a6;
+      transform-origin: left center;
+    }
+
+    [class~="08-package-shows-gaps-stat"] {
+      position: relative;
+      display: flex;
+      min-width: 0;
+      flex-direction: column;
+      justify-content: space-between;
+      box-sizing: border-box;
+      padding: 3.2cqh 2.1cqw 2.6cqh;
+      border-left: 1px solid #283031;
+    }
+
+    [class~="08-package-shows-gaps-stat"]:first-of-type {
+      border-left: 0;
+    }
+
+    [class~="08-package-shows-gaps-stat-kicker"] {
+      color: #727c79;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 0.72cqw;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      line-height: 1;
+      text-transform: uppercase;
+    }
+
+    [class~="08-package-shows-gaps-stat-value"] {
+      color: #f0f3f1;
+      font-size: 3.08cqw;
+      font-weight: 700;
+      letter-spacing: -0.05em;
+      line-height: 0.92;
+      white-space: nowrap;
+    }
+
+    [class~="08-package-shows-gaps-stat"][data-kind="gaps"] [class~="08-package-shows-gaps-stat-value"] {
+      color: #63e6a6;
+    }
+
+    [class~="08-package-shows-gaps-receipt"] {
+      position: absolute;
+      top: 11.6cqh;
+      left: 5.5cqw;
+      width: 89cqw;
+      height: 39.3cqh;
+      box-sizing: border-box;
+      border-top: 1px solid #63e6a6;
+      border-bottom: 1px solid #283031;
+      background: #111516;
+      overflow: hidden;
+      z-index: 8;
+      transform-origin: center center;
+    }
+
+    [class~="08-package-shows-gaps-receipt-lock"] {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 2px;
+      background: #63e6a6;
+      transform-origin: left center;
+    }
+
+    [class~="08-package-shows-gaps-receipt-head"] {
+      position: absolute;
+      top: 3.35cqh;
+      right: 3cqw;
+      left: 3cqw;
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+    }
+
+    [class~="08-package-shows-gaps-receipt-title"] {
+      color: #63e6a6;
+      font-size: 4.55cqw;
+      font-weight: 700;
+      letter-spacing: -0.055em;
+      line-height: 0.9;
+      text-transform: lowercase;
+    }
+
+    [class~="08-package-shows-gaps-receipt-package"] {
+      max-width: 39cqw;
+      color: #76807d;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 0.72cqw;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      line-height: 1.45;
+      text-align: right;
+      text-transform: uppercase;
+    }
+
+    [class~="08-package-shows-gaps-hash-wrap"] {
+      position: absolute;
+      top: 16.1cqh;
+      right: 3cqw;
+      left: 3cqw;
+      padding: 2.5cqh 0 2.65cqh;
+      border-top: 1px solid #283031;
+      border-bottom: 1px solid #283031;
+      overflow: hidden;
+    }
+
+    [class~="08-package-shows-gaps-hash"] {
+      color: #f0f3f1;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 1.45cqw;
+      font-weight: 700;
+      letter-spacing: -0.045em;
+      line-height: 1;
+      white-space: nowrap;
+    }
+
+    [class~="08-package-shows-gaps-receipt-signer"] {
+      position: absolute;
+      right: 3cqw;
+      bottom: 3.3cqh;
+      left: 3cqw;
+      display: grid;
+      grid-template-columns: 10.5cqw 1fr;
+      align-items: center;
+    }
+
+    [class~="08-package-shows-gaps-receipt-signer-value"] {
+      color: #a7b0ad;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 1.4cqw;
+      font-weight: 400;
+      letter-spacing: -0.04em;
+      line-height: 1;
+      white-space: nowrap;
+    }
+  </style>
+
+  <div data-hf-id="hf-xfvh" id="root" data-composition-id="08-package-shows-gaps" data-duration="10.38" data-width="1920" data-height="1080">
+    <div data-hf-id="hf-qxtb" class="clip 08-package-shows-gaps-ground" data-start="0" data-duration="10.38" data-track-index="0" aria-hidden="true">
+      <div data-hf-id="hf-a8av" class="08-package-shows-gaps-ground-rule" data-axis="x" data-line="top"></div>
+      <div data-hf-id="hf-rbfn" class="08-package-shows-gaps-ground-rule" data-axis="x" data-line="bottom"></div>
+      <div data-hf-id="hf-h07j" class="08-package-shows-gaps-ground-rule" data-axis="y"></div>
+      <div data-hf-id="hf-094c" class="08-package-shows-gaps-chrome" data-side="left" data-layout-allow-overlap="">PACKAGE MANIFEST / DURABLE RECEIPT</div>
+      <div data-hf-id="hf-cvhb" class="08-package-shows-gaps-chrome" data-side="right" data-layout-allow-overlap="">ATLAS / FRAME 08</div>
+    </div>
+
+    <div data-hf-id="hf-p6fd" class="clip 08-package-shows-gaps-content" data-start="0" data-duration="10.38" data-track-index="1">
+      <section data-hf-id="hf-h3oo" class="08-package-shows-gaps-viewport" aria-label="Stored package manifest">
+        <div data-hf-id="hf-a53q" class="08-package-shows-gaps-world" data-layout-allow-overflow="">
+          <header data-hf-id="hf-u4td" class="08-package-shows-gaps-intro">
+            <div data-hf-id="hf-3cpt" class="08-package-shows-gaps-label">package_id</div>
+            <div data-hf-id="hf-wcsn" class="08-package-shows-gaps-package-id">atlas-soc2-2026-run-2026-q3</div>
+            <div data-hf-id="hf-c1e7" class="08-package-shows-gaps-signer">
+              <div data-hf-id="hf-ys9j" class="08-package-shows-gaps-label">signed_by</div>
+              <div data-hf-id="hf-dn6r" class="08-package-shows-gaps-signer-value">spiffe://atlas.dev/agent/assembler</div>
+            </div>
+          </header>
+
+          <div data-hf-id="hf-bep1" class="08-package-shows-gaps-stream">
+            <div data-hf-id="hf-3tww" class="08-package-shows-gaps-stream-head">
+              <span data-hf-id="hf-mvek">manifest entry</span>
+              <span data-hf-id="hf-ydqt">artifact payload</span>
+              <span data-hf-id="hf-g4i2">storage</span>
+            </div>
+            <div data-hf-id="hf-s5f7" class="08-package-shows-gaps-artifact-row" data-length="a">
+              <span data-hf-id="hf-zkyw" class="08-package-shows-gaps-row-key">artifact</span>
+              <span data-hf-id="hf-00c1" class="08-package-shows-gaps-artifact-line"></span>
+              <span data-hf-id="hf-fr6v" class="08-package-shows-gaps-row-state">stored</span>
+            </div>
+            <div data-hf-id="hf-jhjc" class="08-package-shows-gaps-artifact-row" data-length="b">
+              <span data-hf-id="hf-iig0" class="08-package-shows-gaps-row-key">artifact</span>
+              <span data-hf-id="hf-33qd" class="08-package-shows-gaps-artifact-line"></span>
+              <span data-hf-id="hf-cpaf" class="08-package-shows-gaps-row-state">stored</span>
+            </div>
+            <div data-hf-id="hf-k975" class="08-package-shows-gaps-artifact-row" data-length="c">
+              <span data-hf-id="hf-hbix" class="08-package-shows-gaps-row-key">artifact</span>
+              <span data-hf-id="hf-4ang" class="08-package-shows-gaps-artifact-line"></span>
+              <span data-hf-id="hf-caze" class="08-package-shows-gaps-row-state">stored</span>
+            </div>
+            <div data-hf-id="hf-9dpi" class="08-package-shows-gaps-artifact-row" data-length="d">
+              <span data-hf-id="hf-hpty" class="08-package-shows-gaps-row-key">artifact</span>
+              <span data-hf-id="hf-3wcf" class="08-package-shows-gaps-artifact-line"></span>
+              <span data-hf-id="hf-bwod" class="08-package-shows-gaps-row-state">stored</span>
+            </div>
+            <div data-hf-id="hf-rzls" class="08-package-shows-gaps-artifact-row" data-length="b">
+              <span data-hf-id="hf-giwv" class="08-package-shows-gaps-row-key">artifact</span>
+              <span data-hf-id="hf-539i" class="08-package-shows-gaps-artifact-line"></span>
+              <span data-hf-id="hf-eotk" class="08-package-shows-gaps-row-state">stored</span>
+            </div>
+            <div data-hf-id="hf-rsur" class="08-package-shows-gaps-artifact-row" data-length="a">
+              <span data-hf-id="hf-gx7w" class="08-package-shows-gaps-row-key">artifact</span>
+              <span data-hf-id="hf-4oyh" class="08-package-shows-gaps-artifact-line"></span>
+              <span data-hf-id="hf-eaij" class="08-package-shows-gaps-row-state">stored</span>
+            </div>
+            <div data-hf-id="hf-ve3u" class="08-package-shows-gaps-artifact-row" data-length="d">
+              <span data-hf-id="hf-fqat" class="08-package-shows-gaps-row-key">artifact</span>
+              <span data-hf-id="hf-5vvk" class="08-package-shows-gaps-artifact-line"></span>
+              <span data-hf-id="hf-dw7i" class="08-package-shows-gaps-row-state">stored</span>
+            </div>
+            <div data-hf-id="hf-1nxu" class="08-package-shows-gaps-root-row">
+              <span data-hf-id="hf-ii8z" class="08-package-shows-gaps-root-selector" aria-hidden="true"></span>
+              <span data-hf-id="hf-iexp" class="08-package-shows-gaps-row-key" data-layout-allow-overlap="">root_hash</span>
+              <span data-hf-id="hf-5hkj" class="08-package-shows-gaps-artifact-line"></span>
+              <span data-hf-id="hf-yf8w" class="08-package-shows-gaps-row-state">select</span>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section data-hf-id="hf-b6dd" class="08-package-shows-gaps-stat-rail" aria-label="Package summary">
+        <div data-hf-id="hf-brsx" class="08-package-shows-gaps-sequence" data-layout-allow-overflow="" aria-live="off">
+          <div data-hf-id="hf-6ebt" class="08-package-shows-gaps-sequence-label">reading</div>
+          <div data-hf-id="hf-q42f" class="08-package-shows-gaps-sequence-body" data-layout-allow-overlap=""></div>
+          <div data-hf-id="hf-xmhx" class="08-package-shows-gaps-sequence-track" aria-hidden="true">
+            <div data-hf-id="hf-1fic" class="08-package-shows-gaps-sequence-fill"></div>
+          </div>
+        </div>
+        <div data-hf-id="hf-c45y" class="08-package-shows-gaps-stat" data-kind="artifacts">
+          <div data-hf-id="hf-8il6" class="08-package-shows-gaps-stat-kicker">artifact register</div>
+          <div data-hf-id="hf-zdv6" class="08-package-shows-gaps-stat-value">28 artifacts</div>
+        </div>
+        <div data-hf-id="hf-a61h" class="08-package-shows-gaps-stat" data-kind="verified">
+          <div data-hf-id="hf-n8cc" class="08-package-shows-gaps-stat-kicker">verification</div>
+          <div data-hf-id="hf-dflk" class="08-package-shows-gaps-stat-value">2 / 64 verified</div>
+        </div>
+        <div data-hf-id="hf-76ee" class="08-package-shows-gaps-stat" data-kind="gaps">
+          <div data-hf-id="hf-22ua" class="08-package-shows-gaps-stat-kicker">gap register</div>
+          <div data-hf-id="hf-jr8o" class="08-package-shows-gaps-stat-value">62 declared gaps</div>
+        </div>
+      </section>
+
+      <section data-hf-id="hf-se76" class="08-package-shows-gaps-receipt" aria-label="Root hash receipt">
+        <div data-hf-id="hf-3xec" class="08-package-shows-gaps-receipt-lock" aria-hidden="true"></div>
+        <div data-hf-id="hf-a24i" class="08-package-shows-gaps-receipt-head">
+          <div data-hf-id="hf-w2x3" class="08-package-shows-gaps-receipt-title">root_hash</div>
+          <div data-hf-id="hf-tsfp" class="08-package-shows-gaps-receipt-package">atlas-soc2-2026-run-2026-q3<br data-hf-id="hf-x5px">independently reproducible</div>
+        </div>
+        <div data-hf-id="hf-vrc6" class="08-package-shows-gaps-hash-wrap">
+          <div data-hf-id="hf-xbrz" class="08-package-shows-gaps-hash">661c7cb1fca893712a52b4c84b2eaa6070a09d45738e2f3de6651ca63f128055</div>
+        </div>
+        <div data-hf-id="hf-33oa" class="08-package-shows-gaps-receipt-signer">
+          <div data-hf-id="hf-0xw7" class="08-package-shows-gaps-label">signed_by</div>
+          <div data-hf-id="hf-ixfy" class="08-package-shows-gaps-receipt-signer-value">spiffe://atlas.dev/agent/assembler</div>
+        </div>
+      </section>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+  <script>
+    (() => {
+      const root = document.querySelector('[data-composition-id="08-package-shows-gaps"]');
+      if (!root || !window.gsap) return;
+
+      const q = (selector) => root.querySelector(selector);
+      const qa = (selector) => Array.from(root.querySelectorAll(selector));
+      const tl = window.gsap.timeline({ paused: true });
+      const durationClock = { t: 0 };
+
+      window.__timelines = window.__timelines || {};
+      window.__timelines["08-package-shows-gaps"] = tl;
+
+      tl.to(durationClock, { t: 9.88, duration: 9.88, ease: "none" }, 0);
+
+      const world = q('[class~="08-package-shows-gaps-world"]');
+      const viewport = q('[class~="08-package-shows-gaps-viewport"]');
+      const packageLabel = q('[class~="08-package-shows-gaps-intro"] [class~="08-package-shows-gaps-label"]');
+      const packageId = q('[class~="08-package-shows-gaps-package-id"]');
+      const signer = q('[class~="08-package-shows-gaps-signer"]');
+      const artifactRows = qa('[class~="08-package-shows-gaps-artifact-row"]');
+
+      tl.fromTo(
+        packageLabel,
+        { opacity: 0, x: "-1.2cqw" },
+        { opacity: 1, x: "0cqw", duration: 0.4, ease: "power2.out" },
+        0.04
+      );
+      tl.fromTo(
+        packageId,
+        { opacity: 0, y: "2.2cqh" },
+        { opacity: 1, y: "0cqh", duration: 0.62, ease: "power3.out" },
+        0.14
+      );
+      tl.fromTo(
+        signer,
+        { opacity: 0, y: "1.8cqh" },
+        { opacity: 1, y: "0cqh", duration: 0.58, ease: "power3.out" },
+        0.74
+      );
+      tl.fromTo(
+        artifactRows,
+        { opacity: 0, x: "2.4cqw" },
+        { opacity: 1, x: "0cqw", duration: 0.36, stagger: 0.12, ease: "power2.out" },
+        1.25
+      );
+      tl.fromTo(
+        world,
+        { y: "0cqh" },
+        { y: "-27.5cqh", duration: 2.58, ease: "power2.inOut" },
+        0.62
+      );
+      tl.to(
+        world,
+        { y: "-54.5cqh", duration: 3.08, ease: "power3.out" },
+        3.2
+      );
+
+      const CONTENT = [
+        { eyebrow: "ARTIFACTS", title: "28 artifacts", body: "artifact register", hold: 0.2 },
+        { eyebrow: "VERIFICATION", title: "2 / 64 verified", body: "verification", hold: 0.2 },
+        { eyebrow: "GAPS", title: "62 declared gaps", body: "gap register", hold: 0.5 }
+      ];
+      const BASE_DURATION = 0.52;
+      const SEC_PER_CHAR = 0.012;
+      const TAIL_PAD = 0.15;
+      let cumulative = 0;
+      const CONTENT_TIMELINE = CONTENT.map((entry) => {
+        const itemDuration = BASE_DURATION + entry.title.length * SEC_PER_CHAR + entry.hold;
+        const start = cumulative;
+        cumulative += itemDuration;
+        return { ...entry, start, end: cumulative };
+      });
+      const entryAt = (time) => {
+        for (let index = CONTENT_TIMELINE.length - 1; index >= 0; index -= 1) {
+          if (time >= CONTENT_TIMELINE[index].start) return CONTENT_TIMELINE[index];
+        }
+        return CONTENT_TIMELINE[0];
+      };
+
+      const STAT_SEQUENCE_START = 3.28;
+      const TOTAL_SEQUENCE_DURATION = cumulative + TAIL_PAD;
+      const sequenceDriver = { t: 0 };
+      const sequenceBody = q('[class~="08-package-shows-gaps-sequence-body"]');
+      const sequenceFill = q('[class~="08-package-shows-gaps-sequence-fill"]');
+      const statRail = q('[class~="08-package-shows-gaps-stat-rail"]');
+      const statCells = qa('[class~="08-package-shows-gaps-stat"]');
+      let lastTitle = "";
+
+      tl.fromTo(
+        statRail,
+        { opacity: 0, y: "3cqh" },
+        { opacity: 1, y: "0cqh", duration: 0.5, ease: "power3.out" },
+        3.12
+      );
+      statCells.forEach((cell, index) => {
+        tl.fromTo(
+          cell,
+          { opacity: 0, y: "2.6cqh" },
+          { opacity: 1, y: "0cqh", duration: 0.52, ease: "power3.out" },
+          STAT_SEQUENCE_START + CONTENT_TIMELINE[index].start
+        );
+      });
+      tl.fromTo(
+        sequenceFill,
+        { scaleX: 0 },
+        { scaleX: 1, duration: TOTAL_SEQUENCE_DURATION, ease: "none" },
+        STAT_SEQUENCE_START
+      );
+      tl.to(
+        sequenceDriver,
+        {
+          t: TOTAL_SEQUENCE_DURATION,
+          duration: TOTAL_SEQUENCE_DURATION,
+          ease: "none",
+          onUpdate: () => {
+            const entry = entryAt(sequenceDriver.t);
+            if (entry.title !== lastTitle) {
+              sequenceBody.textContent = entry.title;
+              lastTitle = entry.title;
+            }
+          }
+        },
+        STAT_SEQUENCE_START
+      );
+
+      const rootRow = q('[class~="08-package-shows-gaps-root-row"]');
+      const rootSelector = q('[class~="08-package-shows-gaps-root-selector"]');
+      const rootKey = rootRow.querySelector('[class~="08-package-shows-gaps-row-key"]');
+      const rootState = rootRow.querySelector('[class~="08-package-shows-gaps-row-state"]');
+      const receipt = q('[class~="08-package-shows-gaps-receipt"]');
+      const receiptLock = q('[class~="08-package-shows-gaps-receipt-lock"]');
+      const receiptTitle = q('[class~="08-package-shows-gaps-receipt-title"]');
+      const receiptPackage = q('[class~="08-package-shows-gaps-receipt-package"]');
+      const hashWrap = q('[class~="08-package-shows-gaps-hash-wrap"]');
+      const hash = q('[class~="08-package-shows-gaps-hash"]');
+      const receiptSigner = q('[class~="08-package-shows-gaps-receipt-signer"]');
+
+      tl.fromTo(
+        rootSelector,
+        { scaleX: 0 },
+        { scaleX: 1, duration: 0.42, ease: "power3.out" },
+        6.34
+      );
+      tl.fromTo(
+        rootKey,
+        { color: "#63e6a6" },
+        { color: "#0b0e0f", duration: 0.24, ease: "none" },
+        6.43
+      );
+      tl.fromTo(
+        rootState,
+        { color: "#727c79" },
+        { color: "#0b0e0f", duration: 0.24, ease: "none" },
+        6.43
+      );
+      tl.to(
+        world,
+        { y: "-57cqh", duration: 0.48, ease: "power2.out" },
+        6.3
+      );
+      tl.fromTo(
+        viewport,
+        { opacity: 1, scaleY: 1, y: "0cqh" },
+        { opacity: 0.16, scaleY: 0.16, y: "-8cqh", duration: 0.68, ease: "power4.inOut" },
+        6.56
+      );
+      tl.fromTo(
+        receipt,
+        { opacity: 0, scaleY: 0.08, y: "12cqh" },
+        { opacity: 1, scaleY: 1, y: "0cqh", duration: 0.74, ease: "power4.out" },
+        6.67
+      );
+      tl.set(world, { visibility: "hidden" }, 7.42);
+      tl.fromTo(
+        receiptLock,
+        { scaleX: 0 },
+        { scaleX: 1, duration: 0.62, ease: "power3.out" },
+        6.78
+      );
+      tl.to(
+        statRail,
+        { opacity: 0.38, y: "1.7cqh", duration: 0.62, ease: "power2.out" },
+        6.76
+      );
+      tl.fromTo(
+        receiptTitle,
+        { opacity: 0, x: "-2.2cqw" },
+        { opacity: 1, x: "0cqw", duration: 0.54, ease: "power3.out" },
+        6.92
+      );
+      tl.fromTo(
+        receiptPackage,
+        { opacity: 0, x: "1.8cqw" },
+        { opacity: 1, x: "0cqw", duration: 0.48, ease: "power3.out" },
+        7.02
+      );
+      tl.fromTo(
+        hashWrap,
+        { opacity: 0, y: "2.2cqh" },
+        { opacity: 1, y: "0cqh", duration: 0.52, ease: "power3.out" },
+        7.18
+      );
+      tl.fromTo(
+        hash,
+        { opacity: 0, x: "2.4cqw" },
+        { opacity: 1, x: "0cqw", duration: 0.72, ease: "power3.out" },
+        7.28
+      );
+      tl.fromTo(
+        receiptSigner,
+        { opacity: 0, y: "1.4cqh" },
+        { opacity: 1, y: "0cqh", duration: 0.54, ease: "power2.out" },
+        7.64
+      );
+    })();
+  </script>
+</template>

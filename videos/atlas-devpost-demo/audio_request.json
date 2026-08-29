@@ -1,0 +1,57 @@
+{
+  "provider": "deepgram",
+  "speed": 1,
+  "lines": [
+    {
+      "id": "01",
+      "text": "An audit agent should collect evidence. It should never invent assurance."
+    },
+    {
+      "id": "02",
+      "text": "ATLAS is a governed SOC 2 assurance fleet: eleven specialized agents gather proof, judge it and assemble a package an auditor can verify."
+    },
+    {
+      "id": "03",
+      "text": "This is the deployed Cloud Ledger, not a green-screen demo. It shows the uncomfortable truth: two of sixty-four controls verified, three percent ready."
+    },
+    {
+      "id": "04",
+      "text": "For recovery testing, ATLAS queried real Cloud Asset Inventory and found the two buckets in this project. The record keeps the collector identity, source, byte count, Armor result and SHA-256."
+    },
+    {
+      "id": "05",
+      "text": "But a bucket list is not proof of recovery testing. Gemini 3.5 Flash ruled the evidence insufficient, so ATLAS failed A1.3 instead of manufacturing a pass."
+    },
+    {
+      "id": "06",
+      "text": "That judgment sits inside a governed fleet: hunters collect, Armor screens, the Control Judge evaluates, Memory recalls policy and the Assembler packages receipts."
+    },
+    {
+      "id": "07",
+      "text": "Security is layered and explicit. Managed Model Armor returned clean on this seeded injection fixture. ATLAS's labelled deterministic layer still quarantined it and stored the combined verdict."
+    },
+    {
+      "id": "08",
+      "text": "The durable package contains twenty-eight artifacts and sixty-two declared gaps. It also contains a root hash for every artifact and records the Assembler's SPIFFE-format identity."
+    },
+    {
+      "id": "09",
+      "text": "A standalone verifier imports nothing from the application. It checks manifest integrity, screening fields and identity attribution, then returns package verified."
+    },
+    {
+      "id": "10",
+      "text": "The cloud proof is visible too: the active Cloud Run revision receives one hundred percent of traffic, Vertex AI is enabled and Cloud Trace records Gemini, memory recall and Control Judge spans."
+    },
+    {
+      "id": "11",
+      "text": "For the submission, cost controls stay on. Cloud Run scales to zero, the revision caps at one instance with concurrency one and the weekly sweep is paused."
+    },
+    {
+      "id": "12",
+      "text": "ATLAS does not promise a perfect audit. It promises evidence you can trust, gaps you can see and claims you can verify. The code is public on GitHub."
+    }
+  ],
+  "bgm": {
+    "mode": "none"
+  }
+}

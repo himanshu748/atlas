@@ -1,0 +1,13 @@
+ATLAS: Autonomous Assurance Fleet
+
+ATLAS is a governed SOC 2 evidence workflow running on a private Cloud Run service. Eleven registered roles collect evidence, judge controls, route human decisions, detect drift and assemble a hash-verifiable audit package.
+
+The verified cloud proof uses Gemini 3.5 Flash through Vertex AI, Google ADK, Cloud Run, Firestore, Pub/Sub, Cloud Storage, Cloud Asset Inventory, Cloud Trace and Model Armor.
+
+The deployed proof read actual IAM bindings and two actual Cloud Storage buckets. Gemini correctly ruled that the data was insufficient to prove quarterly access recertification or recovery testing. It did not manufacture a green result.
+
+Managed Model Armor returned clean on the seeded indirect-injection fixture. ATLAS then applied its labelled deterministic second layer, which quarantined the fixture and recorded the combined backend as model-armor+deterministic.
+
+The final evidence package contains per-control entries, a gap register, artifact hashes and a root hash. An independent verifier re-derives the root and reports package integrity.
+
+The Cloud Run deployment is private, scales from zero to one instance and uses concurrency one. The recurring Scheduler job is configured but paused after validation.

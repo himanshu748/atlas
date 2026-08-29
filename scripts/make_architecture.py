@@ -188,7 +188,7 @@ infra = [
     ("Cloud Scheduler", "weekly drift sweep\n→ /internal/sweep"),
     ("Model Armor",     "managed screening\n+ local fallback"),
     ("Cloud Storage",   "manifest.json\n+ SHA-256 root"),
-    ("Vertex AI",       "managed Gemini\n+ Gemma helper"),
+    ("Vertex AI",       "managed Gemini\n+ optional Gemma helper"),
 ]
 for i, (name, sub) in enumerate(infra):
     x = 4 + i * 25.4

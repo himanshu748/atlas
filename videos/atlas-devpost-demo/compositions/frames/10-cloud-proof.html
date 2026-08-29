@@ -1,0 +1,767 @@
+<template>
+  <style>
+    @font-face {
+      font-family: "Space Grotesk";
+      src: url("assets/fonts/SpaceGrotesk-400.woff2") format("woff2");
+      font-style: normal;
+      font-weight: 400;
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: "Space Grotesk";
+      src: url("assets/fonts/SpaceGrotesk-700.woff2") format("woff2");
+      font-style: normal;
+      font-weight: 700;
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: "JetBrains Mono";
+      src: url("assets/fonts/JetBrainsMono-400.woff2") format("woff2");
+      font-style: normal;
+      font-weight: 400;
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: "JetBrains Mono";
+      src: url("assets/fonts/JetBrainsMono-700.woff2") format("woff2");
+      font-style: normal;
+      font-weight: 700;
+      font-display: swap;
+    }
+
+    #root {
+      position: relative;
+      width: 1920px;
+      height: 1080px;
+      overflow: hidden;
+      container-type: size;
+      color: #f0f3f1;
+      font-family: "Space Grotesk", sans-serif;
+    }
+
+    .f10-cloud-proof-ground {
+      position: absolute;
+      inset: 0;
+      width: 1920px;
+      height: 1080px;
+      overflow: hidden;
+      background: #0b0e0f;
+    }
+
+    .f10-cloud-proof-ground-rule {
+      position: absolute;
+      top: 0;
+      left: 52px;
+      width: 2px;
+      height: 896px;
+      background: #63e6a6;
+      opacity: 0.42;
+    }
+
+    .f10-cloud-proof-scene {
+      position: absolute;
+      inset: 0 auto auto 0;
+      width: 1920px;
+      height: 896px;
+      overflow: hidden;
+      isolation: isolate;
+    }
+
+    .f10-cloud-proof-camera-filter,
+    .f10-cloud-proof-camera-scale,
+    .f10-cloud-proof-camera-shift {
+      position: absolute;
+      inset: 0;
+      width: 1920px;
+      height: 896px;
+    }
+
+    .f10-cloud-proof-camera-filter {
+      filter: url("#f10-cloud-proof-streak");
+      perspective: 1900px;
+      overflow: hidden;
+    }
+
+    .f10-cloud-proof-camera-scale {
+      transform-origin: 50% 50%;
+      will-change: transform;
+    }
+
+    .f10-cloud-proof-camera-shift {
+      will-change: transform;
+    }
+
+    .f10-cloud-proof-world {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 4200px;
+      height: 896px;
+      transform-style: preserve-3d;
+      transform-origin: 3420px 480px;
+      will-change: transform;
+    }
+
+    .f10-cloud-proof-flight-rail {
+      position: absolute;
+      top: 447px;
+      left: 1140px;
+      width: 2350px;
+      height: 1px;
+      background: #283031;
+    }
+
+    .f10-cloud-proof-flight-rail::before,
+    .f10-cloud-proof-flight-rail::after {
+      position: absolute;
+      top: -4px;
+      width: 9px;
+      height: 9px;
+      background: #63e6a6;
+      content: "";
+    }
+
+    .f10-cloud-proof-flight-rail::before {
+      left: 0;
+    }
+
+    .f10-cloud-proof-flight-rail::after {
+      right: 0;
+    }
+
+    .f10-cloud-proof-plane {
+      position: absolute;
+      display: block;
+      overflow: hidden;
+      margin: 0;
+      border: 1px solid #283031;
+      background: #111516;
+    }
+
+    .f10-cloud-proof-plane img {
+      position: absolute;
+      inset: 0;
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: fill;
+    }
+
+    .f10-cloud-proof-plane-kicker {
+      position: absolute;
+      z-index: 5;
+      top: 16px;
+      left: 18px;
+      display: block;
+      width: 210px;
+      height: 30px;
+      color: #63e6a6;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 14px;
+      font-weight: 700;
+      line-height: 30px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+
+    .f10-cloud-proof-plane-run {
+      top: 120px;
+      left: 80px;
+      width: 1200px;
+      height: 514px;
+    }
+
+    .f10-cloud-proof-plane-runtime {
+      top: 42px;
+      left: 1520px;
+      width: 780px;
+      height: 799px;
+    }
+
+    .f10-cloud-proof-plane-trace {
+      top: 44px;
+      left: 2720px;
+      width: 1400px;
+      height: 872px;
+    }
+
+    .f10-cloud-proof-target {
+      position: absolute;
+      z-index: 7;
+      display: block;
+      width: 4px;
+      height: 4px;
+      pointer-events: none;
+    }
+
+    #f10-cloud-proof-run-revision-target {
+      top: 244px;
+      left: 320px;
+    }
+
+    #f10-cloud-proof-run-traffic-target {
+      top: 244px;
+      left: 548px;
+    }
+
+    #f10-cloud-proof-runtime-flag-target {
+      top: 681px;
+      left: 400px;
+    }
+
+    #f10-cloud-proof-runtime-concurrency-target {
+      top: 118px;
+      left: 390px;
+    }
+
+    #f10-cloud-proof-runtime-maximum-target {
+      top: 503px;
+      left: 390px;
+    }
+
+    #f10-cloud-proof-trace-target {
+      top: 436px;
+      left: 700px;
+    }
+
+    .f10-cloud-proof-active-row {
+      position: absolute;
+      z-index: 3;
+      top: 220px;
+      left: 83px;
+      display: block;
+      width: 1040px;
+      height: 62px;
+      border: 1px solid rgba(99, 230, 166, 0.72);
+      transform-origin: 0 50%;
+    }
+
+    .f10-cloud-proof-traffic-cell {
+      position: absolute;
+      z-index: 4;
+      top: 220px;
+      left: 486px;
+      display: block;
+      width: 142px;
+      height: 62px;
+      border: 2px solid #63e6a6;
+      transform-origin: 0 50%;
+    }
+
+    .f10-cloud-proof-callout {
+      position: absolute;
+      z-index: 6;
+      display: block;
+      box-sizing: border-box;
+      height: 48px;
+      padding: 0 14px;
+      border-top: 1px solid #63e6a6;
+      background: rgba(11, 14, 15, 0.94);
+      color: #f0f3f1;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 20px;
+      font-weight: 700;
+      line-height: 48px;
+      letter-spacing: -0.02em;
+      white-space: nowrap;
+    }
+
+    .f10-cloud-proof-callout em {
+      color: #63e6a6;
+      font-style: normal;
+    }
+
+    #f10-cloud-proof-revision-callout {
+      top: 154px;
+      left: 176px;
+      width: 390px;
+    }
+
+    #f10-cloud-proof-traffic-callout {
+      top: 304px;
+      left: 470px;
+      width: 210px;
+    }
+
+    #f10-cloud-proof-flag-callout {
+      top: 626px;
+      left: 30px;
+      width: 720px;
+      font-size: 18px;
+    }
+
+    #f10-cloud-proof-concurrency-callout {
+      top: 88px;
+      left: 380px;
+      width: 338px;
+    }
+
+    #f10-cloud-proof-maximum-callout {
+      top: 454px;
+      left: 350px;
+      width: 380px;
+    }
+
+    .f10-cloud-proof-trace-label {
+      position: absolute;
+      z-index: 8;
+      left: 400px;
+      display: block;
+      width: 940px;
+      height: 64px;
+      box-sizing: border-box;
+      padding: 0 22px;
+      border-top: 1px solid #63e6a6;
+      border-bottom: 1px solid #283031;
+      background: rgba(11, 14, 15, 0.94);
+      color: #f0f3f1;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 34px;
+      font-weight: 700;
+      line-height: 64px;
+      letter-spacing: -0.04em;
+      white-space: nowrap;
+    }
+
+    .f10-cloud-proof-trace-label::before {
+      position: absolute;
+      top: 27px;
+      left: -154px;
+      width: 132px;
+      height: 1px;
+      background: #63e6a6;
+      content: "";
+    }
+
+    .f10-cloud-proof-trace-label::after {
+      position: absolute;
+      top: 23px;
+      left: -164px;
+      width: 9px;
+      height: 9px;
+      background: #63e6a6;
+      content: "";
+    }
+
+    #f10-cloud-proof-trace-generate {
+      top: 360px;
+    }
+
+    #f10-cloud-proof-trace-memory {
+      top: 452px;
+    }
+
+    #f10-cloud-proof-trace-judge {
+      top: 544px;
+    }
+
+    .f10-cloud-proof-chrome {
+      position: absolute;
+      z-index: 30;
+      top: 34px;
+      left: 88px;
+      display: flex;
+      width: 1744px;
+      height: 50px;
+      box-sizing: border-box;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid #283031;
+      color: #63e6a6;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 16px;
+      font-weight: 700;
+      line-height: 50px;
+      letter-spacing: 0.14em;
+      text-transform: uppercase;
+    }
+
+    .f10-cloud-proof-chrome-meta {
+      color: #a7b0ad;
+      font-weight: 400;
+    }
+
+    .f10-cloud-proof-final-rail {
+      position: absolute;
+      z-index: 34;
+      top: 824px;
+      left: 498px;
+      display: flex;
+      width: 924px;
+      height: 54px;
+      box-sizing: border-box;
+      align-items: center;
+      justify-content: center;
+      border-top: 1px solid #63e6a6;
+      border-bottom: 1px solid #283031;
+      background: #0b0e0f;
+      color: #f0f3f1;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 22px;
+      font-weight: 700;
+      line-height: 54px;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .f10-cloud-proof-final-rail span {
+      color: #63e6a6;
+      padding: 0 14px;
+    }
+  </style>
+
+  <div data-hf-id="hf-85qh" id="root" data-composition-id="10-cloud-proof" data-duration="11.82" data-width="1920" data-height="1080">
+    <div data-hf-id="hf-uo4s" class="clip f10-cloud-proof-ground" data-start="0" data-duration="11.82" data-track-index="0">
+      <div data-hf-id="hf-yeps" class="f10-cloud-proof-ground-rule" aria-hidden="true"></div>
+    </div>
+
+    <section data-hf-id="hf-rr0i" class="clip f10-cloud-proof-scene" data-start="0" data-duration="11.82" data-track-index="1" aria-label="Google Cloud deployment and trace proof">
+      <svg data-hf-id="hf-p3r6" width="0" height="0" aria-hidden="true" style="position: absolute">
+        <filter data-hf-id="hf-bgix" id="f10-cloud-proof-streak" x="-50%" y="-50%" width="200%" height="200%">
+          <fegaussianblur data-hf-id="hf-7jq8" id="f10-cloud-proof-streak-blur" in="SourceGraphic" stdDeviation="0 0" />
+        </filter>
+      </svg>
+
+      <div data-hf-id="hf-al57" class="f10-cloud-proof-camera-filter">
+        <div data-hf-id="hf-ucxu" class="f10-cloud-proof-camera-scale" id="f10-cloud-proof-camera-scale">
+          <div data-hf-id="hf-7xny" class="f10-cloud-proof-camera-shift" id="f10-cloud-proof-camera-shift">
+            <div data-hf-id="hf-hy8r" class="f10-cloud-proof-world" id="f10-cloud-proof-world" data-layout-allow-overflow="">
+              <div data-hf-id="hf-7lxn" class="f10-cloud-proof-flight-rail" aria-hidden="true"></div>
+
+              <figure data-hf-id="hf-hkpr" class="f10-cloud-proof-plane f10-cloud-proof-plane-run" aria-label="Cloud Run revision capture">
+                <img data-hf-id="hf-a82o" src="assets/image_003.png" alt="Cloud Run revisions showing atlas-console-00004-2n6 receiving 100 percent traffic" draggable="false">
+                <span data-hf-id="hf-esc8" class="f10-cloud-proof-plane-kicker">Cloud Run</span>
+                <span data-hf-id="hf-ppqa" class="f10-cloud-proof-target" id="f10-cloud-proof-run-revision-target" aria-hidden="true"></span>
+                <span data-hf-id="hf-t5og" class="f10-cloud-proof-target" id="f10-cloud-proof-run-traffic-target" aria-hidden="true"></span>
+                <span data-hf-id="hf-6700" class="f10-cloud-proof-active-row" id="f10-cloud-proof-active-row" aria-hidden="true"></span>
+                <span data-hf-id="hf-69z0" class="f10-cloud-proof-traffic-cell" id="f10-cloud-proof-traffic-cell" aria-hidden="true"></span>
+                <span data-hf-id="hf-pv7k" class="f10-cloud-proof-callout" id="f10-cloud-proof-revision-callout">atlas-console-00004-2n6</span>
+                <span data-hf-id="hf-fctm" class="f10-cloud-proof-callout" id="f10-cloud-proof-traffic-callout"><em data-hf-id="hf-9nqd">100%</em> traffic</span>
+              </figure>
+
+              <figure data-hf-id="hf-e6pb" class="f10-cloud-proof-plane f10-cloud-proof-plane-runtime" aria-label="Cloud Run runtime configuration capture">
+                <img data-hf-id="hf-gaol" src="assets/image_005.png" alt="Cloud Run configuration showing Vertex AI enabled, concurrency one and maximum instances one" draggable="false">
+                <span data-hf-id="hf-6y3w" class="f10-cloud-proof-plane-kicker">Vertex AI</span>
+                <span data-hf-id="hf-99dy" class="f10-cloud-proof-target" id="f10-cloud-proof-runtime-flag-target" aria-hidden="true"></span>
+                <span data-hf-id="hf-7svz" class="f10-cloud-proof-target" id="f10-cloud-proof-runtime-concurrency-target" aria-hidden="true"></span>
+                <span data-hf-id="hf-hz0e" class="f10-cloud-proof-target" id="f10-cloud-proof-runtime-maximum-target" aria-hidden="true"></span>
+                <span data-hf-id="hf-ck26" class="f10-cloud-proof-callout" id="f10-cloud-proof-flag-callout">GOOGLE_GENAI_USE_VERTEXAI=<em data-hf-id="hf-25cb">true</em></span>
+                <span data-hf-id="hf-wl8m" class="f10-cloud-proof-callout" id="f10-cloud-proof-concurrency-callout">concurrency <em data-hf-id="hf-k3o2">1</em></span>
+                <span data-hf-id="hf-uuee" class="f10-cloud-proof-callout" id="f10-cloud-proof-maximum-callout">maximum instances <em data-hf-id="hf-ojbq">1</em></span>
+              </figure>
+
+              <figure data-hf-id="hf-15eh" class="f10-cloud-proof-plane f10-cloud-proof-plane-trace" aria-label="Google Cloud Trace capture">
+                <img data-hf-id="hf-pfwn" src="assets/image_004.png" alt="Cloud Trace explorer showing Gemini, memory recall and Control Judge spans" draggable="false">
+                <span data-hf-id="hf-3th8" class="f10-cloud-proof-plane-kicker">Cloud Trace</span>
+                <span data-hf-id="hf-vqrc" class="f10-cloud-proof-target" id="f10-cloud-proof-trace-target" aria-hidden="true"></span>
+                <span data-hf-id="hf-sy5k" class="f10-cloud-proof-trace-label" id="f10-cloud-proof-trace-generate">generate_content · gemini-3.5-flash · 22</span>
+                <span data-hf-id="hf-wfa2" class="f10-cloud-proof-trace-label" id="f10-cloud-proof-trace-memory">memory_bank.recall · 11</span>
+                <span data-hf-id="hf-fu0q" class="f10-cloud-proof-trace-label" id="f10-cloud-proof-trace-judge">invoke_agent control_judge · 11</span>
+              </figure>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <header data-hf-id="hf-s6fa" class="f10-cloud-proof-chrome" id="f10-cloud-proof-chrome">
+        <span data-hf-id="hf-ou40">Infrastructure proof</span>
+        <span data-hf-id="hf-w004" class="f10-cloud-proof-chrome-meta">Google Cloud / 10</span>
+      </header>
+
+      <div data-hf-id="hf-zb9r" class="f10-cloud-proof-final-rail" id="f10-cloud-proof-final-rail">
+        Cloud Run <span data-hf-id="hf-1bmq">·</span> Vertex AI <span data-hf-id="hf-8hs6">·</span> Trace
+      </div>
+    </section>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+  <script>
+    (() => {
+      const stage = document.querySelector("#root .f10-cloud-proof-scene");
+      const cameraScale = document.getElementById("f10-cloud-proof-camera-scale");
+      const cameraShift = document.getElementById("f10-cloud-proof-camera-shift");
+      const world = document.getElementById("f10-cloud-proof-world");
+      const blurNode = document.getElementById("f10-cloud-proof-streak-blur");
+
+      const targetPose = (id) => {
+        const stageRect = stage.getBoundingClientRect();
+        const targetRect = document.getElementById(id).getBoundingClientRect();
+        return {
+          x: -(targetRect.left + targetRect.width / 2 - (stageRect.left + stageRect.width / 2)),
+          y: -(targetRect.top + targetRect.height / 2 - (stageRect.top + stageRect.height / 2)),
+        };
+      };
+
+      const runRevision = targetPose("f10-cloud-proof-run-revision-target");
+      const runTraffic = targetPose("f10-cloud-proof-run-traffic-target");
+      const runtimeFlag = targetPose("f10-cloud-proof-runtime-flag-target");
+      const runtimeConcurrency = targetPose("f10-cloud-proof-runtime-concurrency-target");
+      const runtimeMaximum = targetPose("f10-cloud-proof-runtime-maximum-target");
+      const trace = targetPose("f10-cloud-proof-trace-target");
+
+      const camera = {
+        scale: 1.48,
+        x: runRevision.x,
+        y: runRevision.y,
+      };
+
+      const applyCamera = () => {
+        gsap.set(cameraScale, { scale: camera.scale });
+        gsap.set(cameraShift, { x: camera.x, y: camera.y });
+      };
+
+      const blur = { x: 0, y: 0 };
+      const writeBlur = () => {
+        blurNode.setAttribute("stdDeviation", `${blur.x} ${blur.y}`);
+      };
+
+      applyCamera();
+      writeBlur();
+
+      const tl = gsap.timeline({ paused: true });
+
+      tl.set(world, { rotateX: 0, rotateY: 0, transformPerspective: 1900 }, 0);
+
+      tl.fromTo(
+        "#f10-cloud-proof-chrome",
+        { y: -14, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.42, ease: "power3.out" },
+        0,
+      );
+      tl.fromTo(
+        "#f10-cloud-proof-revision-callout",
+        { x: -32, opacity: 0 },
+        { x: 0, opacity: 1, duration: 0.48, ease: "power4.out" },
+        0.04,
+      );
+      tl.fromTo(
+        "#f10-cloud-proof-active-row",
+        { scaleX: 0, opacity: 0 },
+        { scaleX: 1, opacity: 1, duration: 0.54, ease: "power3.out" },
+        0.08,
+      );
+
+      tl.to(
+        camera,
+        {
+          scale: 2.05,
+          x: runTraffic.x,
+          y: runTraffic.y,
+          duration: 1.25,
+          ease: "power4.out",
+          onUpdate: applyCamera,
+        },
+        0.58,
+      );
+      tl.fromTo(
+        blur,
+        { x: 11, y: 11 },
+        {
+          x: 0,
+          y: 0,
+          duration: 1.25,
+          ease: "power4.out",
+          onUpdate: writeBlur,
+          immediateRender: false,
+        },
+        0.58,
+      );
+      tl.fromTo(
+        "#f10-cloud-proof-traffic-cell",
+        { scaleX: 0, opacity: 0 },
+        { scaleX: 1, opacity: 1, duration: 0.46, ease: "power3.out" },
+        1.24,
+      );
+      tl.fromTo(
+        "#f10-cloud-proof-traffic-callout",
+        { x: 30, opacity: 0 },
+        { x: 0, opacity: 1, duration: 0.5, ease: "power4.out" },
+        1.42,
+      );
+
+      const whipStart = { x: runTraffic.x, y: runTraffic.y, scale: 2.05 };
+      const whipDelta = {
+        x: runtimeFlag.x - whipStart.x,
+        y: runtimeFlag.y - whipStart.y,
+        scale: 1.72 - whipStart.scale,
+      };
+
+      tl.to(
+        camera,
+        {
+          x: whipStart.x + whipDelta.x * 0.1,
+          y: whipStart.y + whipDelta.y * 0.1,
+          scale: whipStart.scale + whipDelta.scale * 0.1,
+          duration: 0.15,
+          ease: "power3.in",
+          onUpdate: applyCamera,
+        },
+        3.398,
+      );
+      tl.to(
+        camera,
+        {
+          x: whipStart.x + whipDelta.x * 0.75,
+          y: whipStart.y + whipDelta.y * 0.75,
+          scale: whipStart.scale + whipDelta.scale * 0.75,
+          duration: 0.13,
+          ease: "none",
+          onUpdate: applyCamera,
+        },
+        3.548,
+      );
+      tl.to(
+        camera,
+        {
+          x: runtimeFlag.x,
+          y: runtimeFlag.y,
+          scale: 1.72,
+          duration: 0.45,
+          ease: "power4.out",
+          onUpdate: applyCamera,
+        },
+        3.678,
+      );
+      tl.to(
+        blur,
+        { x: 18, y: 0, duration: 0.15, ease: "power3.in", onUpdate: writeBlur },
+        3.398,
+      );
+      tl.to(
+        blur,
+        { x: 0, y: 0, duration: 0.45, ease: "power4.out", onUpdate: writeBlur },
+        3.678,
+      );
+      tl.fromTo(
+        "#f10-cloud-proof-flag-callout",
+        { x: 40, opacity: 0 },
+        { x: 0, opacity: 1, duration: 0.48, ease: "power4.out" },
+        4.1,
+      );
+
+      tl.to(
+        camera,
+        {
+          x: runtimeConcurrency.x,
+          y: runtimeConcurrency.y,
+          scale: 1.68,
+          duration: 0.55,
+          ease: "power4.out",
+          onUpdate: applyCamera,
+        },
+        4.45,
+      );
+      tl.fromTo(
+        blur,
+        { x: 0, y: 12 },
+        {
+          x: 0,
+          y: 0,
+          duration: 0.55,
+          ease: "power4.out",
+          onUpdate: writeBlur,
+          immediateRender: false,
+        },
+        4.45,
+      );
+      tl.fromTo(
+        "#f10-cloud-proof-concurrency-callout",
+        { x: 30, opacity: 0 },
+        { x: 0, opacity: 1, duration: 0.42, ease: "power4.out" },
+        4.72,
+      );
+
+      tl.to(
+        camera,
+        {
+          x: runtimeMaximum.x,
+          y: runtimeMaximum.y,
+          scale: 1.68,
+          duration: 0.55,
+          ease: "power3.inOut",
+          onUpdate: applyCamera,
+        },
+        5.0,
+      );
+      tl.fromTo(
+        blur,
+        { x: 0, y: 10 },
+        {
+          x: 0,
+          y: 0,
+          duration: 0.55,
+          ease: "power3.out",
+          onUpdate: writeBlur,
+          immediateRender: false,
+        },
+        5.0,
+      );
+      tl.fromTo(
+        "#f10-cloud-proof-maximum-callout",
+        { x: 30, opacity: 0 },
+        { x: 0, opacity: 1, duration: 0.42, ease: "power4.out" },
+        5.32,
+      );
+
+      tl.set(world, { rotateX: 7, rotateY: -10 }, 6.642);
+      tl.to(
+        world,
+        { rotateX: 0, rotateY: 0, duration: 1.12, ease: "power3.out" },
+        6.642,
+      );
+      tl.to(
+        camera,
+        {
+          x: trace.x,
+          y: trace.y,
+          scale: 0.86,
+          duration: 1.12,
+          ease: "power2.inOut",
+          onUpdate: applyCamera,
+        },
+        6.642,
+      );
+      tl.to(
+        blur,
+        { x: 16, y: 8, duration: 0.5, ease: "power2.in", onUpdate: writeBlur },
+        6.642,
+      );
+      tl.to(
+        blur,
+        { x: 0, y: 0, duration: 0.62, ease: "power3.out", onUpdate: writeBlur },
+        7.142,
+      );
+
+      tl.fromTo(
+        "#f10-cloud-proof-trace-generate",
+        { x: 70, opacity: 0 },
+        { x: 0, opacity: 1, duration: 0.46, ease: "power4.out" },
+        7.78,
+      );
+      tl.fromTo(
+        "#f10-cloud-proof-trace-memory",
+        { x: 70, opacity: 0 },
+        { x: 0, opacity: 1, duration: 0.46, ease: "power4.out" },
+        8.47,
+      );
+      tl.fromTo(
+        "#f10-cloud-proof-trace-judge",
+        { x: 70, opacity: 0 },
+        { x: 0, opacity: 1, duration: 0.46, ease: "power4.out" },
+        9.15,
+      );
+      tl.fromTo(
+        "#f10-cloud-proof-final-rail",
+        { y: 10, opacity: 0 },
+        { y: 0, opacity: 1, duration: 0.259, ease: "power3.out" },
+        9.55,
+      );
+
+      window.__timelines["10-cloud-proof"] = tl;
+    })();
+  </script>
+</template>

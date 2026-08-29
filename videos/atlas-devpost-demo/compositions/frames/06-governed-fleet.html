@@ -1,0 +1,520 @@
+<template>
+  <style>
+    @font-face {
+      font-family: "Space Grotesk";
+      src: url("assets/fonts/SpaceGrotesk-400.woff2") format("woff2");
+      font-style: normal;
+      font-weight: 400;
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: "Space Grotesk";
+      src: url("assets/fonts/SpaceGrotesk-700.woff2") format("woff2");
+      font-style: normal;
+      font-weight: 700;
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: "JetBrains Mono";
+      src: url("assets/fonts/JetBrainsMono-400.woff2") format("woff2");
+      font-style: normal;
+      font-weight: 400;
+      font-display: swap;
+    }
+
+    @font-face {
+      font-family: "JetBrains Mono";
+      src: url("assets/fonts/JetBrainsMono-700.woff2") format("woff2");
+      font-style: normal;
+      font-weight: 700;
+      font-display: swap;
+    }
+
+    #root {
+      position: relative;
+      width: 1920px;
+      height: 1080px;
+      overflow: hidden;
+      container-type: size;
+      color: #f0f3f1;
+      font-family: "Space Grotesk", sans-serif;
+    }
+
+    [class~="06-governed-fleet-ground"],
+    [class~="06-governed-fleet-scene"] {
+      position: absolute;
+      inset: 0;
+      width: 1920px;
+      height: 1080px;
+    }
+
+    [class~="06-governed-fleet-ground"] {
+      background: #0b0e0f;
+    }
+
+    [class~="06-governed-fleet-scene"] {
+      overflow: hidden;
+    }
+
+    [class~="06-governed-fleet-architecture"] {
+      position: absolute;
+      top: 82px;
+      left: 578px;
+      z-index: 1;
+      width: 1246px;
+      height: 690px;
+      margin: 0;
+      overflow: hidden;
+      background: #111516;
+      border-top: 1px solid #283031;
+      border-bottom: 1px solid #283031;
+      will-change: transform, opacity;
+    }
+
+    [class~="06-governed-fleet-architecture"] img {
+      display: block;
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: 50% 26%;
+      filter: grayscale(1) contrast(1.42) brightness(0.78);
+      opacity: 0.62;
+    }
+
+    [class~="06-governed-fleet-architecture-label"] {
+      position: absolute;
+      top: 0;
+      left: 0;
+      padding: 12px 16px 11px;
+      background: #0b0e0f;
+      color: #a7b0ad;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      line-height: 1;
+      text-transform: uppercase;
+    }
+
+    [class~="06-governed-fleet-title-block"] {
+      position: absolute;
+      top: 82px;
+      left: 96px;
+      z-index: 8;
+      width: 430px;
+    }
+
+    [class~="06-governed-fleet-kicker"] {
+      margin: 0;
+      color: #63e6a6;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 15px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      line-height: 1.2;
+      text-transform: uppercase;
+      will-change: transform, opacity;
+    }
+
+    [class~="06-governed-fleet-rule"] {
+      width: 36px;
+      height: 2px;
+      margin-top: 24px;
+      background: #63e6a6;
+      transform-origin: left center;
+      will-change: transform;
+    }
+
+    [class~="06-governed-fleet-title"] {
+      margin: 28px 0 0;
+      color: #f0f3f1;
+      font-size: 112px;
+      font-weight: 700;
+      letter-spacing: -0.04em;
+      line-height: 0.84;
+      text-transform: lowercase;
+    }
+
+    [class~="06-governed-fleet-title"] span {
+      display: block;
+      width: max-content;
+      max-width: 430px;
+      will-change: transform, opacity;
+    }
+
+    [class~="06-governed-fleet-title"] span:first-child {
+      color: #76807d;
+    }
+
+    [class~="06-governed-fleet-title"] span:last-child {
+      color: #63e6a6;
+    }
+
+    [class~="06-governed-fleet-tally"] {
+      position: absolute;
+      top: 665px;
+      left: 96px;
+      z-index: 8;
+      width: 430px;
+      padding-top: 16px;
+      border-top: 1px solid #283031;
+      display: grid;
+      grid-template-columns: 72px 1fr;
+      align-items: end;
+      column-gap: 18px;
+      will-change: transform, opacity;
+    }
+
+    [class~="06-governed-fleet-tally-count"] {
+      color: #63e6a6;
+      font-size: 44px;
+      font-weight: 700;
+      letter-spacing: -0.04em;
+      line-height: 1.1;
+    }
+
+    [class~="06-governed-fleet-tally-copy"] {
+      display: grid;
+      row-gap: 3px;
+      color: #a7b0ad;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      line-height: 1.45;
+      text-transform: uppercase;
+    }
+
+    [class~="06-governed-fleet-role-card"] {
+      position: absolute;
+      z-index: 6;
+      width: 256px;
+      height: 78px;
+      box-sizing: border-box;
+      padding: 14px 16px 13px;
+      overflow: hidden;
+      background: rgba(17, 21, 22, 0.95);
+      border-top: 1px solid #283031;
+      border-bottom: 1px solid #283031;
+      will-change: transform, opacity;
+    }
+
+    [class~="06-governed-fleet-role-card"][data-primary="true"] {
+      border-top-color: #63e6a6;
+    }
+
+    [class~="06-governed-fleet-role-name"] {
+      display: block;
+      padding-right: 54px;
+      overflow: hidden;
+      color: #f0f3f1;
+      font-size: 22px;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      line-height: 1.2;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    [class~="06-governed-fleet-role-meta"] {
+      position: absolute;
+      bottom: 13px;
+      left: 16px;
+      color: #76807d;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.14em;
+      line-height: 1;
+      text-transform: uppercase;
+    }
+
+    [class~="06-governed-fleet-role-card"][data-primary="true"] [class~="06-governed-fleet-role-meta"] {
+      color: #63e6a6;
+    }
+
+    [class~="06-governed-fleet-role-index"] {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      color: #76807d;
+      font-family: "JetBrains Mono", monospace;
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      line-height: 1;
+    }
+
+    [class~="06-governed-fleet-stage-bar"] {
+      position: absolute;
+      right: 0;
+      bottom: 0;
+      left: 0;
+      height: 2px;
+      background: #63e6a6;
+      transform-origin: left center;
+      will-change: transform;
+    }
+
+    [id="06-governed-fleet-orchestrator"] { top: 218px; left: 630px; }
+    [id="06-governed-fleet-hunter"] { top: 218px; left: 910px; }
+    [id="06-governed-fleet-armor"] { top: 218px; left: 1190px; }
+    [id="06-governed-fleet-control-judge"] { top: 218px; left: 1470px; }
+    [id="06-governed-fleet-chaser"] { top: 410px; left: 630px; }
+    [id="06-governed-fleet-sentinel"] { top: 410px; left: 910px; }
+    [id="06-governed-fleet-memory"] { top: 410px; left: 1190px; }
+    [id="06-governed-fleet-assembler"] { top: 410px; left: 1470px; }
+    [id="06-governed-fleet-redactor"] { top: 602px; left: 630px; }
+    [id="06-governed-fleet-auditor"] { top: 602px; left: 910px; }
+    [id="06-governed-fleet-scheduler"] { top: 602px; left: 1190px; }
+
+    [class~="06-governed-fleet-route"] {
+      position: absolute;
+      inset: 0;
+      z-index: 5;
+      width: 1920px;
+      height: 1080px;
+      overflow: visible;
+      pointer-events: none;
+    }
+
+    [class~="06-governed-fleet-route-path"] {
+      fill: none;
+      stroke: #63e6a6;
+      stroke-width: 2;
+      stroke-linecap: square;
+      stroke-linejoin: miter;
+      vector-effect: non-scaling-stroke;
+    }
+
+    [class~="06-governed-fleet-route-node"] {
+      fill: #63e6a6;
+      transform-box: fill-box;
+      transform-origin: center;
+      will-change: transform, opacity;
+    }
+  </style>
+
+  <div data-hf-id="hf-mr04" id="root" data-composition-id="06-governed-fleet" data-duration="11.58" data-width="1920" data-height="1080">
+    <div data-hf-id="hf-2qrb" class="clip 06-governed-fleet-ground" data-start="0" data-duration="11.58" data-track-index="0"></div>
+
+    <section data-hf-id="hf-utdf" class="clip 06-governed-fleet-scene" data-start="0" data-duration="11.58" data-track-index="1" aria-label="ATLAS governed role fleet">
+      <figure data-hf-id="hf-1b5z" class="06-governed-fleet-architecture">
+        <img data-hf-id="hf-fblw" src="assets/image_001.png" alt="ATLAS governed fleet architecture">
+        <figcaption data-hf-id="hf-fau3" class="06-governed-fleet-architecture-label">ATLAS / architecture</figcaption>
+      </figure>
+
+      <header data-hf-id="hf-osvb" class="06-governed-fleet-title-block">
+        <p data-hf-id="hf-cdec" class="06-governed-fleet-kicker">Mechanism / 11 roles</p>
+        <div data-hf-id="hf-qqg9" class="06-governed-fleet-rule"></div>
+        <h1 data-hf-id="hf-wi81" class="06-governed-fleet-title" data-layout-allow-overlap="">
+          <span data-hf-id="hf-ep0d" data-layout-allow-overlap="">a</span>
+          <span data-hf-id="hf-cfcs" data-layout-allow-overlap="">governed</span>
+          <span data-hf-id="hf-u24q" data-layout-allow-overlap="">fleet</span>
+        </h1>
+      </header>
+
+      <div data-hf-id="hf-4g07" class="06-governed-fleet-tally">
+        <span data-hf-id="hf-7dfs" class="06-governed-fleet-tally-count">11</span>
+        <span data-hf-id="hf-thyy" class="06-governed-fleet-tally-copy">
+          <span data-hf-id="hf-4ukz">specialized roles</span>
+          <span data-hf-id="hf-9cy2">one governed path</span>
+        </span>
+      </div>
+
+      <svg data-hf-id="hf-20x6" class="06-governed-fleet-route" viewBox="0 0 1920 1080" aria-hidden="true">
+        <path data-hf-id="hf-gyae" id="06-governed-fleet-route-1" class="06-governed-fleet-route-path" d="M 758 218 V 176 H 1038 V 218" />
+        <path data-hf-id="hf-43d3" id="06-governed-fleet-route-2" class="06-governed-fleet-route-path" d="M 1038 296 V 342 H 1318 V 296" />
+        <path data-hf-id="hf-vv96" id="06-governed-fleet-route-3" class="06-governed-fleet-route-path" d="M 1318 218 V 176 H 1598 V 218" />
+        <path data-hf-id="hf-usc0" id="06-governed-fleet-route-4" class="06-governed-fleet-route-path" d="M 1598 296 V 362 H 1318 V 410" />
+        <path data-hf-id="hf-ygja" id="06-governed-fleet-route-5" class="06-governed-fleet-route-path" d="M 1318 488 V 536 H 1598 V 488" />
+        <rect data-hf-id="hf-cim7" class="06-governed-fleet-route-node" data-node-at="8.32" x="1034" y="172" width="8" height="8" />
+        <rect data-hf-id="hf-adp1" class="06-governed-fleet-route-node" data-node-at="8.75" x="1314" y="338" width="8" height="8" />
+        <rect data-hf-id="hf-0i4f" class="06-governed-fleet-route-node" data-node-at="9.18" x="1594" y="172" width="8" height="8" />
+        <rect data-hf-id="hf-kpg3" class="06-governed-fleet-route-node" data-node-at="9.61" x="1314" y="358" width="8" height="8" />
+        <rect data-hf-id="hf-a3xu" class="06-governed-fleet-route-node" data-node-at="10.04" x="1594" y="532" width="8" height="8" />
+      </svg>
+
+      <article data-hf-id="hf-ol2b" id="06-governed-fleet-orchestrator" class="06-governed-fleet-role-card" data-primary="true" data-arrival="1.02" data-in-x="-34" data-in-y="-18">
+        <span data-hf-id="hf-2b1a" class="06-governed-fleet-role-name">Orchestrator</span>
+        <span data-hf-id="hf-q90u" class="06-governed-fleet-role-index">01</span>
+        <span data-hf-id="hf-pnr2" class="06-governed-fleet-role-meta">coordinate</span>
+        <span data-hf-id="hf-t0yn" class="06-governed-fleet-stage-bar" data-stage-at="8.32"></span>
+      </article>
+
+      <article data-hf-id="hf-kudz" id="06-governed-fleet-hunter" class="06-governed-fleet-role-card" data-primary="true" data-arrival="1.44" data-in-x="30" data-in-y="-22">
+        <span data-hf-id="hf-ig5s" class="06-governed-fleet-role-name">Hunter</span>
+        <span data-hf-id="hf-qnbv" class="06-governed-fleet-role-index">02</span>
+        <span data-hf-id="hf-us6i" class="06-governed-fleet-role-meta">collect</span>
+        <span data-hf-id="hf-1mlo" class="06-governed-fleet-stage-bar" data-stage-at="8.75"></span>
+      </article>
+
+      <article data-hf-id="hf-ewbg" id="06-governed-fleet-armor" class="06-governed-fleet-role-card" data-primary="true" data-arrival="3.00" data-in-x="-32" data-in-y="22">
+        <span data-hf-id="hf-2k1d" class="06-governed-fleet-role-name">Armor</span>
+        <span data-hf-id="hf-r1mw" class="06-governed-fleet-role-index">03</span>
+        <span data-hf-id="hf-uuv0" class="06-governed-fleet-role-meta">screen</span>
+        <span data-hf-id="hf-3db4" class="06-governed-fleet-stage-bar" data-stage-at="9.18"></span>
+      </article>
+
+      <article data-hf-id="hf-so3z" id="06-governed-fleet-control-judge" class="06-governed-fleet-role-card" data-primary="true" data-arrival="3.34" data-in-x="34" data-in-y="-20">
+        <span data-hf-id="hf-bzgs" class="06-governed-fleet-role-name">Control Judge</span>
+        <span data-hf-id="hf-o9hp" class="06-governed-fleet-role-index">04</span>
+        <span data-hf-id="hf-wwd7" class="06-governed-fleet-role-meta">evaluate</span>
+        <span data-hf-id="hf-pfcc" class="06-governed-fleet-stage-bar" data-stage-at="9.61"></span>
+      </article>
+
+      <article data-hf-id="hf-dxmc" id="06-governed-fleet-chaser" class="06-governed-fleet-role-card" data-arrival="5.92" data-in-x="-28" data-in-y="-26">
+        <span data-hf-id="hf-zvt6" class="06-governed-fleet-role-name">Chaser</span>
+        <span data-hf-id="hf-pges" class="06-governed-fleet-role-index">07</span>
+        <span data-hf-id="hf-eyqm" class="06-governed-fleet-role-meta">role / 07</span>
+      </article>
+
+      <article data-hf-id="hf-lrsz" id="06-governed-fleet-sentinel" class="06-governed-fleet-role-card" data-arrival="6.25" data-in-x="26" data-in-y="22">
+        <span data-hf-id="hf-nqou" class="06-governed-fleet-role-name">Sentinel</span>
+        <span data-hf-id="hf-t161" class="06-governed-fleet-role-index">08</span>
+        <span data-hf-id="hf-gy9r" class="06-governed-fleet-role-meta">role / 08</span>
+      </article>
+
+      <article data-hf-id="hf-5rzr" id="06-governed-fleet-memory" class="06-governed-fleet-role-card" data-primary="true" data-arrival="4.46" data-in-x="-30" data-in-y="24">
+        <span data-hf-id="hf-jhj9" class="06-governed-fleet-role-name">Memory</span>
+        <span data-hf-id="hf-onsq" class="06-governed-fleet-role-index">05</span>
+        <span data-hf-id="hf-b6mt" class="06-governed-fleet-role-meta">recall</span>
+        <span data-hf-id="hf-44sd" class="06-governed-fleet-stage-bar" data-stage-at="10.04"></span>
+      </article>
+
+      <article data-hf-id="hf-9mii" id="06-governed-fleet-assembler" class="06-governed-fleet-role-card" data-primary="true" data-arrival="4.82" data-in-x="34" data-in-y="18">
+        <span data-hf-id="hf-gvrg" class="06-governed-fleet-role-name">Assembler</span>
+        <span data-hf-id="hf-p23r" class="06-governed-fleet-role-index">06</span>
+        <span data-hf-id="hf-ur2w" class="06-governed-fleet-role-meta">package</span>
+        <span data-hf-id="hf-13si" class="06-governed-fleet-stage-bar" data-stage-at="10.47"></span>
+      </article>
+
+      <article data-hf-id="hf-804q" id="06-governed-fleet-redactor" class="06-governed-fleet-role-card" data-arrival="6.58" data-in-x="-30" data-in-y="18">
+        <span data-hf-id="hf-80hy" class="06-governed-fleet-role-name">Redactor</span>
+        <span data-hf-id="hf-tfh2" class="06-governed-fleet-role-index">09</span>
+        <span data-hf-id="hf-hcks" class="06-governed-fleet-role-meta">role / 09</span>
+      </article>
+
+      <article data-hf-id="hf-an7d" id="06-governed-fleet-auditor" class="06-governed-fleet-role-card" data-arrival="6.91" data-in-x="24" data-in-y="-20">
+        <span data-hf-id="hf-gslg" class="06-governed-fleet-role-name">Auditor</span>
+        <span data-hf-id="hf-p320" class="06-governed-fleet-role-index">10</span>
+        <span data-hf-id="hf-d05q" class="06-governed-fleet-role-meta">role / 10</span>
+      </article>
+
+      <article data-hf-id="hf-oyet" id="06-governed-fleet-scheduler" class="06-governed-fleet-role-card" data-arrival="7.24" data-in-x="-24" data-in-y="26">
+        <span data-hf-id="hf-x9hz" class="06-governed-fleet-role-name">Scheduler</span>
+        <span data-hf-id="hf-ooqz" class="06-governed-fleet-role-index">11</span>
+        <span data-hf-id="hf-clup" class="06-governed-fleet-role-meta">role / 11</span>
+      </article>
+    </section>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/gsap@3.12.5/dist/gsap.min.js"></script>
+  <script>
+    const governedFleetTimeline = gsap.timeline({ paused: true });
+
+    governedFleetTimeline.fromTo(
+      '[class~="06-governed-fleet-architecture"]',
+      { x: 46, scale: 1.025, opacity: 0 },
+      { x: 0, scale: 1, opacity: 1, duration: 1.16, ease: "power3.out" },
+      0.06,
+    );
+
+    governedFleetTimeline.fromTo(
+      '[class~="06-governed-fleet-kicker"]',
+      { y: 16, opacity: 0 },
+      { y: 0, opacity: 1, duration: 0.5, ease: "power2.out" },
+      0.08,
+    );
+
+    governedFleetTimeline.fromTo(
+      '[class~="06-governed-fleet-rule"]',
+      { scaleX: 0 },
+      { scaleX: 1, duration: 0.44, ease: "power2.out" },
+      0.24,
+    );
+
+    governedFleetTimeline.fromTo(
+      '[class~="06-governed-fleet-title"] span',
+      { y: 42, opacity: 0 },
+      {
+        y: 0,
+        opacity: 1,
+        duration: 0.62,
+        ease: "power3.out",
+        stagger: 0.12,
+      },
+      0.18,
+    );
+
+    governedFleetTimeline.fromTo(
+      '[class~="06-governed-fleet-tally"]',
+      { y: 22, opacity: 0 },
+      { y: 0, opacity: 1, duration: 0.62, ease: "power2.out" },
+      1.88,
+    );
+
+    gsap.utils.toArray('[class~="06-governed-fleet-role-card"]').forEach((card) => {
+      governedFleetTimeline.fromTo(
+        card,
+        {
+          x: Number(card.dataset.inX),
+          y: Number(card.dataset.inY),
+          scale: 0.955,
+          opacity: 0,
+        },
+        {
+          x: 0,
+          y: 0,
+          scale: 1,
+          opacity: 1,
+          duration: 0.68,
+          ease: "power3.out",
+        },
+        Number(card.dataset.arrival),
+      );
+    });
+
+    const governedFleetRoutePaths = gsap.utils.toArray(
+      '[class~="06-governed-fleet-route-path"]',
+    );
+    const governedFleetRouteStarts = [8.32, 8.75, 9.18, 9.61, 10.04];
+
+    governedFleetRoutePaths.forEach((path, index) => {
+      const pathLength = path.getTotalLength();
+      path.style.strokeDasharray = `${pathLength}`;
+      path.style.strokeDashoffset = `${pathLength}`;
+      governedFleetTimeline.to(
+        path,
+        {
+          strokeDashoffset: 0,
+          duration: 0.56,
+          ease: "power2.out",
+        },
+        governedFleetRouteStarts[index],
+      );
+    });
+
+    gsap.utils.toArray('[class~="06-governed-fleet-route-node"]').forEach((node) => {
+      governedFleetTimeline.fromTo(
+        node,
+        { scale: 0.4, opacity: 0 },
+        { scale: 1, opacity: 1, duration: 0.24, ease: "power2.out" },
+        Number(node.dataset.nodeAt) + 0.38,
+      );
+    });
+
+    gsap.utils.toArray('[class~="06-governed-fleet-stage-bar"]').forEach((bar) => {
+      governedFleetTimeline.fromTo(
+        bar,
+        { scaleX: 0 },
+        { scaleX: 1, duration: 0.34, ease: "power2.out" },
+        Number(bar.dataset.stageAt),
+      );
+    });
+
+    window.__timelines["06-governed-fleet"] = governedFleetTimeline;
+  </script>
+</template>

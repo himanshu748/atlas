@@ -1,0 +1,6 @@
+{"id":"image_001","type":"image","path":".media/images/image_001.png","source":"ingested","description":"architecture.png","provenance":{"provider":"local","from":"../../docs/architecture.png"}}
+{"id":"image_002","type":"image","path":".media/images/image_002.png","source":"ingested","description":"atlas-scheduler-safe.png","provenance":{"provider":"local","from":"/private/tmp/atlas-scheduler-safe.png"}}
+{"id":"image_003","type":"image","path":".media/images/image_003.png","source":"ingested","description":"atlas-gcp-revisions-safe.png","provenance":{"provider":"local","from":"/private/tmp/atlas-gcp-revisions-safe.png"}}
+{"id":"image_004","type":"image","path":".media/images/image_004.png","source":"ingested","description":"atlas-cloud-trace-safe.png","provenance":{"provider":"local","from":"/private/tmp/atlas-cloud-trace-safe.png"}}
+{"id":"image_005","type":"image","path":".media/images/image_005.png","source":"ingested","description":"atlas-gcp-runtime-safe.png","provenance":{"provider":"local","from":"/private/tmp/atlas-gcp-runtime-safe.png"}}
+{"id":"image_006","type":"image","path":".media/images/image_006.png","source":"ingested","description":"atlas-fleet-safe.png","provenance":{"provider":"local","from":"/private/tmp/atlas-fleet-safe.png"}}

@@ -107,7 +107,7 @@ ISO 27001 and HIPAA as registry-driven second frameworks reusing the same hunter
 - [x] Private Cloud Run URL labelled as authenticated deployment proof, not public judge access
 - [x] `docs/architecture.png` present locally
 - [x] Re-tested the repository from a clean anonymous clone at commit `283ed51`; 25 tests passed
-- [x] Devpost project created and linked to the All Things Agentic Hackathon as a draft
+- [ ] Link the existing Devpost project to the All Things Agentic Hackathon submission
 - [ ] Attach `docs/architecture.png` to the Devpost entry
 - [ ] Keep the demo video public, at or below four minutes, and show the verified cloud proof
 - [ ] Set the category to **The Fortified Enterprise Fleet** only

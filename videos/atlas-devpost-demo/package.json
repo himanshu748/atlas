@@ -1,0 +1,11 @@
+{
+  "name": "atlas-devpost-demo",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "NPM_CONFIG_CACHE=.npm-cache npx --yes hyperframes@0.8.17 preview",
+    "check": "NPM_CONFIG_CACHE=.npm-cache npx --yes hyperframes@0.8.17 check",
+    "render": "NPM_CONFIG_CACHE=.npm-cache npx --yes hyperframes@0.8.17 render",
+    "publish": "NPM_CONFIG_CACHE=.npm-cache npx --yes hyperframes@0.8.17 publish"
+  }
+}
