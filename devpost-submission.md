@@ -4,7 +4,7 @@ ATLAS: Autonomous Assurance Fleet
 
 ## One-line Summary
 
-ATLAS is a governed SOC 2 evidence fleet that collects proof, judges controls, escalates policy decisions and produces a verifiable audit manifest.
+Eleven governed workflow roles collect live cloud evidence, judge SOC 2 controls and ship a hash-verifiable audit package.
 
 ## Problem
 
@@ -80,7 +80,7 @@ https://github.com/himanshu748/atlas
 
 https://devpost.com/software/atlas-autonomous-assurance-fleet
 
-The project page and hackathon entry exist. The public video and architecture diagram are attached. The hackathon entry remains a Devpost draft until the final entry is explicitly sent.
+The project page and hackathon entry are live. The public video, architecture diagram and project thumbnail are attached. Devpost verified the final entry on August 29, 2026.
 
 ## Demo Video
 
@@ -125,7 +125,7 @@ Final timestamped run sheet: `docs/DEMO_SCRIPT.md`
 - [x] Public demo video uploaded to YouTube
 - [x] Public playback verified; runtime is 2:00
 - [x] Final Devpost project created or updated
-- [ ] Final project submitted to the hackathon
+- [x] Final project submitted to the hackathon
 
 ## Known Limitations
 

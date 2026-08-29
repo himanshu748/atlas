@@ -23,7 +23,8 @@
     "start-hackathon",
     "review",
     "resources",
-    "prepare-submission"
+    "prepare-submission",
+    "submit-project"
   ],
   "rules_acknowledged": true,
   "learning": {
@@ -35,12 +36,12 @@
   },
   "submission": {
     "draft_file": "devpost-submission.md",
-    "status": "ready",
+    "status": "submitted",
     "project_id": 1406084,
     "project_slug": "atlas-autonomous-assurance-fleet",
     "project_url": "https://devpost.com/software/atlas-autonomous-assurance-fleet",
     "hackathon_submission_id": 1159620,
-    "hackathon_submission_status": "Draft"
+    "hackathon_submission_status": "Submitted"
   },
-  "next_command": "submit-project"
+  "next_command": "hackathon-map"
 }
