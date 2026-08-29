@@ -5,6 +5,7 @@
 
 **Track:** The Fortified Enterprise Fleet · **Hackathon:** All Things Agentic (Google · Devpost)
 **Model:** `gemini-3.5-flash` through Vertex AI in `us` · **Agent SDK:** Google ADK 2 · **Infra:** Cloud Run, Firestore, Pub/Sub, Cloud Scheduler, Cloud Storage, Cloud Trace
+**Devpost:** [ATLAS: Autonomous Assurance Fleet](https://devpost.com/software/atlas-autonomous-assurance-fleet)
 
 ---
 

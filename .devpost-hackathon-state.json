@@ -13,12 +13,12 @@
     "display_name": ""
   },
   "project": {
-    "name": "",
-    "summary": "",
-    "ai_usage": "",
-    "codex_usage": ""
+    "name": "ATLAS: Autonomous Assurance Fleet",
+    "summary": "A governed SOC 2 evidence fleet that collects proof, judges controls, escalates policy decisions and produces a verifiable audit manifest.",
+    "ai_usage": "Gemini 3.5 Flash through Vertex AI and Google ADK summarizes evidence and produces cited structured control rulings.",
+    "codex_usage": "Codex hardened deployment, corrected implementation claims, added tests and verified the live Google Cloud proof."
   },
-  "current_stage": "resources",
+  "current_stage": "prepare-submission",
   "completed_stages": [
     "start-hackathon",
     "review",
@@ -34,7 +34,12 @@
   },
   "submission": {
     "draft_file": "devpost-submission.md",
-    "status": "not-started"
+    "status": "drafting",
+    "project_id": 1406084,
+    "project_slug": "atlas-autonomous-assurance-fleet",
+    "project_url": "https://devpost.com/software/atlas-autonomous-assurance-fleet",
+    "hackathon_submission_id": 1159620,
+    "hackathon_submission_status": "Draft"
   },
   "next_command": "prepare-submission"
 }
