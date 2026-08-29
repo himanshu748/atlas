@@ -12,7 +12,7 @@ import os
 from functools import lru_cache
 from typing import Literal
 
-from pydantic import Field
+from pydantic import Field, model_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -23,6 +23,7 @@ class Settings(BaseSettings):
     # local  : in-memory store, mock connectors, heuristic armor. No GCP needed.
     # cloud  : Firestore + Pub/Sub, with Gemini API or Vertex AI.
     mode: Literal["local", "cloud"] = Field("local", alias="ATLAS_MODE")
+    public_demo: bool = Field(False, alias="ATLAS_PUBLIC_DEMO")
 
     # ---- google cloud ------------------------------------------------
     project_id: str = Field("", alias="GOOGLE_CLOUD_PROJECT")
@@ -65,19 +66,70 @@ class Settings(BaseSettings):
     framework: str = Field("soc2", alias="ATLAS_FRAMEWORK")
     audit_window_weeks: int = Field(9, alias="ATLAS_AUDIT_WEEKS")
 
+    @model_validator(mode="after")
+    def public_demo_is_explicitly_credential_free(self) -> "Settings":
+        """Refuse to start a public fixture service with live capabilities.
+
+        The public judge demo is a separate trust boundary. It must not become
+        cloud-capable because a deploy accidentally carries an old variable or
+        mounted credential forward.
+        """
+        if not self.public_demo:
+            return self
+
+        unsafe: list[str] = []
+        if self.mode != "local":
+            unsafe.append("ATLAS_MODE must be local")
+        if self.project_id:
+            unsafe.append("GOOGLE_CLOUD_PROJECT must be empty")
+        if self.bucket:
+            unsafe.append("ATLAS_BUCKET must be empty")
+        if self.use_vertex:
+            unsafe.append("GOOGLE_GENAI_USE_VERTEXAI must be false")
+        if self.use_managed_armor:
+            unsafe.append("ATLAS_USE_MANAGED_ARMOR must be false")
+        if self.enable_tts:
+            unsafe.append("ATLAS_ENABLE_TTS must be false")
+        if self.run_budget_usd != 0:
+            unsafe.append("ATLAS_RUN_BUDGET_USD must be 0")
+        if self.estimated_cost_per_control_usd != 0:
+            unsafe.append("ATLAS_COST_PER_CONTROL_USD must be 0")
+
+        parsed_credentials = {
+            "GEMINI_API_KEY": self.gemini_api_key,
+            "GITHUB_TOKEN": self.github_token,
+            "SLACK_BOT_TOKEN": self.slack_token,
+        }
+        present_parsed = [name for name, value in parsed_credentials.items() if value]
+        if present_parsed:
+            unsafe.append(f"credential settings present: {', '.join(present_parsed)}")
+
+        credential_envs = (
+            "GOOGLE_API_KEY",
+            "GOOGLE_APPLICATION_CREDENTIALS",
+            "DEEPGRAM_API_KEY",
+        )
+        present_credentials = [name for name in credential_envs if os.environ.get(name)]
+        if present_credentials:
+            unsafe.append(f"credential variables present: {', '.join(present_credentials)}")
+
+        if unsafe:
+            raise ValueError("unsafe public demo configuration: " + "; ".join(unsafe))
+        return self
+
     @property
     def is_cloud(self) -> bool:
-        return self.mode == "cloud" and bool(self.project_id)
+        return not self.public_demo and self.mode == "cloud" and bool(self.project_id)
 
     @property
     def use_vertex_ai(self) -> bool:
         """Use Vertex only when cloud mode explicitly requests it."""
-        return self.is_cloud and self.use_vertex
+        return not self.public_demo and self.is_cloud and self.use_vertex
 
     @property
     def use_ai_studio(self) -> bool:
         """Use the Gemini Developer API when an API key is configured."""
-        return not self.use_vertex_ai and bool(
+        return not self.public_demo and not self.use_vertex_ai and bool(
             self.gemini_api_key or os.environ.get("GOOGLE_API_KEY")
         )
 

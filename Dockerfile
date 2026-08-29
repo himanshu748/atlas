@@ -1,7 +1,7 @@
 # ATLAS — single-container deploy for Cloud Run.
 # One image serves the API, the SSE stream and the console UI.
 
-FROM python:3.12-slim
+FROM python:3.12-slim@sha256:09f7da3bc104798d0afb40bc08d23ab2da20a76130cec1f2ef170848f5d85217
 
 ENV PYTHONUNBUFFERED=1 \
     PYTHONDONTWRITEBYTECODE=1 \
@@ -10,9 +10,10 @@ ENV PYTHONUNBUFFERED=1 \
 
 WORKDIR /app
 
-# Dependencies first so layer caching survives source edits.
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+# Dependencies first so layer caching survives source edits. The Linux/Python
+# 3.12 graph is fully pinned and hash-checked for reproducible cloud builds.
+COPY requirements.txt requirements.lock ./
+RUN python -m pip install --no-cache-dir --require-hashes -r requirements.lock
 
 COPY app ./app
 COPY seed ./seed

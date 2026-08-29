@@ -1,0 +1,14 @@
+# Upload only the source needed to build the ATLAS container.
+*
+!.gcloudignore
+!Dockerfile
+!requirements.txt
+!requirements.lock
+!app/
+!app/**
+!seed/
+!seed/**
+!web/
+!web/**
+**/__pycache__/**
+**/*.py[cod]

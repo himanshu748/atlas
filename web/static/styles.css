@@ -74,8 +74,8 @@ button { touch-action: manipulation; }
 .app-shell {
   display: grid;
   grid-template-columns: var(--rail-w) 1fr;
-  grid-template-rows: var(--topbar-h) 1fr var(--tm-h);
-  grid-template-areas: "rail topbar" "rail main" "rail tm";
+  grid-template-rows: var(--topbar-h) auto 1fr var(--tm-h);
+  grid-template-areas: "rail topbar" "rail notice" "rail main" "rail tm";
   min-height: 100dvh;
   height: 100dvh;
 }
@@ -159,6 +159,31 @@ kbd { font-family: var(--mono); font-size: 9.5px; background: var(--bg-raised); 
 .lg\:hidden { display: none; }
 @media (max-width: 900px) { .lg\:hidden { display: grid; } }
 
+.public-demo-banner {
+  grid-area: notice;
+  min-height: 48px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 18px;
+  border-bottom: 1px solid rgba(99,230,166,.24);
+  background: linear-gradient(90deg, rgba(99,230,166,.105), rgba(99,230,166,.035));
+}
+.public-demo-kicker { color: var(--st-verified); font-weight: 700; letter-spacing: .08em; white-space: nowrap; }
+.public-demo-copy { min-width: 0; display: flex; align-items: baseline; gap: 8px; color: var(--text-mid); font-size: 11.5px; }
+.public-demo-copy strong { color: var(--text-hi); font-size: 12px; font-weight: 620; }
+.public-demo-lock { margin-left: auto; color: var(--text-lo); white-space: nowrap; }
+@media (max-width: 800px) {
+  .public-demo-banner { align-items: flex-start; padding-block: 9px; }
+  .public-demo-copy { display: block; }
+  .public-demo-copy span { display: block; margin-top: 2px; }
+  .public-demo-lock { display: none; }
+}
+@media (max-width: 520px) {
+  .public-demo-banner { gap: 8px; padding-inline: 12px; }
+  .public-demo-kicker { max-width: 72px; white-space: normal; line-height: 1.35; }
+}
+
 /* ============================================================ MAIN */
 .main { grid-area: main; overflow-y: auto; padding: 22px 24px 28px; scroll-behavior: smooth; }
 .main > .card,
@@ -174,9 +199,16 @@ kbd { font-family: var(--mono); font-size: 9.5px; background: var(--bg-raised); 
   transition: color .15s ease, background-color .15s ease, border-color .15s ease, transform .12s ease; }
 .btn:hover { border-color: var(--border-strong); color: var(--text-hi); }
 .btn:active { transform: translateY(1px); }
-.btn:disabled { cursor: wait; opacity: .72; }
+.btn:disabled { cursor: not-allowed; opacity: .62; }
 .btn-primary { background: var(--st-verified); border-color: var(--st-verified); color: #07140f; font-weight: 700; }
 .btn-primary:hover { background: #7aefb7; color: #07140f; }
+.public-demo .btn-primary:disabled {
+  background: var(--bg-raised);
+  border-color: var(--border-strong);
+  color: var(--text-lo);
+  opacity: 1;
+}
+.public-demo .pulse-ring::after { animation: none; opacity: 0; }
 .btn-danger { color: var(--st-failed); border-color: rgba(255,92,92,.3); }
 
 /* ============================================================ CARDS */

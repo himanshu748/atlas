@@ -34,11 +34,13 @@ Autonomy is a measured, first-class metric. The live API calculates `verified co
 
 ## How I built it
 
-The application is packaged as one container for the API, SSE stream and console. The verified deployment is private Cloud Run service `atlas-console` in project `atlas-agentic-hack-2026-v2`. Revision `atlas-console-00004-2n6` receives 100% of traffic at `https://atlas-console-jguwjegiqq-uc.a.run.app`. The URL requires authenticated Cloud Run access and is not a public judge demo.
+The live application is packaged as one container for the API, SSE stream and console. The verified workflow deployment is private Cloud Run service `atlas-console` in project `atlas-agentic-hack-2026-v2`. Revision `atlas-console-00004-2n6` receives 100% of traffic at `https://atlas-console-jguwjegiqq-uc.a.run.app` and requires authenticated Cloud Run access.
+
+Judges can explore a separate public Cloud Run service at `https://atlas-public-demo-jguwjegiqq-uc.a.run.app`. Revision `atlas-public-demo-00003-rmr` is visibly labelled, fixture-only and read-only. It runs deterministic inference under an identity with no project IAM roles and exposes no mutation, upload, SSE, briefing, docs or internal-sweep route.
 
 - **Gemini 3.5 Flash** through Vertex AI in location `us` for hunting summaries, judgment with structured output and vision-based evidence parsing. The validation run recorded `runtime_mode=cloud` and `model_backend=vertex-ai`.
 - **Google ADK 2** constructs `LlmAgent` instances for the five hunters and Control Judge. The coordinator uses `asyncio.gather` plus ordinary awaited Python calls; it does not instantiate ADK `ParallelAgent`, `SequentialAgent` or `LoopAgent`.
-- **Firestore**, **Pub/Sub**, **Cloud Storage** and **Cloud Trace** were exercised and verified in the deployed cloud profile. **Cloud Scheduler** is configured for the weekly sweep but remains `PAUSED` after validation. The application does not use Cloud Tasks.
+- **Firestore**, **Pub/Sub**, **Cloud Storage** and **Cloud Trace** were exercised and verified in the deployed cloud profile. **Cloud Scheduler** completed one authenticated private sweep with HTTP 200 on August 29, 2026 and is `PAUSED` after validation. The application does not use Cloud Tasks.
 - **Agent Registry** is an in-project catalog of versioned cards with name lookup and capability search. The current coordinator dispatches to in-process Python functions.
 - **Agent Identity** uses SPIFFE-format labels and application-enforced scope allowlists. The deployment uses a dedicated runtime account plus a separate source-build account; the Cloud Run container executes under the orchestrator runtime account.
 - **Model Armor** screens untrusted hunter input and package-output checks in cloud mode. After a managed clean verdict, ATLAS also applies its labelled deterministic guard. The seeded injection recorded `backend=model-armor+deterministic`: managed Armor returned clean and the deterministic second layer quarantined it.
@@ -47,7 +49,7 @@ The application is packaged as one container for the API, SSE stream and console
 
 ### Deployment status
 
-The dedicated deployment is live and verified. Cloud Run is private, scales from zero to one instance and uses concurrency 1. The Scheduler job is paused unless explicitly resumed. A monthly billing alert is configured at 1 billing-account currency unit and excludes credits. It is an alert, not a hard cap, and delayed billing data means it is not evidence of actual cost. The application-level `cost_usd` value is also an estimate rather than Google Cloud billing data.
+The dedicated workflow deployment is live and verified. It is private, scales from zero to one instance and uses concurrency 1. The separate public judge service also scales from zero to one instance, uses a 30-second timeout and applies per-client plus whole-instance request throttles. The Scheduler job is paused unless explicitly resumed. A monthly billing alert is configured at 1 billing-account currency unit and excludes credits. It is an alert, not a hard cap, and delayed billing data means it is not evidence of actual cost. The application-level `cost_usd` value is also an estimate rather than Google Cloud billing data.
 
 The validation run produced concrete proof: Cloud Asset Inventory returned actual IAM bindings and two actual Cloud Storage buckets; Gemini judged both the IAM recertification evidence and backup evidence `INSUFFICIENT`; the layered security path recorded `backend=model-armor+deterministic`; Firestore, Pub/Sub, Cloud Storage and Cloud Trace were verified. Managed Armor returned clean on the seeded injection, then the deterministic second layer caught it.
 
@@ -87,9 +89,10 @@ ISO 27001 and HIPAA as registry-driven second frameworks reusing the same hunter
 
 ## Try it out links
 
-- Live console: `https://atlas-console-jguwjegiqq-uc.a.run.app`. **Private authenticated deployment proof only; public judge access is not provided.**
+- Public judge console: `https://atlas-public-demo-jguwjegiqq-uc.a.run.app`. **No login; labelled fixture data; read-only.**
+- Private workflow proof: `https://atlas-console-jguwjegiqq-uc.a.run.app`. **Authenticated Cloud Run access only.**
 - Repo: `https://github.com/himanshu748/atlas`. **Public access verified on August 29, 2026.**
-- Devpost project: `https://devpost.com/software/atlas-autonomous-assurance-fleet`. **Project page created; hackathon submission is still a draft.**
+- Devpost project: `https://devpost.com/software/atlas-autonomous-assurance-fleet`. **Submitted to All Things Agentic with the hosted judge URL.**
 - Demo video: **[Public on YouTube](https://www.youtube.com/watch?v=ZbEzvKVPXIU)**, titled **ATLAS: Autonomous Assurance Fleet | All Things Agentic Hackathon**. Runtime: **2:00**. Public playback verified.
 - Build blog: **Pending publication.**
 
@@ -97,17 +100,19 @@ ISO 27001 and HIPAA as registry-driven second frameworks reusing the same hunter
 
 ## Remaining release blockers
 
-- [ ] Review the assembled entry, then explicitly send the final hackathon entry.
+None for the required submission fields. Optional blog and social bonus entries remain unpublished.
 
 ## Final Devpost assembly checks
 
 - [x] MIT `LICENSE` present at the repository root
 - [x] Private Cloud Run deployment verified in the dedicated disposable project
 - [x] Vertex AI, Cloud Asset, Firestore, Pub/Sub, Cloud Storage, Cloud Trace and the layered Armor path captured
-- [x] Private Cloud Run URL labelled as authenticated deployment proof, not public judge access
+- [x] Private Cloud Run URL labelled as authenticated deployment proof
+- [x] Separate zero-role public judge service deployed and verified read-only
 - [x] `docs/architecture.png` present locally
-- [x] Recorded clean anonymous-clone validation at historical commit `cd679d0`; 25 tests passed
+- [x] Current suite passes 40 tests; the fully resolved dependency lock has no known vulnerabilities
 - [x] Existing Devpost project linked to the All Things Agentic Hackathon entry
 - [x] Attached `docs/architecture.png` to the Devpost entry
 - [x] Public video playback verified at 2:00 with the verified cloud proof
 - [x] Category set to **Fortified Enterprise Fleet** only
+- [x] Devpost submission remains **Submitted** with the hosted public judge URL

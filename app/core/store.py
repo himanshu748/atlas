@@ -206,8 +206,12 @@ async def complete_task(task: Task, error: str = "") -> None:
     await get_store().put(TASKS, task)
 
 
-async def recompute_summary(run_id: str) -> RunSummary:
-    """Derive fleet posture from the ledger. Single source of truth for the UI."""
+async def recompute_summary(run_id: str, *, persist: bool = True) -> RunSummary:
+    """Derive fleet posture from the ledger. Single source of truth for the UI.
+
+    Public fixture reads use ``persist=False`` so even a dashboard refresh cannot
+    mutate the in-memory judge snapshot.
+    """
     store = get_store()
     controls: Iterable[Control] = await store.list(CONTROLS, limit=5000)
     controls = list(controls)
@@ -216,11 +220,14 @@ async def recompute_summary(run_id: str) -> RunSummary:
     summary = await store.get(RUNS, run_id)
     if summary is None:
         summary = RunSummary(run_id=run_id, started_at=now(), budget_usd=settings.run_budget_usd)
+    elif not persist:
+        summary = summary.model_copy(deep=True)
 
     summary.controls_total = len(controls)
     summary.controls_verified = sum(1 for c in controls if c.status.value == "verified")
     summary.controls_autonomous = sum(1 for c in controls if c.closed_autonomously)
     summary.handoffs_open = sum(1 for h in handoffs if h.is_open)
     summary.events_emitted = await store.count(EVENTS)
-    await store.put(RUNS, summary)
+    if persist:
+        await store.put(RUNS, summary)
     return summary

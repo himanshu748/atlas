@@ -13,6 +13,7 @@
   const API = '';
   let connected = false;
   window.__atlasConnected = false;
+  window.__atlasPublicDemo = document.body.dataset.publicDemo === 'true';
 
   const displayText = (value) => String(value ?? '')
     .replaceAll('—', '-')
@@ -25,6 +26,9 @@
     return r.json();
   };
   const post = async (path, body) => {
+    if (window.__atlasPublicDemo) {
+      throw new Error('The public judge demo is read-only.');
+    }
     const r = await fetch(API + path, {
       method: 'POST',
       headers: { 'content-type': 'application/json' },
@@ -36,15 +40,17 @@
 
   /* ---------------------------------------------------- hydrate ledger */
   async function hydrate() {
-    const [fleet, ctrls, agents, armor, mems, handoffs, events] = await Promise.all([
-      get('/api/fleet'),
+    const fleet = await get('/api/fleet');
+    const publicDemo = Boolean(fleet.public_demo);
+    window.__atlasPublicDemo = publicDemo;
+    const [ctrls, agents, armor, mems, events] = await Promise.all([
       get('/api/controls'),
       get('/api/agents'),
       get('/api/armor'),
       get('/api/memories'),
-      get('/api/handoffs'),
       get('/api/events'),
     ]);
+    const handoffs = publicDemo ? (fleet.handoffs || []) : await get('/api/handoffs');
 
     // ---- controls -> the shape app.js renders
     controls.length = 0;
@@ -72,6 +78,7 @@
     autonomy = fleet.autonomy_pct;
     uptimeSec = fleet.uptime_seconds;
     window.__atlasFleet = fleet;
+    document.body.classList.toggle('public-demo', publicDemo);
 
     // ---- registry
     AGENTS.length = 0;
@@ -131,13 +138,28 @@
     const connectionLabel = document.getElementById('connectionLabel');
     const environmentLabel = document.getElementById('environmentLabel');
     const workingCount = document.getElementById('workingCount');
-    workingCount.textContent = String(fleet.by_status?.working || 0);
-    if (fleet.runtime_mode === 'cloud') {
-      connectionLabel.textContent = 'CLOUD LEDGER';
-      environmentLabel.textContent = `cloud / ${fleet.cloud_location || 'configured region'}`;
+    const workingLabel = document.querySelector('.tick-working');
+    const publicDemoBanner = document.getElementById('publicDemoBanner');
+    const demoAvatar = document.getElementById('demoAvatar');
+    if (workingCount) {
+      workingCount.textContent = String(fleet.by_status?.working || 0);
+    }
+    if (publicDemo) {
+      if (connectionLabel) connectionLabel.textContent = 'READ-ONLY JUDGE DEMO';
+      if (environmentLabel) environmentLabel.textContent = 'zero-role / fixture only';
+      if (workingLabel) workingLabel.textContent = 'fixture snapshot';
+      if (publicDemoBanner) publicDemoBanner.hidden = false;
+      if (demoAvatar) {
+        demoAvatar.textContent = 'JD';
+        demoAvatar.title = 'Public judge demo, no account';
+        demoAvatar.setAttribute('aria-label', 'Public judge demo, no account');
+      }
+    } else if (fleet.runtime_mode === 'cloud') {
+      if (connectionLabel) connectionLabel.textContent = 'CLOUD LEDGER';
+      if (environmentLabel) environmentLabel.textContent = `cloud / ${fleet.cloud_location || 'configured region'}`;
     } else {
-      connectionLabel.textContent = 'LOCAL DEMO';
-      environmentLabel.textContent = 'local / seeded ledger';
+      if (connectionLabel) connectionLabel.textContent = 'LOCAL DEMO';
+      if (environmentLabel) environmentLabel.textContent = 'local / seeded ledger';
     }
   }
 
@@ -196,6 +218,15 @@
   /* ------------------------------------------- real actions on buttons */
   function wireActions() {
     document.addEventListener('click', async (e) => {
+      const mutation = e.target.closest(
+        '#runNow, #genPkg, [data-approve], [data-reject], [data-submit-rejection]'
+      );
+      if (mutation && window.__atlasPublicDemo) {
+        e.preventDefault();
+        e.stopImmediatePropagation();
+        return;
+      }
+
       const controlLink = e.target.closest('[data-control]');
       if (controlLink && connected) {
         e.stopPropagation();
@@ -306,8 +337,12 @@
   // Silence the simulated event generator; real events arrive over SSE.
   pushStream = function () {};
 
-  connectStream();
+  if (!window.__atlasPublicDemo) connectStream();
   wireActions();
   go(route);
-  console.info('ATLAS console connected to live ledger.');
+  console.info(
+    window.__atlasPublicDemo
+      ? 'ATLAS console connected to the read-only fixture ledger.'
+      : 'ATLAS console connected to live ledger.'
+  );
 })();

@@ -49,6 +49,8 @@ elif args[:2] == ["projects", "describe"]:
         print("123456789012")
     elif "lifecycleState" in joined:
         print(os.environ.get("FAKE_PROJECT_STATE", "ACTIVE"))
+elif args[:2] == ["projects", "get-iam-policy"]:
+    print(os.environ.get("FAKE_PUBLIC_RUNTIME_PROJECT_ROLES", ""))
 elif args[:3] == ["billing", "accounts", "describe"]:
     print("True")
 elif args[:3] == ["billing", "projects", "describe"]:
@@ -59,7 +61,10 @@ elif args[:3] == ["billing", "projects", "describe"]:
 elif args[:3] == ["billing", "budgets", "list"]:
     print(os.environ.get("FAKE_EXISTING_BUDGET", ""))
 elif args[:3] == ["run", "services", "describe"]:
-    print("https://atlas-console-test-uc.a.run.app")
+    if "atlas-public-demo" in args:
+        print("https://atlas-public-demo-test-uc.a.run.app")
+    else:
+        print("https://atlas-console-test-uc.a.run.app")
 elif "describe" in args:
     sys.exit(1)
 """,
@@ -233,6 +238,134 @@ def test_deploy_only_resumes_scheduler_with_explicit_opt_in(
     recorded = commands(log_path)
     assert has_command(recorded, "scheduler", "jobs", "pause", "atlas-weekly-sweep")
     assert has_command(recorded, "scheduler", "jobs", "resume", "atlas-weekly-sweep")
+
+
+def test_public_demo_is_isolated_zero_role_and_strictly_bounded(
+    fake_gcloud: tuple[dict[str, str], Path],
+) -> None:
+    env, log_path = fake_gcloud
+
+    result = run_script("deploy_public_demo.sh", [PROJECT], env)
+
+    assert result.returncode == 0, result.stdout + result.stderr
+    recorded = commands(log_path)
+    assert has_command(
+        recorded,
+        "iam",
+        "service-accounts",
+        "create",
+        "atlas-public-demo",
+    )
+    deploy = command_with(recorded, "run", "deploy", "atlas-public-demo")
+    assert "--region=us-central1" in deploy
+    assert "--allow-unauthenticated" in deploy
+    assert "--service-account=atlas-public-demo@atlas-agentic-hack-2026-v2.iam.gserviceaccount.com" in deploy
+    assert "--concurrency=8" in deploy
+    assert "--min-instances=0" in deploy
+    assert "--max-instances=1" in deploy
+    assert "--timeout=30" in deploy
+    assert "--memory=512Mi" in deploy
+    assert "--cpu=1" in deploy
+    assert "--cpu-throttling" in deploy
+    assert "--no-cpu-boost" in deploy
+    assert "--clear-secrets" in deploy
+    assert "--clear-volumes" in deploy
+    assert "--clear-volume-mounts" in deploy
+    assert "--clear-cloudsql-instances" in deploy
+    assert "--clear-vpc-connector" in deploy
+    assert "--clear-network" in deploy
+    assert f"--source={ATLAS_ROOT}" in deploy
+
+    env_flag = next(arg for arg in deploy if arg.startswith("--set-env-vars="))
+    assert "ATLAS_MODE=local" in env_flag
+    assert "ATLAS_PUBLIC_DEMO=true" in env_flag
+    assert "GOOGLE_GENAI_USE_VERTEXAI=false" in env_flag
+    assert "ATLAS_USE_MANAGED_ARMOR=false" in env_flag
+    assert "ATLAS_ENABLE_TTS=false" in env_flag
+    assert "ATLAS_RUN_BUDGET_USD=0" in env_flag
+    assert "ATLAS_COST_PER_CONTROL_USD=0" in env_flag
+    assert "GOOGLE_CLOUD_PROJECT" not in env_flag
+    assert "ATLAS_BUCKET" not in env_flag
+    assert "TOKEN" not in env_flag
+    assert "SECRET" not in env_flag
+    assert "API_KEY" not in env_flag
+
+    runtime_project_grants = [
+        entry
+        for entry in recorded
+        if entry["args"][:3] == ["projects", "add-iam-policy-binding", PROJECT]
+        and any("atlas-public-demo@" in arg for arg in entry["args"])
+    ]
+    assert runtime_project_grants == []
+    assert has_command(recorded, "projects", "get-iam-policy", PROJECT)
+    assert not has_command(recorded, "scheduler")
+    assert not has_command(recorded, "pubsub")
+    assert not has_command(recorded, "storage")
+    assert not has_command(recorded, "model-armor")
+
+
+def test_cloud_build_uses_a_digest_pinned_base_and_hashed_lockfile() -> None:
+    dockerfile = (ATLAS_ROOT / "Dockerfile").read_text()
+    cloud_ignore = (ATLAS_ROOT / ".gcloudignore").read_text()
+
+    assert "FROM python:3.12-slim@sha256:" in dockerfile
+    assert "--require-hashes -r requirements.lock" in dockerfile
+    assert "--upgrade pip" not in dockerfile
+    assert "!requirements.lock" in cloud_ignore
+
+
+def test_public_demo_refuses_other_projects_before_cloud_access(
+    fake_gcloud: tuple[dict[str, str], Path],
+) -> None:
+    env, log_path = fake_gcloud
+
+    result = run_script(
+        "deploy_public_demo.sh",
+        ["shared-production-project"],
+        env,
+    )
+
+    assert result.returncode != 0
+    assert PROJECT in result.stderr
+    assert commands(log_path) == []
+
+
+def test_public_demo_refuses_runtime_identity_with_project_roles(
+    fake_gcloud: tuple[dict[str, str], Path],
+) -> None:
+    env, log_path = fake_gcloud
+    env["FAKE_PUBLIC_RUNTIME_PROJECT_ROLES"] = "roles/viewer"
+
+    result = run_script("deploy_public_demo.sh", [PROJECT], env)
+
+    assert result.returncode != 0
+    assert "project IAM roles" in result.stderr
+    assert "roles/viewer" in result.stderr
+    assert not has_command(commands(log_path), "run", "deploy")
+
+
+def test_only_public_demo_deployment_is_unauthenticated(
+    fake_gcloud: tuple[dict[str, str], Path],
+) -> None:
+    env, log_path = fake_gcloud
+
+    private_result = run_script("deploy.sh", [PROJECT], env)
+    public_result = run_script("deploy_public_demo.sh", [PROJECT], env)
+
+    assert private_result.returncode == 0, private_result.stdout + private_result.stderr
+    assert public_result.returncode == 0, public_result.stdout + public_result.stderr
+    deploys = [
+        entry["args"]
+        for entry in commands(log_path)
+        if entry["args"][:2] == ["run", "deploy"]
+    ]
+    assert len(deploys) == 2
+    private = next(args for args in deploys if args[2] == "atlas-console")
+    public = next(args for args in deploys if args[2] == "atlas-public-demo")
+    assert "--no-allow-unauthenticated" in private
+    assert "--allow-unauthenticated" not in private
+    assert "--allow-unauthenticated" in public
+    assert "--no-allow-unauthenticated" not in public
 
 
 def test_cost_guard_is_project_specific_and_updates_an_existing_budget(

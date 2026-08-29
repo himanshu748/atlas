@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import logging
 
-from fastapi import APIRouter, File, HTTPException, Query, UploadFile
+from fastapi import APIRouter, File, HTTPException, Query, Request, UploadFile
 from fastapi.responses import JSONResponse, StreamingResponse
 from pydantic import BaseModel
 
@@ -40,10 +40,11 @@ RUN_ID = "run-2026-q3"
 
 # ------------------------------------------------------------------ fleet
 @router.get("/api/fleet")
-async def fleet_state():
+async def fleet_state(request: Request):
     """Everything the Fleet Command screen needs in one round trip."""
     store = get_store()
-    summary = await recompute_summary(RUN_ID)
+    runtime_settings = getattr(request.app.state, "settings", settings)
+    summary = await recompute_summary(RUN_ID, persist=not runtime_settings.public_demo)
     controls: list[Control] = await store.list(CONTROLS, limit=5000)
     handoffs: list[Handoff] = await store.list(HANDOFFS, limit=1000)
 
@@ -53,10 +54,13 @@ async def fleet_state():
 
     return {
         "run_id": summary.run_id,
-        "runtime_mode": settings.mode,
-        "cloud_location": settings.location if settings.is_cloud else None,
-        "model": settings.model_fast,
-        "model_backend": settings.model_backend,
+        "runtime_mode": "local" if runtime_settings.public_demo else runtime_settings.mode,
+        "public_demo": runtime_settings.public_demo,
+        "read_only": runtime_settings.public_demo,
+        "data_profile": "seeded-fixtures" if runtime_settings.public_demo else "runtime-ledger",
+        "cloud_location": runtime_settings.location if runtime_settings.is_cloud else None,
+        "model": runtime_settings.model_fast,
+        "model_backend": runtime_settings.model_backend,
         "readiness_pct": summary.readiness_pct,
         "autonomy_pct": summary.autonomy_pct,
         "uptime_seconds": summary.uptime_seconds,
@@ -73,7 +77,10 @@ async def fleet_state():
         "coverage": [
             {"id": c.id, "group": c.group, "status": c.status.value} for c in sorted(controls, key=lambda x: x.id)
         ],
-        "handoffs": [h.model_dump(mode="json") for h in handoffs if h.is_open][:5],
+        "handoffs": [
+            {**h.model_dump(mode="json"), "hours_remaining": round(h.hours_remaining, 1)}
+            for h in handoffs if h.is_open
+        ][:5],
     }
 
 

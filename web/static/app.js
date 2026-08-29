@@ -5,6 +5,8 @@
 
 'use strict';
 
+window.__atlasPublicDemo = document.body.dataset.publicDemo === 'true';
+
 /* ---------------------------------------------------------- DATA */
 const STATUS = ['verified','working','waiting','stale','failed','blocked','idle'];
 const STATUS_LABEL = { verified:'Verified', working:'Working', waiting:'Waiting', stale:'Stale', failed:'Failed', blocked:'Blocked', idle:'Not started' };
@@ -197,13 +199,15 @@ function pageCommand(){
   const dlqDepth = fleet.dlq_depth ?? 0;
   const cost = Number(fleet.cost_usd ?? 4.19).toFixed(2);
   const budget = Number(fleet.budget_usd ?? 50).toFixed(0);
+  const publicDemo = Boolean(window.__atlasPublicDemo);
+  const costLabel = publicDemo ? `fixture estimate $${cost}` : `$${cost} / $${budget} budget`;
   return `
   <div class="page-head">
     <div><h1 class="page-title">Fleet Command</h1>
     <div class="page-sub">Seeded SOC 2 Type II audit window, 2026-07-01 to 2026-09-30. Auditor: Schellman & Co.</div></div>
     <div class="page-actions">
-      <button class="btn" type="button" data-route="trace">${icon('trace',13)} Open latest trace</button>
-      <button class="btn btn-primary" type="button" id="runNow">Run evidence sweep</button>
+      <button class="btn" type="button" data-route="trace">${icon('trace',13)} ${publicDemo ? 'Open recorded proof trace' : 'Open latest trace'}</button>
+      <button class="btn btn-primary" type="button" id="runNow" ${publicDemo ? 'disabled aria-disabled="true" title="State-changing actions are disabled in the public judge demo"' : ''}>${publicDemo ? 'Sweep disabled in read-only demo' : 'Run evidence sweep'}</button>
     </div>
   </div>
 
@@ -218,7 +222,7 @@ function pageCommand(){
       <div class="kpi-meta">closed with no human touch, ${HANDOFFS.length} handoffs open</div></div>
     <div class="card kpi"><div class="kpi-label">FLEET HEALTH</div>
       <div class="kpi-value" style="font-size:22px;padding-top:6px">${agentCount} <span style="font-size:13px;color:var(--text-lo)">agents</span> / <span style="color:var(--st-verified)">${dlqDepth}</span> <span style="font-size:13px;color:var(--text-lo)">DLQ</span></div>
-      <div class="kpi-meta" style="margin-top:11px"><span class="mono">$${cost} / $${budget} budget</span><span class="mono">p95 span 1.4s</span></div></div>
+      <div class="kpi-meta" style="margin-top:11px"><span class="mono">${costLabel}</span><span class="mono">p95 span 1.4s</span></div></div>
   </div>
 
   <div class="card" style="margin-bottom:12px">
@@ -238,8 +242,8 @@ function pageCommand(){
 
   <div class="grid-main">
     <div class="card">
-      <div class="card-head"><span class="card-title">LIVE ACTIVITY</span>
-        <span class="chip working" style="margin-left:auto"><span class="dot dot-working"></span>streaming</span></div>
+      <div class="card-head"><span class="card-title">${publicDemo ? 'FIXTURE ACTIVITY' : 'LIVE ACTIVITY'}</span>
+        <span class="chip ${publicDemo ? 'verified' : 'working'}" style="margin-left:auto"><span class="dot dot-${publicDemo ? 'verified' : 'working'}"></span>${publicDemo ? 'fixture timeline' : 'streaming'}</span></div>
       <div class="stream" id="stream">${streamLog.map(streamRow).join('')}</div>
     </div>
     <div class="card">
@@ -253,21 +257,21 @@ function pageCommand(){
 
 function streamRow(e){
   return `<div class="stream-row ${e.fresh?'fresh':''}">
-    <span class="stream-t">${e.t}</span><span class="stream-a ${e.cls}">${e.a}</span><span class="stream-m">${e.m}</span></div>`;
+    <span class="stream-t">${escapeHtml(e.t)}</span><span class="stream-a ${e.cls}">${escapeHtml(e.a)}</span><span class="stream-m">${escapeHtml(e.m)}</span></div>`;
 }
 
 function handoffCard(h){
-  return `<div class="handoff" data-ho="${h.id}">
+  const publicDemo = Boolean(window.__atlasPublicDemo);
+  return `<div class="handoff" data-ho="${escapeHtml(h.id)}">
     <div style="display:flex;align-items:center;gap:7px">
-      <span class="mono" style="color:var(--text-lo)">${h.id}</span>
-      <button class="chip chip-mono" type="button" data-control="${h.control}">${h.control}</button>
-      <span class="chip waiting">stage ${h.stage}</span></div>
-    <div class="ho-q">${h.q}</div>
-    <div class="ho-reason">${h.reason}</div>
+      <span class="mono" style="color:var(--text-lo)">${escapeHtml(h.id)}</span>
+      <button class="chip chip-mono" type="button" data-control="${escapeHtml(h.control)}">${escapeHtml(h.control)}</button>
+      <span class="chip waiting">stage ${escapeHtml(h.stage)}</span></div>
+    <div class="ho-q">${escapeHtml(h.q)}</div>
+    <div class="ho-reason">${escapeHtml(h.reason)}</div>
     <div class="ho-actions">
-      <button class="btn btn-primary" type="button" data-approve="${h.id}">Approve</button>
-      <button class="btn" type="button" data-reject="${h.id}">Reject with reason</button>
-      <span class="ho-sla">${h.sla}</span></div>
+      ${publicDemo ? '<span class="chip verified">Decision actions disabled in read-only demo</span>' : `<button class="btn btn-primary" type="button" data-approve="${escapeHtml(h.id)}">Approve</button><button class="btn" type="button" data-reject="${escapeHtml(h.id)}">Reject with reason</button>`}
+      <span class="ho-sla">${escapeHtml(h.sla)}</span></div>
   </div>`;
 }
 
@@ -329,11 +333,11 @@ function pageLedger(){
     <div class="ledger">
       <div class="lg-head"><span>CONTROL</span><span>TITLE</span><span class="lg-hide">EVIDENCE</span><span class="lg-hide">UPDATED</span><span>STATUS</span></div>
       ${rows.map(c=>`
-      <button class="lg-row" type="button" data-control="${c.id}" style="border-left-color:var(--st-${c.status})" aria-label="Open ${c.id}, ${c.name}, ${STATUS_LABEL[c.status]}">
-        <span class="lg-id">${c.id}</span>
-        <span class="lg-name">${c.name}</span>
+      <button class="lg-row" type="button" data-control="${escapeHtml(c.id)}" style="border-left-color:var(--st-${c.status})" aria-label="Open ${escapeHtml(c.id)}, ${escapeHtml(c.name)}, ${STATUS_LABEL[c.status]}">
+        <span class="lg-id">${escapeHtml(c.id)}</span>
+        <span class="lg-name">${escapeHtml(c.name)}</span>
         <span class="lg-ev lg-hide"><span class="bar"><i style="width:${Math.round(c.ev/c.evTotal*100)}%;background:var(--st-${c.status})"></i></span>${c.ev}/${c.evTotal}</span>
-        <span class="lg-when lg-hide">${c.when}</span>
+        <span class="lg-when lg-hide">${escapeHtml(c.when)}</span>
         <span><span class="chip ${c.status}">${STATUS_LABEL[c.status]}</span></span>
       </button>`).join('')}
       ${rows.length===0?'<div class="empty">No controls in this state. The fleet will keep working. Next sweep in 6h 12m.</div>':''}
@@ -363,14 +367,14 @@ function pageRegistry(){
     <div class="agent-card">
       <div class="ac-top">
         <div class="brand-mark" style="width:24px;height:24px">${icon('registry',13)}</div>
-        <div style="min-width:0"><div class="ac-name mono">${a.id}</div>
-        <div style="display:flex;gap:5px;margin-top:3px;flex-wrap:wrap"><span class="chip chip-mono">v${a.v}</span><span class="chip chip-mono">${a.fw}</span></div></div>
+        <div style="min-width:0"><div class="ac-name mono">${escapeHtml(a.id)}</div>
+        <div style="display:flex;gap:5px;margin-top:3px;flex-wrap:wrap"><span class="chip chip-mono">v${escapeHtml(a.v)}</span><span class="chip chip-mono">${escapeHtml(a.fw)}</span></div></div>
       </div>
-      <div class="ac-desc">${a.desc}</div>
-      <div class="ac-scopes">${a.scopes.map(s=>`<span class="chip chip-mono">${s}</span>`).join('')}</div>
-      <div class="ac-foot"><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%">${a.spiffe}</span></div>
+      <div class="ac-desc">${escapeHtml(a.desc)}</div>
+      <div class="ac-scopes">${a.scopes.map(s=>`<span class="chip chip-mono">${escapeHtml(s)}</span>`).join('')}</div>
+      <div class="ac-foot"><span style="overflow:hidden;text-overflow:ellipsis;white-space:nowrap;max-width:100%">${escapeHtml(a.spiffe)}</span></div>
       <div class="ac-foot" style="border:none;padding-top:0;margin-top:0">
-        <span>${a.inv} invocations</span><span>${a.dept.join(', ')}</span>
+        <span>${escapeHtml(a.inv)} invocations</span><span>${escapeHtml(a.dept.join(', '))}</span>
         <span style="margin-left:auto;color:var(--st-verified)">active</span></div>
     </div>`).join('')}
   </div>`;
@@ -378,12 +382,13 @@ function pageRegistry(){
 
 function pageTrace(){
   const max = Math.max(...TRACES.map(t=>t.ms));
+  const publicDemo = Boolean(window.__atlasPublicDemo);
   return `
   <div class="page-head">
     <div><h1 class="page-title">Trace Explorer</h1>
-    <div class="page-sub">OpenTelemetry reasoning chains expose every prompt, tool call and model decision.</div></div>
+    <div class="page-sub">${publicDemo ? 'Recorded proof fixture from the verified private deployment. This public service never invokes Gemini.' : 'OpenTelemetry reasoning chains expose every prompt, tool call and model decision.'}</div></div>
     <div class="page-actions">
-      <span class="chip chip-mono">trace 8f2a…c41d</span>
+      <span class="chip chip-mono">${publicDemo ? 'RECORDED PROOF FIXTURE' : 'trace 8f2a…c41d'}</span>
       <span class="chip chip-mono">run CC6.1 / week 6</span>
       <button class="btn" type="button" id="replayTrace">Replay trace</button></div>
   </div>
@@ -431,18 +436,21 @@ function pageTrace(){
 
 function pageSecurity(){
   const isLive = Boolean(window.__atlasConnected && window.__atlasArmor);
+  const publicDemo = Boolean(window.__atlasPublicDemo);
   const armor = isLive ? window.__atlasArmor : OFFLINE_ARMOR;
   const counts = armor.counts || {};
   const verdicts = Array.isArray(armor.verdicts) ? armor.verdicts : [];
   const blocked = verdicts.find(v => v.action === 'blocked');
   const backend = blocked?.backend || (isLive ? 'unreported' : 'offline');
-  const sourceLabel = !isLive
-    ? 'OFFLINE SAMPLE'
-    : backend === 'model-armor'
-      ? 'MANAGED ARMOR'
-      : backend === 'model-armor+deterministic'
-        ? 'MANAGED + LOCAL GUARD'
-        : 'LOCAL FALLBACK';
+  const sourceLabel = publicDemo
+    ? 'RECORDED FINDING'
+    : !isLive
+      ? 'OFFLINE SAMPLE'
+      : backend === 'model-armor'
+        ? 'MANAGED ARMOR'
+        : backend === 'model-armor+deterministic'
+          ? 'MANAGED + LOCAL GUARD'
+          : 'LOCAL FALLBACK';
   const banner = blocked ? `
   <div class="armor-banner" style="margin-bottom:12px">
     <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
@@ -466,7 +474,7 @@ function pageSecurity(){
   return `
   <div class="page-head">
     <div><h1 class="page-title">Security Console</h1>
-    <div class="page-sub">Third-party ingress and agent egress are screened with managed Model Armor when available; every fallback is identified in the ledger.</div></div>
+    <div class="page-sub">${publicDemo ? 'Recorded fixture from the verified private run: managed screening returned clean, then the labelled deterministic layer blocked the override.' : 'Third-party ingress and agent egress are screened with managed Model Armor when available; every fallback is identified in the ledger.'}</div></div>
     <div class="page-actions"><span class="chip chip-mono">${sourceLabel}</span><span class="chip">${Number(armor.screened || 0)} screened</span><span class="chip blocked">${Number(counts.blocked || 0)} blocked</span><span class="chip waiting">${Number(counts.redacted || 0)} redacted</span></div>
   </div>
   ${banner}
@@ -498,8 +506,8 @@ function pageMemory(){
     <div class="sec-label">ORG PREFERENCES & PRECEDENTS / ${MEMORIES.length} MEMORIES</div>
     ${MEMORIES.map(m=>`
     <div class="mem">
-      <div class="mem-text">${m.text}</div>
-      <div class="mem-meta"><span>src: ${m.src}</span><span>reinforced ${m.reinforced}</span>
+      <div class="mem-text">${escapeHtml(m.text)}</div>
+      <div class="mem-meta"><span>src: ${escapeHtml(m.src)}</span><span>reinforced ${escapeHtml(m.reinforced)}</span>
         <span style="display:inline-flex;align-items:center;gap:6px">confidence <span class="conf"><i style="width:${m.conf*100}%"></i></span> ${m.conf.toFixed(2)}</span></div>
     </div>`).join('')}
     <div class="card" style="margin-top:14px"><div class="card-body" style="font-size:12px;color:var(--text-lo);line-height:1.65">
@@ -512,7 +520,8 @@ function pagePackage(){
   const manifest = window.__atlasPackage;
   const fleet = window.__atlasFleet || {};
   const isLive = Boolean(window.__atlasConnected);
-  const stateLabel = manifest ? 'LIVE MANIFEST' : isLive ? 'LIVE LEDGER / NOT GENERATED' : 'OFFLINE / BACKEND REQUIRED';
+  const publicDemo = Boolean(window.__atlasPublicDemo);
+  const stateLabel = publicDemo ? 'READ-ONLY FIXTURE / GENERATION DISABLED' : manifest ? 'LIVE MANIFEST' : isLive ? 'LIVE LEDGER / NOT GENERATED' : 'OFFLINE / BACKEND REQUIRED';
   const controlCount = Number(manifest?.controls_total ?? fleet.controls_total ?? controls.length);
   const generatedContents = manifest ? [
     ['json','manifest.json',`${manifest.artifacts} artifact hashes across ${manifest.controls_total} controls`],
@@ -539,7 +548,7 @@ function pagePackage(){
   <div class="page-head">
     <div><h1 class="page-title">Evidence Package</h1>
     <div class="page-sub">Package Assembler builds a downloadable manifest with per-control narratives, provenance, SHA-256 hashes and a gap register.</div></div>
-    <div class="page-actions"><span class="chip chip-mono">${stateLabel}</span><button class="btn btn-primary" type="button" id="genPkg" ${isLive?'':'disabled'}>${isLive ? 'Generate and download manifest' : 'Connect backend to generate'}</button></div>
+    <div class="page-actions"><span class="chip chip-mono">${stateLabel}</span><button class="btn btn-primary" type="button" id="genPkg" ${isLive && !publicDemo ? '' : 'disabled aria-disabled="true"'}>${publicDemo ? 'Generation disabled in read-only demo' : isLive ? 'Generate and download manifest' : 'Connect backend to generate'}</button></div>
   </div>
   <div class="grid-2">
     <div class="card"><div class="card-head"><span class="card-title">MANIFEST CONTENTS</span><span class="chip ${manifest?'verified':'idle'}" style="margin-left:auto">${manifest?'generated':'pending'}</span></div>
@@ -590,10 +599,10 @@ function openControl(id){
     <div class="drawer-head">
       <div style="min-width:0">
         <div style="display:flex;align-items:center;gap:8px;flex-wrap:wrap">
-          <span class="mono" style="font-size:14px">${c.id}</span>
+          <span class="mono" style="font-size:14px">${escapeHtml(c.id)}</span>
           <span class="chip ${c.status}">${STATUS_LABEL[c.status]}</span>
-          <span class="chip chip-mono">hunter/${c.domain}</span></div>
-        <div style="font-size:12px;color:var(--text-lo);margin-top:4px">${c.name}</div></div>
+          <span class="chip chip-mono">hunter/${escapeHtml(c.domain)}</span></div>
+        <div style="font-size:12px;color:var(--text-lo);margin-top:4px">${escapeHtml(c.name)}</div></div>
       <button class="icon-btn" type="button" style="margin-left:auto" id="drawerClose" aria-label="Close control details">✕</button>
     </div>
     <div class="drawer-body">
@@ -634,7 +643,7 @@ function openCmdk(){
 function renderCmdk(q){
   const items = CMDK_ITEMS().filter(i=>i.label.toLowerCase().includes(q.toLowerCase()));
   document.getElementById('cmdkResults').innerHTML = items.map((i,x)=>
-    `<button class="cmdk-item ${x===0?'sel':''}" type="button" data-idx="${x}"><span class="cmdk-kind">${i.kind}</span><span style="font-size:12.5px;color:var(--text-mid)">${i.label}</span></button>`).join('')
+    `<button class="cmdk-item ${x===0?'sel':''}" type="button" data-idx="${x}"><span class="cmdk-kind">${escapeHtml(i.kind)}</span><span style="font-size:12.5px;color:var(--text-mid)">${escapeHtml(i.label)}</span></button>`).join('')
     || '<div class="empty">No matches.</div>';
   document.querySelectorAll('.cmdk-item').forEach((el,x)=> el.onclick = ()=>{ items[x].go(); closeCmdk(); });
 }
@@ -678,6 +687,14 @@ function pushStream(){
 
 /* ---------------------------------------------------------- EVENTS */
 document.addEventListener('click', e => {
+  const publicMutation = e.target.closest(
+    '#runNow, #genPkg, [data-approve], [data-reject], [data-submit-rejection]'
+  );
+  if (window.__atlasPublicDemo && publicMutation) {
+    e.preventDefault();
+    e.stopImmediatePropagation();
+    return;
+  }
   const nav = e.target.closest('[data-route]'); if (nav){ go(nav.dataset.route); return; }
   const ctrl = e.target.closest('[data-control]'); if (ctrl){ openControl(ctrl.dataset.control); return; }
   const f = e.target.closest('[data-filter]'); if (f){ filter = f.dataset.filter; go('ledger'); return; }
@@ -771,8 +788,18 @@ document.getElementById('tmPlay').addEventListener('click', () => {
 });
 
 /* ---------------------------------------------------------- BOOT */
+if (window.__atlasPublicDemo) {
+  document.getElementById('publicDemoBanner').hidden = false;
+  document.getElementById('connectionLabel').textContent = 'READ-ONLY JUDGE DEMO';
+  document.getElementById('environmentLabel').textContent = 'zero-role / fixture only';
+  document.querySelector('.tick-working').textContent = 'fixture snapshot';
+  const demoAvatar = document.getElementById('demoAvatar');
+  demoAvatar.textContent = 'JD';
+  demoAvatar.title = 'Public judge demo, no account';
+  demoAvatar.setAttribute('aria-label', 'Public judge demo, no account');
+}
 buildControls();
 for (let i=0;i<9;i++){ const t = STREAM_TEMPLATES[i % STREAM_TEMPLATES.length]; streamLog.push({ t:`14:0${9-Math.floor(i/2)}:${String(50-i*4).padStart(2,'0')}`, a:t[0], cls:t[1], m:t[2], fresh:false }); }
 go('command');
 setInterval(tick, 1000);
-setInterval(() => pushStream(), 2600);
+if (!window.__atlasPublicDemo) setInterval(() => pushStream(), 2600);

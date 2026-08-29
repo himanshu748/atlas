@@ -1,26 +1,27 @@
 # ---- core runtime -------------------------------------------------
-fastapi>=0.115.0
-uvicorn[standard]>=0.32.0
-pydantic>=2.9.0
-pydantic-settings>=2.6.0
-httpx>=0.27.0
+fastapi==0.141.1
+starlette==1.6.0
+uvicorn[standard]==0.52.4
+pydantic==2.13.5
+pydantic-settings==2.15.0
+httpx==0.28.1
 
 # ---- google agent stack -------------------------------------------
-google-adk>=2.0.0
-google-genai>=2.4.0
+google-adk==2.8.0
+google-genai==2.20.0
 
 # ---- google cloud infrastructure (optional at runtime; needed for ATLAS_MODE=cloud)
-google-cloud-firestore>=2.19.0
-google-cloud-pubsub>=2.26.0
-google-cloud-storage>=2.18.0
-google-cloud-asset>=3.27.0
-google-cloud-modelarmor>=0.1.0
+google-cloud-firestore==2.29.0
+google-cloud-pubsub==2.39.2
+google-cloud-storage==3.13.1
+google-cloud-asset==4.4.0
+google-cloud-modelarmor==0.7.1
 
 # ---- observability -------------------------------------------------
-opentelemetry-sdk>=1.27.0
-opentelemetry-exporter-gcp-trace>=1.7.0
+opentelemetry-sdk==1.42.1
+opentelemetry-exporter-gcp-trace==1.15.0
 
 # ---- dev ------------------------------------------------------------
-pytest>=8.3.0
-pytest-asyncio>=0.24.0
-python-multipart>=0.0.9
+pytest==9.1.1
+pytest-asyncio==1.4.0
+python-multipart==0.0.32
