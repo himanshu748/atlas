@@ -1,4 +1,4 @@
-# ATLAS: 4:00 demo video script
+# ATLAS: 3:42 demo video script
 
 Record one continuous screen capture with the cursor visible. Let real calls finish on camera and narrate only values and events that are visible in that recording.
 
@@ -24,26 +24,23 @@ Record through an authenticated Cloud Run session or `gcloud run services proxy`
 | Security fixture | Confirm `/api/armor` contains that blocked layered verdict from the vendor fixture. If it does not, do not substitute the standalone simulation. |
 | Handoff | Use an open handoff that actually exists in `/api/handoffs`. If none exists, run a sweep before recording. Do not use the static `HO-142` sample as live evidence. |
 | Package check | Set `ATLAS_URL` to the private deployed URL, obtain a fresh identity token and test the package commands below before recording. |
-| Cloud proof | Pre-open Cloud Run, Vertex AI usage, Cloud Asset evidence, Firestore, Pub/Sub, Cloud Storage, Cloud Trace, Model Armor and the paused Scheduler job. |
-| Spend guard | Show the monthly alert at 1 billing-account currency unit, excluding credits. Call it an alert, not a cap or actual cost. |
+| Cloud proof | Pre-open Cloud Run, Vertex AI usage, Cloud Trace and the paused Scheduler job. Keep the live Cloud Asset and layered Armor evidence inside ATLAS. |
 
 The console includes a synthetic nine-week backfill and a standalone browser simulation. Both are useful demo aids, but neither is evidence of nine weeks of live collection.
 
-Total target: **3:55**. Keep five seconds of headroom.
+Total target: **3:42**. Keep eighteen seconds of headroom below the four-minute limit.
 
 ---
 
-## 0:00–0:22: Scope the demo honestly
+## 0:00–0:30: Scope the demo and read the live KPIs
 
 **On screen:** Fleet Command. Point briefly to `CLOUD LEDGER` and the line that labels the audit window as seeded.
 
-> "ATLAS is a SOC 2 evidence workflow running in a private authenticated Cloud Run service. This ledger is a seeded nine-week audit scenario, so we can exercise drift, handoffs and packaging in four minutes. The state changes I trigger now are live against the deployed backend."
+> "ATLAS is a SOC 2 evidence workflow running in a private authenticated Cloud Run service. This ledger is a seeded nine-week audit scenario, so we can exercise drift, handoffs and packaging quickly. The state changes I trigger now are live against the deployed backend."
 
 Do not describe the uptime counter as proof that the deployment has been collecting for that long. It is derived from the seeded run start.
 
 ---
-
-## 0:22–0:48: Read the live KPIs
 
 **On screen:** Point to Audit Readiness, Autonomy and the coverage heatmap.
 
@@ -55,7 +52,7 @@ Read the displayed percentages and verified control count aloud. Do not put fixe
 
 ---
 
-## 0:48–1:28: Run a real sweep
+## 0:30–1:15: Run a real sweep
 
 **On screen:** Click **Run evidence sweep** and keep the activity stream visible.
 
@@ -75,7 +72,7 @@ Point to the two validated cloud findings:
 
 ---
 
-## 1:28–1:58: Show the injection fixture
+## 1:15–1:42: Show the injection fixture
 
 **On screen:** Open **Security Console** and select the blocked vendor artifact created by the sweep.
 
@@ -85,7 +82,7 @@ Do not say managed Model Armor caught this fixture. Do not describe the fixture 
 
 ---
 
-## 1:58–2:25: Complete one real handoff
+## 1:42–2:05: Complete one real handoff
 
 **On screen:** Open **Handoff Inbox** and select the actual open handoff verified during preflight.
 
@@ -97,7 +94,7 @@ Click **Approve** or provide a truthful rejection reason. Wait for the API respo
 
 ---
 
-## 2:25–2:50: Show governance and traces
+## 2:05–2:27: Show governance and traces
 
 **On screen:** Open **Agent Registry**.
 
@@ -111,24 +108,20 @@ Click **Approve** or provide a truthful rejection reason. Wait for the API respo
 
 ---
 
-## 2:50–3:18: Prove the deployed Google Cloud path
+## 2:27–3:05: Prove the deployed Google Cloud path
 
 **On screen:** Switch through only the pre-opened resources for this deployment.
 
-1. **Cloud Run:** Show `atlas-console`, its region, revision and the exact URL used by the browser.
+1. **Cloud Run:** Show `atlas-console`, its region, revision, exact `.run.app` URL, 100 percent traffic, minimum 0, maximum 1 and concurrency 1.
 2. **Vertex AI:** Show `gemini-3.5-flash` usage in `us` that matches `model_backend=vertex-ai` from `/api/fleet`.
-3. **Cloud Asset:** Show the proof run's actual IAM bindings and the two actual Cloud Storage buckets.
-4. **Firestore, Pub/Sub and Storage:** Show a persisted control, `atlas-events` activity and the uploaded manifest object.
-5. **Cloud Trace:** Show spans from the verified sweep.
-6. **Model Armor:** Show the managed request plus the API verdict labelled `model-armor+deterministic`; state that the deterministic layer caught the fixture after the managed clean verdict.
-7. **Cloud Scheduler:** Show `atlas-weekly-sweep`, its Monday 07:00 UTC configuration and its current `PAUSED` state.
-8. **Bounds:** Show minimum 0, maximum 1, concurrency 1 and the 1-unit billing alert that excludes credits. Do not call the alert a cap or a charge.
+3. **Cloud Trace:** Show spans from the verified sweep.
+4. **Cloud Scheduler:** Show `atlas-weekly-sweep`, its Monday 07:00 UTC configuration and current `PAUSED` state.
 
 > "This revision receives 100 percent of traffic. Firestore preserves the ledger, Pub/Sub receives event copies, Cloud Storage holds the generated manifest and Cloud Trace receives spans. The Scheduler is configured but paused after validation. Control work is executed in-process; this application does not use Cloud Tasks or Pub/Sub workers for dispatch."
 
 ---
 
-## 3:18–3:45: Generate and verify the manifest
+## 3:05–3:32: Generate and verify the manifest
 
 **On screen:** Return to **Evidence Package** and click **Generate package**. Then switch to the prepared terminal.
 
@@ -146,7 +139,7 @@ Pause on `PACKAGE VERIFIED`. Do not call the `signed_by` field a digital signatu
 
 ---
 
-## 3:45–3:55: Close
+## 3:32–3:42: Close
 
 **On screen:** Fleet Command. Optionally start the time-machine control and label it while it plays.
 
