@@ -88,7 +88,7 @@ ISO 27001 and HIPAA as registry-driven second frameworks reusing the same hunter
 ## Try it out links
 
 - Live console: `https://atlas-console-jguwjegiqq-uc.a.run.app`. **Private authenticated deployment proof only; public judge access is not provided.**
-- Repo: `https://github.com/himanshu748/atlas`. **The repository remains private.**
+- Repo: `https://github.com/himanshu748/atlas`. **Public access verified on August 29, 2026.**
 - Demo video: **Pending recording and public upload.**
 - Build blog: **Pending publication.**
 
@@ -96,7 +96,6 @@ ISO 27001 and HIPAA as registry-driven second frameworks reusing the same hunter
 
 ## Remaining release blockers
 
-- [ ] Make `https://github.com/himanshu748/atlas` public or provide the required evaluator access.
 - [ ] Record and publicly upload the final demo video.
 
 ## Final Devpost assembly checks
@@ -106,7 +105,7 @@ ISO 27001 and HIPAA as registry-driven second frameworks reusing the same hunter
 - [x] Vertex AI, Cloud Asset, Firestore, Pub/Sub, Cloud Storage, Cloud Trace and the layered Armor path captured
 - [x] Private Cloud Run URL labelled as authenticated deployment proof, not public judge access
 - [x] `docs/architecture.png` present locally
-- [ ] Re-test the README spin-up instructions from a clean clone after the repository becomes accessible
+- [ ] Re-test the README spin-up instructions from a clean anonymous clone
 - [ ] Attach `docs/architecture.png` to the Devpost entry
 - [ ] Keep the demo video public, at or below four minutes, and show the verified cloud proof
 - [ ] Set the category to **The Fortified Enterprise Fleet** only

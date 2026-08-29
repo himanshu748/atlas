@@ -34,7 +34,7 @@ pip install -r requirements.txt
 uvicorn app.main:app --port 8080
 ```
 
-This is the configured Git remote. If an unauthenticated clone returns 404, the repository is still private and must be published before these instructions are shared with judges.
+The repository is public. Anonymous GitHub API access was verified on August 29, 2026.
 
 Open **http://localhost:8080**.
 
@@ -268,7 +268,7 @@ Interactive docs at `/docs`.
 - The package egress screen records a verdict but does not yet replace uploaded content with the sanitised response.
 - The 9-week history is synthetic backfill, clearly labelled in `seed/seed_data.py` and in the console.
 - The verified Cloud Run URL is private. Public judge access has not been provided.
-- The GitHub repository is still private and the public demo video has not been uploaded.
+- The GitHub repository is public. The public demo video has not been uploaded.
 
 ## License
 

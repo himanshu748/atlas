@@ -203,7 +203,7 @@ uvicorn app.main:app --port 8080
 
 In-memory ledger, faithful mock connectors, and a deliberately pessimistic fallback reasoner when Gemini is unreachable. Every ruling is tagged with the engine that produced it, so a fallback is never passed off as a model decision — which felt like the minimum honesty bar for a tool whose entire job is verifying claims.
 
-Code: `github.com/himanshu748/atlas` (private until submission release) · Demo video: pending public upload
+Code: `github.com/himanshu748/atlas` · Demo video: pending public upload
 
 ---
 

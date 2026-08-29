@@ -6,7 +6,7 @@ Record one continuous screen capture with the cursor visible. Let real calls fin
 
 - **Hosted console:** `https://atlas-console-jguwjegiqq-uc.a.run.app`, private authenticated Cloud Run deployment. Project `atlas-agentic-hack-2026-v2`, service `atlas-console`, revision `atlas-console-00004-2n6`, 100% traffic. This is not public judge access.
 - **Demo video:** Pending recording and public upload.
-- **Repository:** `https://github.com/himanshu748/atlas`; the repository remains private.
+- **Repository:** `https://github.com/himanshu748/atlas`; public access verified on August 29, 2026.
 
 Record through an authenticated Cloud Run session or `gcloud run services proxy`. Do not present the private service URL as a public demo link.
 
