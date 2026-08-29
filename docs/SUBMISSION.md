@@ -97,7 +97,6 @@ ISO 27001 and HIPAA as registry-driven second frameworks reusing the same hunter
 
 ## Remaining release blockers
 
-- [ ] Attach `docs/architecture.png` to the Devpost entry.
 - [ ] Review the assembled entry, then explicitly send the final hackathon entry.
 
 ## Final Devpost assembly checks
@@ -109,6 +108,6 @@ ISO 27001 and HIPAA as registry-driven second frameworks reusing the same hunter
 - [x] `docs/architecture.png` present locally
 - [x] Recorded clean anonymous-clone validation at historical commit `cd679d0`; 25 tests passed
 - [x] Existing Devpost project linked to the All Things Agentic Hackathon entry
-- [ ] Attach `docs/architecture.png` to the Devpost entry
+- [x] Attached `docs/architecture.png` to the Devpost entry
 - [x] Public video playback verified at 2:00 with the verified cloud proof
-- [ ] Set the category to **Fortified Enterprise Fleet** only
+- [x] Category set to **Fortified Enterprise Fleet** only

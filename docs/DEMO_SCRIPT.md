@@ -90,5 +90,5 @@ The final video is a concise judge-facing proof film assembled from captures of 
 
 ## Devpost status
 
-- `docs/architecture.png` exists locally but still needs to be attached to the Devpost entry.
+- `docs/architecture.png` is attached to the Devpost entry.
 - The hackathon entry remains a draft and has not been finally sent.

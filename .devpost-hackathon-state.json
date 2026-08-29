@@ -22,7 +22,8 @@
   "completed_stages": [
     "start-hackathon",
     "review",
-    "resources"
+    "resources",
+    "prepare-submission"
   ],
   "rules_acknowledged": true,
   "learning": {
@@ -41,5 +42,5 @@
     "hackathon_submission_id": 1159620,
     "hackathon_submission_status": "Draft"
   },
-  "next_command": "prepare-submission"
+  "next_command": "submit-project"
 }

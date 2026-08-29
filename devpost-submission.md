@@ -80,7 +80,7 @@ https://github.com/himanshu748/atlas
 
 https://devpost.com/software/atlas-autonomous-assurance-fleet
 
-The project page and hackathon entry exist. The public video is ready, but the hackathon entry remains a Devpost draft until the architecture diagram is uploaded and the final entry is explicitly sent.
+The project page and hackathon entry exist. The public video and architecture diagram are attached. The hackathon entry remains a Devpost draft until the final entry is explicitly sent.
 
 ## Demo Video
 
@@ -121,7 +121,7 @@ Final timestamped run sheet: `docs/DEMO_SCRIPT.md`
 - [x] Anonymous clean-clone test passed
 - [x] Architecture diagram exists
 - [x] Private Google Cloud deployment proof exists
-- [ ] Architecture diagram uploaded to the Devpost file field
+- [x] Architecture diagram uploaded to the Devpost file field
 - [x] Public demo video uploaded to YouTube
 - [x] Public playback verified; runtime is 2:00
 - [x] Final Devpost project created or updated
