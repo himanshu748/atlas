@@ -18,7 +18,7 @@
     "ai_usage": "Gemini 3.5 Flash through Vertex AI and Google ADK summarizes evidence and produces cited structured control rulings.",
     "codex_usage": "Codex hardened deployment, corrected implementation claims, added tests and verified the live Google Cloud proof."
   },
-  "current_stage": "prepare-submission",
+  "current_stage": "submit-project",
   "completed_stages": [
     "start-hackathon",
     "review",
@@ -35,7 +35,7 @@
   },
   "submission": {
     "draft_file": "devpost-submission.md",
-    "status": "drafting",
+    "status": "ready",
     "project_id": 1406084,
     "project_slug": "atlas-autonomous-assurance-fleet",
     "project_url": "https://devpost.com/software/atlas-autonomous-assurance-fleet",
