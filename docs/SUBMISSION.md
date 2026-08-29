@@ -1,6 +1,6 @@
 # Devpost submission: copy/paste fields
 
-Paste these directly into the Devpost form. Category: **The Fortified Enterprise Fleet**.
+Paste these directly into the Devpost form. Category: **Fortified Enterprise Fleet**.
 
 ---
 
@@ -90,14 +90,15 @@ ISO 27001 and HIPAA as registry-driven second frameworks reusing the same hunter
 - Live console: `https://atlas-console-jguwjegiqq-uc.a.run.app`. **Private authenticated deployment proof only; public judge access is not provided.**
 - Repo: `https://github.com/himanshu748/atlas`. **Public access verified on August 29, 2026.**
 - Devpost project: `https://devpost.com/software/atlas-autonomous-assurance-fleet`. **Project page created; hackathon submission is still a draft.**
-- Demo video: **Pending recording and public upload.**
+- Demo video: **[Public on YouTube](https://www.youtube.com/watch?v=ZbEzvKVPXIU)**, titled **ATLAS: Autonomous Assurance Fleet | All Things Agentic Hackathon**. Runtime: **2:00**. Public playback verified.
 - Build blog: **Pending publication.**
 
 ---
 
 ## Remaining release blockers
 
-- [ ] Record and publicly upload the final demo video.
+- [ ] Attach `docs/architecture.png` to the Devpost entry.
+- [ ] Review the assembled entry, then explicitly send the final hackathon entry.
 
 ## Final Devpost assembly checks
 
@@ -106,8 +107,8 @@ ISO 27001 and HIPAA as registry-driven second frameworks reusing the same hunter
 - [x] Vertex AI, Cloud Asset, Firestore, Pub/Sub, Cloud Storage, Cloud Trace and the layered Armor path captured
 - [x] Private Cloud Run URL labelled as authenticated deployment proof, not public judge access
 - [x] `docs/architecture.png` present locally
-- [x] Re-tested the repository from a clean anonymous clone at commit `283ed51`; 25 tests passed
-- [ ] Link the existing Devpost project to the All Things Agentic Hackathon submission
+- [x] Recorded clean anonymous-clone validation at historical commit `cd679d0`; 25 tests passed
+- [x] Existing Devpost project linked to the All Things Agentic Hackathon entry
 - [ ] Attach `docs/architecture.png` to the Devpost entry
-- [ ] Keep the demo video public, at or below four minutes, and show the verified cloud proof
-- [ ] Set the category to **The Fortified Enterprise Fleet** only
+- [x] Public video playback verified at 2:00 with the verified cloud proof
+- [ ] Set the category to **Fortified Enterprise Fleet** only

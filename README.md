@@ -3,7 +3,7 @@
 > **A scheduled SOC 2 evidence workflow with an inspectable ledger.**
 > A governed fleet workflow for recurring evidence collection, separate control judgment, human handoffs, drift checks and integrity-checkable audit manifests.
 
-**Track:** The Fortified Enterprise Fleet · **Hackathon:** All Things Agentic (Google · Devpost)
+**Track:** Fortified Enterprise Fleet · **Hackathon:** All Things Agentic (Google · Devpost)
 **Model:** `gemini-3.5-flash` through Vertex AI in `us` · **Agent SDK:** Google ADK 2 · **Infra:** Cloud Run, Firestore, Pub/Sub, Cloud Scheduler, Cloud Storage, Cloud Trace
 **Devpost:** [ATLAS: Autonomous Assurance Fleet](https://devpost.com/software/atlas-autonomous-assurance-fleet)
 
@@ -254,7 +254,7 @@ Interactive docs at `/docs`.
 | Document | Purpose |
 |---|---|
 | [`design.md`](design.md) | Full product spec: personas, design system, all 8 screens, track strategy |
-| [`docs/DEMO_SCRIPT.md`](docs/DEMO_SCRIPT.md) | Timestamped 4-minute demo script with Cloud Console proof beats |
+| [`docs/DEMO_SCRIPT.md`](docs/DEMO_SCRIPT.md) | Final two-minute public demo run sheet with Google Cloud proof beats |
 | [`docs/SUBMISSION.md`](docs/SUBMISSION.md) | Devpost write-up copy and pre-submit checklist |
 | [`docs/BLOG.md`](docs/BLOG.md) | Build post covering the four things that went wrong |
 | [`docs/SOCIAL.md`](docs/SOCIAL.md) | X thread and LinkedIn post |
@@ -269,7 +269,7 @@ Interactive docs at `/docs`.
 - The package egress screen records a verdict but does not yet replace uploaded content with the sanitised response.
 - The 9-week history is synthetic backfill, clearly labelled in `seed/seed_data.py` and in the console.
 - The verified Cloud Run URL is private. Public judge access has not been provided.
-- The GitHub repository is public. The public demo video has not been uploaded.
+- The GitHub repository is public. The final 2:00 demo is public at [YouTube](https://www.youtube.com/watch?v=ZbEzvKVPXIU), with public playback verified.
 
 ## License
 

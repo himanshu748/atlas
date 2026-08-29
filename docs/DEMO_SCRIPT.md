@@ -1,160 +1,94 @@
-# ATLAS: 3:42 demo video script
+# ATLAS: final 2:00 demo video
 
-Record one continuous screen capture with the cursor visible. Let real calls finish on camera and narrate only values and events that are visible in that recording.
+## Published video
 
-## Submission status
+- **Title:** ATLAS: Autonomous Assurance Fleet | All Things Agentic Hackathon
+- **Public URL:** https://www.youtube.com/watch?v=ZbEzvKVPXIU
+- **Runtime:** 2:00
+- **Playback:** Public playback verified
+- **Narration:** Deepgram Aura-2
 
-- **Hosted console:** `https://atlas-console-jguwjegiqq-uc.a.run.app`, private authenticated Cloud Run deployment. Project `atlas-agentic-hack-2026-v2`, service `atlas-console`, revision `atlas-console-00004-2n6`, 100% traffic. This is not public judge access.
-- **Demo video:** Pending recording and public upload.
-- **Repository:** `https://github.com/himanshu748/atlas`; public access verified on August 29, 2026.
+The final video is a concise judge-facing proof film assembled from captures of the authenticated ATLAS deployment and its Google Cloud resources. The Cloud Run service itself remains private, so the video is the public deployment proof rather than a public live-console link.
 
-Record through an authenticated Cloud Run session or `gcloud run services proxy`. Do not present the private service URL as a public demo link.
+## Final run of show
 
-## Preflight before recording
-
-| Check | Required evidence |
+| Time | Proof beat |
 |---|---|
-| Deployment gate | Confirm `atlas-console-00004-2n6` still receives 100% of traffic in `atlas-agentic-hack-2026-v2`. Cloud Run must remain private with minimum 0, maximum 1 and concurrency 1. |
-| Recording | 1920×1080, 30fps, system audio plus mic. Hide notifications, credentials, email addresses and billing details. |
-| Backend connection | The ATLAS header says `CLOUD LEDGER`, not the standalone simulation state. Open `/healthz` once in a background tab. |
-| Runtime values | Open `/api/fleet` and note the exact readiness, autonomy, verified control count, total control count and runtime mode returned for this run. Do not reuse numbers from an earlier rehearsal. |
-| Model path | Confirm `/api/fleet` reports `runtime_mode=cloud`, `model_backend=vertex-ai`, `model=gemini-3.5-flash` and location `us`. Keep the matching Vertex AI usage view open. |
-| Live connector proof | Keep the Cloud Asset evidence that captured actual IAM bindings and two actual Cloud Storage buckets. SDLC is a fixture in this deployment, with an optional GitHub adapter when configured. HR and vendor are fixture-only in this revision. |
-| Armor path | Confirm the seeded injection verdict reports `backend=model-armor+deterministic`. Managed Model Armor returned clean; the labelled deterministic second layer quarantined the fixture. Do not claim managed Armor caught it. |
-| Security fixture | Confirm `/api/armor` contains that blocked layered verdict from the vendor fixture. If it does not, do not substitute the standalone simulation. |
-| Handoff | Use an open handoff that actually exists in `/api/handoffs`. If none exists, run a sweep before recording. Do not use the static `HO-142` sample as live evidence. |
-| Package check | Set `ATLAS_URL` to the private deployed URL, obtain a fresh identity token and test the package commands below before recording. |
-| Cloud proof | Pre-open Cloud Run, Vertex AI usage, Cloud Trace and the paused Scheduler job. Keep the live Cloud Asset and layered Armor evidence inside ATLAS. |
+| 0:00–0:04 | Establish the standard: collect evidence without inventing assurance. |
+| 0:04–0:13 | Introduce the eleven-role governed fleet and verifiable package. |
+| 0:13–0:21 | Show the deployed Cloud Ledger at 2 of 64 controls verified and 3% ready. |
+| 0:21–0:35 | Show the real Cloud Asset Inventory record for two Cloud Storage buckets and its custody metadata. |
+| 0:35–0:45 | Show Gemini 3.5 Flash ruling the recovery-testing evidence `INSUFFICIENT`, with `A1.3 NOT MET`. |
+| 0:45–0:57 | Explain collection, screening, judgment, memory and packaging roles. |
+| 0:57–1:09 | Show the seeded injection fixture, managed Model Armor's clean verdict and the deterministic second-layer quarantine. |
+| 1:09–1:18 | Show 28 packaged artifacts, 62 declared gaps, artifact hashes and the Assembler identity label. |
+| 1:18–1:27 | Show the standalone verifier returning `PACKAGE VERIFIED`. |
+| 1:27–1:38 | Show the active Cloud Run revision, Vertex AI runtime proof and Cloud Trace spans. |
+| 1:38–1:51 | Show scale-to-zero, the one-instance cap, concurrency one and the paused weekly sweep. |
+| 1:51–2:00 | Close on trustworthy evidence, visible gaps, verifiable claims and the public GitHub repository. |
 
-The console includes a synthetic nine-week backfill and a standalone browser simulation. Both are useful demo aids, but neither is evidence of nine weeks of live collection.
+## Final narration
 
-Total target: **3:42**. Keep eighteen seconds of headroom below the four-minute limit.
+### 0:00–0:04: Assurance without fiction
 
----
+> An audit agent should collect evidence. It should never invent assurance.
 
-## 0:00–0:30: Scope the demo and read the live KPIs
+### 0:04–0:13: Meet ATLAS
 
-**On screen:** Fleet Command. Point briefly to `CLOUD LEDGER` and the line that labels the audit window as seeded.
+> ATLAS is a governed SOC 2 assurance fleet: eleven specialized agents gather proof, judge it and assemble a package an auditor can verify.
 
-> "ATLAS is a SOC 2 evidence workflow running in a private authenticated Cloud Run service. This ledger is a seeded nine-week audit scenario, so we can exercise drift, handoffs and packaging quickly. The state changes I trigger now are live against the deployed backend."
+### 0:13–0:21: The deployed ledger
 
-Do not describe the uptime counter as proof that the deployment has been collecting for that long. It is derived from the seeded run start.
+> This is the deployed Cloud Ledger, not a green-screen demo. It shows the uncomfortable truth: two of sixty-four controls verified, three percent ready.
 
----
+### 0:21–0:35: Evidence with custody
 
-**On screen:** Point to Audit Readiness, Autonomy and the coverage heatmap.
+> For recovery testing, ATLAS queried real Cloud Asset Inventory and found the two buckets in this project. The record keeps the collector identity, source, byte count, Armor result and SHA-256.
 
-> "The exact values on screen come from `/api/fleet`. Readiness is verified controls divided by all controls. Autonomy is the share of verified controls whose ledger record has zero human touches. It measures recorded ATLAS handoffs, not every conversation that may have happened outside the product."
+### 0:35–0:45: Insufficient means insufficient
 
-Read the displayed percentages and verified control count aloud. Do not put fixed percentages in the script because a sweep or handoff changes them.
+> But a bucket list is not proof of recovery testing. Gemini 3.5 Flash ruled the evidence insufficient, so ATLAS reported A1.3 as not met instead of manufacturing a pass.
 
-> "The heatmap is the same ledger by control: green is verified, purple is stale and amber is waiting on a human."
+### 0:45–0:57: A governed fleet
 
----
+> That judgment sits inside a governed fleet: hunters collect, Armor screens, the Control Judge evaluates, Memory recalls policy and the Assembler packages receipts.
 
-## 0:30–1:15: Run a real sweep
+### 0:57–1:09: Layered defense, stated honestly
 
-**On screen:** Click **Run evidence sweep** and keep the activity stream visible.
+> Security is layered and explicit. Managed Model Armor returned clean on this seeded injection fixture. ATLAS's labelled deterministic layer still quarantined it and stored the combined verdict.
 
-> "This request groups outstanding controls by domain and uses Python async fan-out across the domain buckets. Within each control, collection, judgment and the resulting action run in order. The hunters and Judge use ADK `LlmAgent` when Gemini is configured; this coordinator is not an ADK Parallel, Sequential or Loop agent."
+### 1:09–1:18: The package shows the gaps
 
-Read two activity lines exactly as they appear. Do not reuse sample counts from the standalone simulation.
+> The durable package contains twenty-eight artifacts and sixty-two declared gaps. It also contains a root hash for every artifact and records the Assembler's SPIFFE-format identity.
 
-> "The collectors file evidence first. The Judge then rules only on evidence in the ledger. Each connector call passes an application scope check and each ruling records whether Gemini or the deterministic fallback produced it."
+### 1:18–1:27: Independent verification
 
-Point to the two validated cloud findings:
+> A standalone verifier imports nothing from the application. It checks manifest integrity, screening fields and identity attribution, then returns package verified.
 
-> "Cloud Asset read actual IAM bindings and found two actual Cloud Storage buckets in this project. Gemini did not manufacture a green result: it ruled the IAM recertification evidence and the backup evidence insufficient. SDLC is a fixture in this deployment, with a configurable GitHub adapter in the code. HR and vendor are fixture-only in this revision."
+### 1:27–1:38: Google Cloud proof
 
-**On screen:** Open one control updated by this sweep and point to its evidence, ruling and custody metadata.
+> The cloud proof is visible too: the active Cloud Run revision receives one hundred percent of traffic, Vertex AI is enabled and Cloud Trace records Gemini, memory recall and Control Judge spans.
 
-> "This record shows the source label, collecting role, SPIFFE-format identity label, Armor status and SHA-256 metadata. These are application records, not a cryptographic workload identity attestation."
+### 1:38–1:51: Cost controls
 
----
+> For the submission, cost controls stay on. Cloud Run scales to zero, the revision caps at one instance with concurrency one and the weekly sweep is paused.
 
-## 1:15–1:42: Show the injection fixture
+### 1:51–2:00: Close
 
-**On screen:** Open **Security Console** and select the blocked vendor artifact created by the sweep.
+> ATLAS does not promise a perfect audit. It promises evidence you can trust, gaps you can see and claims you can verify. The code is public on GitHub.
 
-> "The vendor fixture represents extracted text from a third-party SOC 2 PDF. It includes an indirect prompt injection that tells the reviewer to mark every control satisfied. Managed Model Armor returned a clean verdict for this seeded text, so ATLAS applied its labelled deterministic second layer. That second layer blocked the fixture before evidence was filed. The API records the combined backend as `model-armor+deterministic`."
+## Claim guardrails preserved in the final cut
 
-Do not say managed Model Armor caught this fixture. Do not describe the fixture as a real vendor incident or claim that the text was hidden in a rendered PDF. The repository stores representative extracted text.
+- The 3% readiness value and 2 of 64 verified controls come from the captured deployed Cloud Ledger. They are presented as an honest baseline, not as a success-rate claim.
+- The verified live connector proof is Cloud Asset Inventory reading actual IAM bindings and two actual Cloud Storage buckets. SDLC, HR and vendor remain fixtures in this deployment.
+- Gemini ruled the bucket inventory insufficient for recovery testing. The final frame says `A1.3 NOT MET`.
+- Managed Model Armor returned clean for the seeded injection. The labelled deterministic second layer quarantined it. The video does not claim that managed Armor caught the fixture.
+- Per-role SPIFFE-format identities are application labels, not cryptographic workload identity attestations.
+- The standalone verifier checks package integrity and provenance fields. It does not decide whether evidence satisfies a control or authenticate the identity label.
+- Cloud Run revision `atlas-console-00004-2n6` receives 100% of traffic. The deployment stays private with minimum zero, maximum one and concurrency one.
+- The recurring Scheduler job remains paused after validation.
 
----
+## Devpost status
 
-## 1:42–2:05: Complete one real handoff
-
-**On screen:** Open **Handoff Inbox** and select the actual open handoff verified during preflight.
-
-> "The Chaser deduplicates open requests by control. This handoff carries the question, cited evidence and the Judge's reasoning."
-
-Click **Approve** or provide a truthful rejection reason. Wait for the API response and updated status.
-
-> "That answer increments the control's recorded human touches, updates its status and writes the decision into the in-project memory store. The Judge can retrieve that precedent before a later ruling. It can reduce repeat questions, but it does not guarantee that the next audit starts at any fixed percentage."
-
----
-
-## 2:05–2:27: Show governance and traces
-
-**On screen:** Open **Agent Registry**.
-
-> "The registry is an in-project catalog of eleven versioned role cards with capability search. Six roles can invoke Gemini through ADK. The remaining roles are deterministic workflow components. Dispatch in this prototype is through in-process Python functions."
-
-> "Each card also shows an application scope allowlist and a SPIFFE-format identity label. The IAM hunter's denial from the HR connector is covered by a repository test. The deployed Cloud Run container itself uses the orchestrator service account."
-
-**On screen:** Open **Trace Explorer**.
-
-> "These are operation spans with agent identity and selected decision metadata. In cloud mode OpenTelemetry exports them to Cloud Trace. The current trace does not store every prompt or every tool payload."
-
----
-
-## 2:27–3:05: Prove the deployed Google Cloud path
-
-**On screen:** Switch through only the pre-opened resources for this deployment.
-
-1. **Cloud Run:** Show `atlas-console`, its region, revision, exact `.run.app` URL, 100 percent traffic, minimum 0, maximum 1 and concurrency 1.
-2. **Vertex AI:** Show `gemini-3.5-flash` usage in `us` that matches `model_backend=vertex-ai` from `/api/fleet`.
-3. **Cloud Trace:** Show spans from the verified sweep.
-4. **Cloud Scheduler:** Show `atlas-weekly-sweep`, its Monday 07:00 UTC configuration and current `PAUSED` state.
-
-> "This revision receives 100 percent of traffic. Firestore preserves the ledger, Pub/Sub receives event copies, Cloud Storage holds the generated manifest and Cloud Trace receives spans. The Scheduler is configured but paused after validation. Control work is executed in-process; this application does not use Cloud Tasks or Pub/Sub workers for dispatch."
-
----
-
-## 3:05–3:32: Generate and verify the manifest
-
-**On screen:** Return to **Evidence Package** and click **Generate package**. Then switch to the prepared terminal.
-
-```bash
-ATLAS_TOKEN="$(gcloud auth print-identity-token)"
-curl -sS -X POST "$ATLAS_URL/api/package" \
-  -H "Authorization: Bearer $ATLAS_TOKEN" \
-  -H 'content-type: application/json' -d '{}' -o manifest.json
-python scripts/verify_manifest.py manifest.json
-```
-
-> "The endpoint returns per-control entries, a gap register, artifact hashes and a root hash. This standalone verifier checks the manifest structure and re-derives the root. With `--artifacts`, it can also hash supplied files from disk. It does not authenticate the identity string or decide whether the evidence proves the control."
-
-Pause on `PACKAGE VERIFIED`. Do not call the `signed_by` field a digital signature.
-
----
-
-## 3:32–3:42: Close
-
-**On screen:** Fleet Command. Optionally start the time-machine control and label it while it plays.
-
-> "The time machine replays synthetic history; the verified state changes came from private Cloud Run revision `atlas-console-00004-2n6`. ATLAS combines ADK model roles, live Google Cloud evidence and an inspectable ledger. The Scheduler is configured and currently paused."
-
-Stop recording.
-
----
-
-## Rehearsal rules
-
-- Read changing values and event lines from the current run.
-- The verified live connector proof is Cloud Asset Inventory: actual IAM bindings and two actual Cloud Storage buckets. SDLC is a fixture in this deployment, with an optional GitHub adapter when configured. HR and vendor are fixture-only in this revision.
-- Never present the standalone browser simulation as backend state.
-- If a cloud or model call falls back, narrate the fallback shown in logs or API state.
-- Never say Model Armor caught the seeded injection. It returned clean, then the labelled deterministic layer quarantined the fixture.
-- If no handoff exists, do not fake one. Re-run the preflight or shorten that section.
-- Upload the final video publicly. Suggested title: `ATLAS: SOC 2 evidence fleet | All Things Agentic Hackathon`.
+- `docs/architecture.png` exists locally but still needs to be attached to the Devpost entry.
+- The hackathon entry remains a draft and has not been finally sent.

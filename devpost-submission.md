@@ -62,9 +62,9 @@ pytest -q
 uvicorn app.main:app --port 8080
 ```
 
-Open http://localhost:8080. Local mode needs no Google Cloud credentials and uses an in-memory ledger, clearly labelled fixtures and a deterministic reasoning fallback. An anonymous clean clone at commit `151646e` passed all 25 tests.
+Open http://localhost:8080. Local mode needs no Google Cloud credentials and uses an in-memory ledger, clearly labelled fixtures and a deterministic reasoning fallback. The recorded anonymous clean-clone validation at historical commit `cd679d0` passed all 25 tests.
 
-The verified cloud deployment is private Cloud Run service `atlas-console`, revision `atlas-console-00004-2n6`, in project `atlas-agentic-hack-2026-v2`. The demo video must show that private deployment through an authenticated session and include the Cloud Run, Vertex AI and Cloud Trace proof.
+The verified cloud deployment is private Cloud Run service `atlas-console`, revision `atlas-console-00004-2n6`, in project `atlas-agentic-hack-2026-v2`. The public demo shows captures from that authenticated deployment together with Cloud Run, Vertex AI and Cloud Trace proof.
 
 ## Public Demo Link
 
@@ -80,13 +80,17 @@ https://github.com/himanshu748/atlas
 
 https://devpost.com/software/atlas-autonomous-assurance-fleet
 
-The project page and hackathon entry exist. The hackathon submission remains a Devpost draft until the required video and architecture upload are complete.
+The project page and hackathon entry exist. The public video is ready, but the hackathon entry remains a Devpost draft until the architecture diagram is uploaded and the final entry is explicitly sent.
 
 ## Demo Video
 
-TODO: Add the final public YouTube or Vimeo URL. It must be under about four minutes, public rather than private or unlisted, English or subtitled and show both the working agent and Google Cloud backend proof.
+Public video: https://www.youtube.com/watch?v=ZbEzvKVPXIU
 
-Planned outline:
+Title: **ATLAS: Autonomous Assurance Fleet | All Things Agentic Hackathon**
+
+Runtime: **2:00**. Public playback was verified.
+
+The final cut covers:
 
 1. Open immediately on the working Fleet Command screen and state the problem.
 2. Trigger or inspect the live evidence flow and show real IAM and Cloud Asset evidence.
@@ -95,7 +99,7 @@ Planned outline:
 5. Generate and independently verify the manifest.
 6. End on Cloud Run revision, Vertex AI activity, Cloud Trace spans and the paused Scheduler.
 
-Detailed recording plan: `docs/DEMO_SCRIPT.md`
+Final timestamped run sheet: `docs/DEMO_SCRIPT.md`
 
 ## Screenshot Shot List
 
@@ -118,8 +122,8 @@ Detailed recording plan: `docs/DEMO_SCRIPT.md`
 - [x] Architecture diagram exists
 - [x] Private Google Cloud deployment proof exists
 - [ ] Architecture diagram uploaded to the Devpost file field
-- [ ] Public demo video uploaded to YouTube or Vimeo
-- [ ] Video checked anonymously and confirmed under four minutes
+- [x] Public demo video uploaded to YouTube
+- [x] Public playback verified; runtime is 2:00
 - [x] Final Devpost project created or updated
 - [ ] Final project submitted to the hackathon
 
@@ -148,6 +152,6 @@ Detailed recording plan: `docs/DEMO_SCRIPT.md`
 - Architecture diagram upload: `docs/architecture.png`
 - Google AI models: `Gemini 3.5 Flash through Vertex AI`
 - Startup Prize fields: leave blank unless entering on behalf of an incorporated organization
-- Bonus content link: pending publication
+- Bonus content link: `https://www.youtube.com/watch?v=ZbEzvKVPXIU`
 - Bonus social link: pending publication
-- Demo video URL: pending public upload
+- Demo video URL: `https://www.youtube.com/watch?v=ZbEzvKVPXIU`
