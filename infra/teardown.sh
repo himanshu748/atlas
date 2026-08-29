@@ -1,44 +1,45 @@
 #!/usr/bin/env bash
-# Stop the live demo and disable project billing. Firestore and the evidence
-# bucket are preserved, but billable services stop when billing is unlinked.
+# Delete the dedicated project, which removes every ATLAS resource as one unit.
 set -euo pipefail
 
-PROJECT="${1:?usage: teardown.sh PROJECT_ID [REGION] --confirm}"
-REGION="${2:-us-central1}"
+SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
+# shellcheck source=common.sh
+source "${SCRIPT_DIR}/common.sh"
+
+PROJECT="${1:-}"
+BILLING_ACCOUNT="${2:-}"
 CONFIRM="${3:-}"
-SERVICE="atlas-console"
-GEMINI_SECRET="atlas-gemini-api-key"
-GEMINI_KEY_ID="atlas-gemini-demo"
+[[ -n "${PROJECT}" && -n "${BILLING_ACCOUNT}" ]] \
+  || die "usage: teardown.sh ${EXPECTED_PROJECT} BILLING_ACCOUNT_ID [--confirm-delete-project]"
+require_dedicated_project "${PROJECT}"
+require_billing_account "${BILLING_ACCOUNT}"
 
-if [[ "${CONFIRM}" != "--confirm" ]]; then
+if [[ "${CONFIRM}" != "--confirm-delete-project" ]]; then
   cat <<EOF
-This stops the public demo, deletes its scheduler and dedicated Gemini key,
-then unlinks billing from ${PROJECT}. Firestore and the evidence bucket remain.
-
-Run after recording:
-  ./infra/teardown.sh ${PROJECT} ${REGION} --confirm
+This permanently schedules deletion of the dedicated project ${PROJECT}, including all ATLAS data and services.
+Run only after recording and exporting anything you need:
+  ./infra/teardown.sh ${PROJECT} ${BILLING_ACCOUNT} --confirm-delete-project
 EOF
   exit 2
 fi
+[[ $# -eq 3 ]] || die "usage: teardown.sh ${EXPECTED_PROJECT} BILLING_ACCOUNT_ID --confirm-delete-project"
 
-echo "▸ deleting scheduled work"
-gcloud scheduler jobs delete atlas-weekly-sweep \
-  --project "${PROJECT}" --location "${REGION}" --quiet 2>/dev/null || true
+require_gcloud
+require_active_project "${PROJECT}"
+require_open_billing_account "${BILLING_ACCOUNT}"
+require_matching_billing_link "${PROJECT}" "${BILLING_ACCOUNT}"
 
-echo "▸ deleting Cloud Run service"
-gcloud run services delete "${SERVICE}" \
-  --project "${PROJECT}" --region "${REGION}" --quiet 2>/dev/null || true
+BUDGETS="$(gcloud billing budgets list \
+  --billing-account="${BILLING_ACCOUNT}" \
+  --filter="displayName='${BUDGET_DISPLAY_NAME}'" \
+  --format='value(name)')"
+if [[ -n "${BUDGETS}" ]]; then
+  while IFS= read -r budget; do
+    [[ -n "${budget}" ]] || continue
+    gcloud billing budgets delete "${budget}" \
+      --billing-account="${BILLING_ACCOUNT}" --quiet
+  done <<< "${BUDGETS}"
+fi
 
-echo "▸ revoking the dedicated Gemini key and secret"
-gcloud services api-keys delete "${GEMINI_KEY_ID}" \
-  --project "${PROJECT}" --quiet 2>/dev/null || true
-gcloud secrets delete "${GEMINI_SECRET}" \
-  --project "${PROJECT}" --quiet 2>/dev/null || true
-
-echo "▸ disabling project billing"
-gcloud billing projects unlink "${PROJECT}" --quiet
-
-gcloud billing projects describe "${PROJECT}" \
-  --format='table(projectId,billingEnabled,billingAccountName.basename())'
-
-echo "✓ demo stopped and billing disabled for ${PROJECT}"
+gcloud projects delete "${PROJECT}" --quiet
+echo "Project ${PROJECT} is scheduled for deletion. Google Cloud provides a limited recovery window before final deletion."

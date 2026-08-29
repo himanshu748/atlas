@@ -2,12 +2,11 @@
 
 One `emit()` call fans out to three places:
   1. the durable ledger (Firestore) — so the audit trail survives restarts
-  2. Pub/Sub — so background workers and other services react
+  2. Pub/Sub — as a durable event copy for downstream integrations
   3. in-process SSE subscribers — so the console updates instantly
 
-Decoupling matters here: the orchestrator publishes work and never waits for
-a hunter. That is what lets a run span nine weeks across many Cloud Run
-instances instead of one long-lived process.
+The current Cloud Run service performs control work in-process. Pub/Sub does
+not dispatch hunters in this prototype.
 """
 from __future__ import annotations
 

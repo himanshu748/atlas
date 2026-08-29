@@ -49,7 +49,7 @@ _PII_PATTERNS: list[tuple[str, str]] = [
 
 
 class ArmorResult:
-    __slots__ = ("action", "policy", "confidence", "text", "excerpt")
+    __slots__ = ("action", "policy", "confidence", "text", "excerpt", "backend")
 
     def __init__(
         self,
@@ -58,12 +58,18 @@ class ArmorResult:
         confidence: float = 0.0,
         text: str = "",
         excerpt: str = "",
+        backend: Literal[
+            "model-armor",
+            "model-armor+deterministic",
+            "deterministic-fallback",
+        ] = "deterministic-fallback",
     ) -> None:
         self.action = action
         self.policy = policy
         self.confidence = confidence
         self.text = text          # sanitised text safe to hand to a model
         self.excerpt = excerpt    # sanitised evidence for the UI
+        self.backend = backend
 
     @property
     def allowed(self) -> bool:
@@ -100,6 +106,18 @@ def _screen_local(text: str, direction: str) -> ArmorResult:
     return ArmorResult(ArmorAction.PASS, "", 0.0, text=text)
 
 
+def _screen_after_managed_pass(text: str, direction: str) -> ArmorResult:
+    """Apply the local guard after a clean managed verdict.
+
+    Model Armor remains the primary managed boundary. The deterministic pass is
+    deliberately additive so a known high-signal payload cannot reach an agent
+    merely because one classifier returned a clean result.
+    """
+    result = _screen_local(text, direction)
+    result.backend = "model-armor+deterministic"
+    return result
+
+
 def _screen_cloud(text: str, direction: str) -> ArmorResult:
     """Call the Model Armor API. Falls back to local on any failure."""
     try:
@@ -131,8 +149,15 @@ def _screen_cloud(text: str, direction: str) -> ArmorResult:
         verdict = str(getattr(result, "filter_match_state", ""))
         if "MATCH_FOUND" in verdict:
             findings = str(getattr(result, "filter_results", ""))[:200]
-            return ArmorResult(ArmorAction.BLOCKED, "model-armor.match", 0.95, "", findings)
-        return ArmorResult(ArmorAction.PASS, "", 0.0, text=text)
+            return ArmorResult(
+                ArmorAction.BLOCKED,
+                "model-armor.match",
+                0.95,
+                "",
+                findings,
+                backend="model-armor",
+            )
+        return _screen_after_managed_pass(text, direction)
     except Exception as exc:
         log.warning("model armor call failed (%s); using local detector", exc)
         return _screen_local(text, direction)
@@ -168,6 +193,7 @@ async def screen(
         action=result.action,
         matched_policy=result.policy,
         confidence=result.confidence,
+        backend=result.backend,
         excerpt=result.excerpt[:600],
         trace_id=trace_id,
     )

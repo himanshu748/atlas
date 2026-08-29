@@ -9,7 +9,7 @@ from __future__ import annotations
 import logging
 
 from fastapi import APIRouter, File, HTTPException, Query, UploadFile
-from fastapi.responses import StreamingResponse
+from fastapi.responses import JSONResponse, StreamingResponse
 from pydantic import BaseModel
 
 from app.agents import chaser
@@ -131,7 +131,7 @@ async def get_control(control_id: str):
             {"hop": "agent identity", "value": evidence[0].agent_identity if evidence else "—"},
             {"hop": "armor verdict", "value": evidence[0].armor_verdict.value if evidence else "—"},
             {"hop": "sha256", "value": (evidence[0].sha256[:16] + "…") if evidence else "—"},
-            {"hop": "immutable store", "value": "ok" if evidence else "—"},
+            {"hop": "evidence ledger", "value": "recorded" if evidence else "—"},
         ],
     }
 
@@ -250,7 +250,14 @@ async def get_trace(trace_id: str):
 # ---------------------------------------------------------------- package
 @router.post("/api/package")
 async def package():
-    return await build_package(RUN_ID, new_trace_id())
+    manifest = await build_package(RUN_ID, new_trace_id())
+    return JSONResponse(
+        content=manifest,
+        headers={
+            "Content-Disposition": 'attachment; filename="manifest.json"',
+            "Cache-Control": "no-store",
+        },
+    )
 
 
 # ------------------------------------------------------------- multimodal
@@ -300,6 +307,7 @@ async def internal_sweep():
     return {"readiness_pct": summary.readiness_pct, **sweep_result}
 
 
+@router.get("/api/health")
 @router.get("/healthz")
 async def healthz():
     return {"status": "ok"}

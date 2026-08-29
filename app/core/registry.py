@@ -1,13 +1,8 @@
 """Agent Registry — discovery and versioning.
 
-The orchestrator never hardcodes a sub-agent endpoint. It asks the registry,
-which is what lets Legal subscribe the vendor hunter for GDPR work without
-touching Security's deployment, and what lets us roll hunter/iam from 1.9.0
-to 2.0.0 behind a version pin.
-
-Cloud mode resolves through the Gemini Enterprise Agent Registry; local mode
-serves the same cards from the ledger so the console and the orchestrator
-behave identically offline.
+The shipped registry is an in-project catalog stored alongside the ledger. It
+supports publication, name lookup and capability search. A best-effort remote
+adapter exists, but the coordinator invokes in-process Python roles.
 """
 from __future__ import annotations
 
@@ -106,7 +101,7 @@ FLEET: list[AgentCard] = [
         name="redactor",
         version="0.3.1",
         framework="GenAI",
-        description="Self-hosted Gemma 3. Strips PII inside the trust boundary before anything leaves. Data sovereignty by architecture.",
+        description="Optional Gemma 3 helper through Vertex AI with a deterministic regex fallback.",
         spiffe_id=IDENTITIES["redactor"].spiffe_id,
         scopes=[],
         departments=["Security"],

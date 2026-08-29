@@ -36,13 +36,14 @@
 
   /* ---------------------------------------------------- hydrate ledger */
   async function hydrate() {
-    const [fleet, ctrls, agents, armor, mems, handoffs] = await Promise.all([
+    const [fleet, ctrls, agents, armor, mems, handoffs, events] = await Promise.all([
       get('/api/fleet'),
       get('/api/controls'),
       get('/api/agents'),
       get('/api/armor'),
       get('/api/memories'),
       get('/api/handoffs'),
+      get('/api/events'),
     ]);
 
     // ---- controls -> the shape app.js renders
@@ -111,12 +112,26 @@
       });
     }
 
+    // ---- activity stream: discard standalone simulation rows once live
+    streamLog.length = 0;
+    for (const e of events) {
+      streamLog.push({
+        t: new Date(e.at).toTimeString().slice(0, 8),
+        a: e.agent,
+        cls: classFor(e.agent),
+        m: displayText(e.message),
+        fresh: false,
+      });
+    }
+
     window.__atlasArmor = armor;
     connected = true;
     window.__atlasConnected = true;
 
     const connectionLabel = document.getElementById('connectionLabel');
     const environmentLabel = document.getElementById('environmentLabel');
+    const workingCount = document.getElementById('workingCount');
+    workingCount.textContent = String(fleet.by_status?.working || 0);
     if (fleet.runtime_mode === 'cloud') {
       connectionLabel.textContent = 'CLOUD LEDGER';
       environmentLabel.textContent = `cloud / ${fleet.cloud_location || 'configured region'}`;
@@ -181,6 +196,21 @@
   /* ------------------------------------------- real actions on buttons */
   function wireActions() {
     document.addEventListener('click', async (e) => {
+      const controlLink = e.target.closest('[data-control]');
+      if (controlLink && connected) {
+        e.stopPropagation();
+        const id = controlLink.dataset.control;
+        window.__atlasControlDetails ||= {};
+        try {
+          window.__atlasControlDetails[id] = await get(`/api/controls/${encodeURIComponent(id)}`);
+          openControl(id);
+        } catch (err) {
+          delete window.__atlasControlDetails[id];
+          openControl(id);
+        }
+        return;
+      }
+
       const runBtn = e.target.closest('#runNow');
       if (runBtn && connected) {
         e.stopPropagation();
@@ -247,14 +277,20 @@
         pkg.setAttribute('aria-busy', 'true');
         try {
           const manifest = await post('/api/package', {});
-          pkg.textContent = `${manifest.artifacts} artifacts ready`;
+          window.__atlasPackage = manifest;
+          downloadText('manifest.json', JSON.stringify(manifest, null, 2), 'application/json;charset=utf-8');
+          await hydrate();
+          if (route === 'package') {
+            go('package');
+            const refreshed = document.getElementById('genPkg');
+            if (refreshed) refreshed.textContent = 'manifest.json downloaded';
+          }
         } catch (err) {
           pkg.textContent = 'Package failed. Retry';
           pkg.disabled = false;
           pkg.removeAttribute('aria-busy');
           return;
         }
-        setTimeout(() => { pkg.textContent = 'Generate package'; pkg.disabled = false; pkg.removeAttribute('aria-busy'); }, 4000);
       }
     }, true);
   }

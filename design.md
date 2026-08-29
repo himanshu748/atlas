@@ -5,7 +5,12 @@
 
 **Track:** The Fortified Enterprise Fleet
 **Submission:** All Things Agentic Hackathon (Google · Devpost) — deadline Aug 31, 2026, 8:00pm EDT
-**Model:** `gemini-3.5-flash` via Gemini Developer API · **Framework:** Google ADK + GenAI SDK · **Infra:** Cloud Run, Firestore, Pub/Sub, Cloud Scheduler, Cloud Storage, Cloud Tasks
+**Model:** `gemini-3.5-flash` via Vertex AI · **Framework:** Google ADK + GenAI SDK · **Infra:** Cloud Run, Firestore, Pub/Sub, Cloud Scheduler, Cloud Storage
+
+> Delivery note: this file began as the product design brief. README.md is the
+> authoritative description of the shipped implementation. Cloud Tasks and ADK
+> orchestration primitives were cut; coordination runs in-process with Python
+> async control flow.
 
 ---
 
@@ -157,7 +162,7 @@ Motion exists only to convey *machine liveness* — never for delight.
 2. **Coverage Heatmap** — 64 controls as a dense grid of 14×14px status squares, grouped by Trust Services Criteria. The single most screenshot-able object in the product; it turns "audit readiness" into one glance. Animates cell-by-cell during time-machine replay.
 3. **Agent Activity Stream** — a live, terminal-flavored feed: `14:02:11  evidence-hunter/iam  ▸ fetched 412 IAM bindings  ▸ 3 flagged`. Monospace, auto-scrolling, pausable. This is what a judge stares at while you talk.
 4. **Reasoning Trace Waterfall** — nested OTel spans with model/tool/latency/tokens. Click a span → the actual prompt, tool args, and Gemini's structured output.
-5. **Chain-of-Custody Strip** — for each artifact: `source system → agent identity → armor verdict → SHA-256 → immutable store`, rendered as a horizontal pipeline with a green checkmark per hop. This is the artifact that convinces the *auditor* persona.
+5. **Chain-of-Custody Strip** — for each artifact: `source system → agent identity → armor verdict → SHA-256 → evidence ledger`, rendered as a horizontal pipeline with a green checkmark per hop. This is the artifact that convinces the *auditor* persona.
 6. **Handoff Card** — control context + candidate evidence preview + agent's recommendation + `Approve` / `Reject with reason`. Answerable in under 8 seconds.
 7. **Armor Verdict Banner** — when Model Armor blocks something, a red-bordered card showing the *redacted* offending payload and the matched policy. Deliberately dramatic; it's the demo's applause moment.
 
@@ -171,7 +176,7 @@ All status meanings carry a text label or icon in addition to color (protanopia-
 ```
                         ┌─────────────────────────────────────────┐
   Operator (Priya) ───▶ │  ATLAS Console — FastAPI + HTML/Tailwind │
-  Auditor (Alex)        │  SSE live stream · Cloud Run (public)     │
+  Auditor (Alex)        │  SSE live stream · Cloud Run (private)    │
                         └───────────────┬─────────────────────────┘
                                         │ authenticated REST + SSE
                         ┌───────────────▼─────────────────────────┐
@@ -242,9 +247,9 @@ All status meanings carry a text label or icon in addition to color (protanopia-
 | **Chaser** | flash, low thinking | `slack.write`, `jira.write` | Owns human interaction: composes minimal-context nudges, escalation ladder, dedupe so Dev is never pinged twice for the same artifact. |
 | **Drift Sentinel** | flash | ledger read + Pub/Sub | Runs on Cloud Scheduler. Recomputes freshness SLAs, detects regressions (a control that *was* satisfied and no longer is), reopens work autonomously. **This is what makes it a fleet that lives, not a batch job.** |
 | **Package Assembler** | flash + long context (1M) | storage write | Builds the final auditor deliverable: index, per-control narrative, artifact manifest with hashes, gap register. |
-| **Redactor (Gemma 3)** | `gemma-3` self-hosted on Cloud Run | none | Data-sovereignty path: strips PII locally before anything leaves the boundary. Earns the bonus "Google AI models" point *and* justifies itself architecturally. |
+| **Redactor (Gemma 3)** | optional Vertex AI helper with regex fallback | none | Experimental PII helper. It is not self-hosted and is not an enforced package boundary in the shipped prototype. |
 
-**Orchestration patterns used** (maps to the ADK webinar content judges will recognise): *Sequential* for the per-control pipeline (hunt → judge → package), *Parallel* fan-out across the five hunters, and *Loop* for the chase-escalate-recheck cycle.
+**Orchestration shipped:** ADK `LlmAgent` roles are invoked inside an explicit Python coordinator. Domain buckets fan out with `asyncio.gather`, control steps are ordinary awaited calls and scheduled sweeps recheck handoffs. The code does not instantiate ADK `ParallelAgent`, `SequentialAgent` or `LoopAgent`.
 
 ---
 
@@ -342,13 +347,13 @@ Preview of the auditor deliverable with a `Generate` action → Cloud Storage ex
 
 | Day | Deliverable | Risk retired |
 |---|---|---|
-| 1 | Configure a free AI Studio API key; enable Firestore, Pub/Sub and Cloud Run; deploy `gemini-3.5-flash` through Secret Manager | Auth/quota surprises |
+| 1 | Configure a dedicated Google Cloud project; enable Firestore, Pub/Sub and Cloud Run; deploy `gemini-3.5-flash` through Vertex AI | Auth/quota surprises |
 | 2 | Data model + Firestore schema + seed generator (64 SOC 2 controls, synthetic org, 9 weeks of backdated events) | Demo has no data |
 | 3 | Console shell: nav, design tokens, Fleet Command with live SSE from real Firestore | UI risk retired early |
-| 4 | ADK orchestrator + 2 Evidence Hunters with real connectors (GitHub, GCP IAM) | Core loop proven |
+| 4 | ADK orchestrator + 2 Evidence Hunters with live GCP IAM and Cloud Asset reads | Core loop proven |
 | 5 | Control Judge with structured output; ledger writes; Control Detail screen | The judgment layer |
-| 6 | Pub/Sub event bus, Cloud Tasks retries, idempotency keys, Drift Sentinel on Scheduler | "Runs for weeks" is real |
-| 7 | Agent Registry publication, Agent Identity scopes, Gateway routing, **Model Armor + the injection demo** | The applause moment |
+| 6 | Pub/Sub event copies, idempotency keys, Drift Sentinel on Scheduler | "Runs for weeks" is inspectable without claiming a worker queue that was not built |
+| 7 | In-project registry, logical agent scopes and **Model Armor + the injection demo** | The applause moment |
 | 8 | Memory Bank, Handoff Inbox, Chaser agent, Trace Explorer, Security Console | Remaining screens |
 | 9 | Package Assembler, multimodal (vision evidence + audio briefing), architecture diagram, README | Deliverables |
 | 10 | Record demo, write blog post, social post, submit **12h early** | Deadline risk |
@@ -359,9 +364,9 @@ Preview of the auditor deliverable with a `Generate` action → Cloud Storage ex
 
 ## 12. Open decisions
 
-1. **Connectors for the live demo.** Real GitHub + real GCP IAM are non-negotiable (they make evidence authentic). Slack for the Chaser is high-value if available; otherwise the Chaser writes to an in-app inbox and email.
-2. **Auth on the public console.** IAP vs. a simple signed link for judges. Leaning signed link + rate limit, to keep judge friction at zero.
-3. **Framework breadth.** Ship SOC 2 fully; show ISO 27001 mapping as a registry-driven second framework only if Day 8 is on schedule.
+1. **Connectors for the live demo.** Resolved: use live GCP IAM and Cloud Asset reads, label GitHub, HR and vendor inputs as fixtures without external credentials.
+2. **Console access.** Resolved: keep Cloud Run private and record through an authenticated local proxy.
+3. **Framework breadth.** Resolved: ship the SOC 2 experience for this submission.
 
 ---
 

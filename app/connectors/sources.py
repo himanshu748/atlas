@@ -71,22 +71,29 @@ async def collect_iam(control_id: str) -> list[Artifact]:
             from google.cloud import asset_v1
 
             client = asset_v1.AssetServiceClient()
-            resp = client.analyze_iam_policy(
+            policies = client.search_all_iam_policies(
                 request={
-                    "analysis_query": {
-                        "scope": f"projects/{settings.project_id}",
-                        "options": {"expand_groups": True},
-                    }
+                    "scope": f"projects/{settings.project_id}",
+                    "page_size": 100,
                 }
             )
-            bindings = [
-                {
-                    "member": m.identity.name,
-                    "role": r.role,
-                }
-                for r in resp.main_analysis.analysis_results
-                for m in getattr(r.identity_list, "identities", [])
-            ][:500]
+            bindings = []
+            for result in policies:
+                for binding in result.policy.bindings:
+                    for member in binding.members:
+                        bindings.append(
+                            {
+                                "member": member,
+                                "role": binding.role,
+                                "resource": result.resource,
+                            }
+                        )
+                        if len(bindings) >= 500:
+                            break
+                    if len(bindings) >= 500:
+                        break
+                if len(bindings) >= 500:
+                    break
             return [
                 Artifact.make(
                     scoped(control_id, f"iam-bindings-{now():%Y-%m-%d}.json"),
@@ -119,7 +126,7 @@ async def collect_iam(control_id: str) -> list[Artifact]:
         Artifact.make(
             scoped(control_id, f"iam-bindings-{now():%Y-%m-%d}.json"),
             "json",
-            "gcp.iam",
+            "demo.gcp.iam",
             {"project": settings.project_id or "acme-prod", "bindings": bindings},
             summary=(
                 f"{len(bindings)} IAM bindings. 3 contractor accounts provisioned via "
@@ -129,7 +136,7 @@ async def collect_iam(control_id: str) -> list[Artifact]:
         Artifact.make(
             scoped(control_id, "mfa-enforcement-console.png"),
             "image",
-            "workspace.admin",
+            "demo.workspace.admin",
             {"screenshot": "admin.google.com/security/2sv", "enforced": True, "exempt_users": 0},
             summary="Workspace admin console screenshot: 2SV enforced org-wide, 0 exemptions.",
         ),
@@ -200,14 +207,14 @@ async def collect_sdlc(control_id: str) -> list[Artifact]:
         Artifact.make(
             scoped(control_id, f"branch-protection-{now():%Y-%m-%d}.json"),
             "json",
-            "github",
+            "demo.github",
             {"org": settings.github_org or "acme", "repos": repos},
             summary="4 repos, all protected, 1,204 PRs in 90d — every merge had ≥1 approving review.",
         ),
         Artifact.make(
             scoped(control_id, "secret-scanning-alerts.json"),
             "json",
-            "github",
+            "demo.github",
             {"open_alerts": 0, "resolved_90d": 3, "push_protection": True},
             summary="Secret scanning + push protection enabled; 0 open alerts.",
         ),
@@ -217,6 +224,46 @@ async def collect_sdlc(control_id: str) -> list[Artifact]:
 # ---------------------------------------------------------------- INFRA
 async def collect_infra(control_id: str) -> list[Artifact]:
     require_scope("gcp.asset.read")
+
+    if settings.is_cloud:
+        try:
+            from google.cloud import asset_v1
+
+            client = asset_v1.AssetServiceClient()
+            assets = client.search_all_resources(
+                request={
+                    "scope": f"projects/{settings.project_id}",
+                    "asset_types": ["storage.googleapis.com/Bucket"],
+                    "page_size": 100,
+                }
+            )
+            buckets = [
+                {
+                    "name": asset.name,
+                    "location": asset.location,
+                    "state": str(asset.state),
+                }
+                for asset in assets
+            ]
+            return [
+                Artifact.make(
+                    scoped(control_id, f"cloud-asset-buckets-{now():%Y-%m-%d}.json"),
+                    "json",
+                    "gcp.asset",
+                    {
+                        "project": settings.project_id,
+                        "asset_type": "storage.googleapis.com/Bucket",
+                        "resources": buckets,
+                        "live": True,
+                    },
+                    summary=(
+                        f"{len(buckets)} live Cloud Storage bucket resource(s) "
+                        f"from Cloud Asset Inventory in {settings.project_id}."
+                    ),
+                )
+            ]
+        except Exception as exc:
+            log.warning("live infrastructure inventory failed (%s); using mock", exc)
 
     buckets = [{"name": f"acme-data-{i}", "cmek": True, "public": False} for i in range(1, 42)]
     alerting = {
@@ -229,14 +276,14 @@ async def collect_infra(control_id: str) -> list[Artifact]:
         Artifact.make(
             scoped(control_id, f"encryption-posture-{now():%Y-%m-%d}.json"),
             "json",
-            "gcp.asset",
+            "demo.gcp.asset",
             {"buckets": buckets, "cmek_coverage": "41/41"},
             summary="CMEK verified on 41/41 storage buckets; no public buckets.",
         ),
         Artifact.make(
             scoped(control_id, "alerting-config-export.json"),
             "json",
-            "gcp.monitoring",
+            "demo.gcp.monitoring",
             alerting,
             summary=(
                 "11 alert policies. Billing service has no alert coverage and the "
@@ -246,7 +293,7 @@ async def collect_infra(control_id: str) -> list[Artifact]:
         Artifact.make(
             scoped(control_id, "log-retention-policy.json"),
             "json",
-            "gcp.logging",
+            "demo.gcp.logging",
             {"retention_days": 400, "locked": True, "sinks": 3},
             summary="Audit logs retained 400 days with a locked retention policy.",
         ),
@@ -261,7 +308,7 @@ async def collect_hr(control_id: str) -> list[Artifact]:
         Artifact.make(
             scoped(control_id, f"offboarding-sla-{now():%Y-%m-%d}.csv"),
             "csv",
-            "hris",
+            "demo.hris",
             "employee_id,termination_date,access_revoked_at,within_24h\n"
             "E-1044,2026-06-12,2026-06-12,true\n"
             "E-1051,2026-07-03,2026-07-04,true\n"
@@ -272,7 +319,7 @@ async def collect_hr(control_id: str) -> list[Artifact]:
         Artifact.make(
             scoped(control_id, "security-training-completion.json"),
             "json",
-            "hris",
+            "demo.hris",
             {"headcount": 48, "completed": 48, "overdue": 0, "course": "SEC-101 2026"},
             summary="48/48 staff completed annual security training; 0 overdue.",
         ),
@@ -317,7 +364,7 @@ async def collect_vendor(control_id: str) -> list[Artifact]:
         Artifact.make(
             scoped(control_id, "northwind-soc2-2026.pdf"),
             "pdf",
-            "drive",
+            "demo.drive",
             _POISONED_SOC2,
             trusted=False,  # third-party → Model Armor ingress screening required
             summary="Vendor SOC 2 Type II report, 118 pages.",
@@ -325,7 +372,7 @@ async def collect_vendor(control_id: str) -> list[Artifact]:
         Artifact.make(
             scoped(control_id, "northwind-dpa.pdf"),
             "pdf",
-            "drive",
+            "demo.drive",
             _CLEAN_DPA,
             trusted=False,
             summary="DPA expired 2026-03-01; renewal requested, unsigned.",

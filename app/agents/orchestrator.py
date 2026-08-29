@@ -1,14 +1,13 @@
 """Orchestrator — plans the audit window and drives the fleet.
 
-Uses all three ADK orchestration patterns, each where it actually fits:
+Uses three explicit workflow shapes in Python:
 
   * PARALLEL   — the five domain hunters fan out; they share nothing.
   * SEQUENTIAL — per control: hunt → judge → file. Order is load-bearing.
   * LOOP       — chase → wait → recheck, until answered or escalated out.
 
-Work is dispatched as idempotent tasks. A redelivered Pub/Sub message for a
-completed step is a no-op, which is the difference between a resumable agent
-and one that files the same evidence twice.
+Work is executed in-process and recorded with idempotent task keys. Pub/Sub
+receives event copies but does not dispatch hunters in this prototype.
 """
 from __future__ import annotations
 

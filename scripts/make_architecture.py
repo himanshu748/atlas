@@ -1,10 +1,10 @@
 """Render docs/architecture.png in the ATLAS design language."""
 from __future__ import annotations
 
+from pathlib import Path
+
 import matplotlib
 matplotlib.use("Agg")
-import matplotlib.patheffects as pe
-from matplotlib import font_manager
 from matplotlib.patches import FancyArrowPatch, FancyBboxPatch
 import matplotlib.pyplot as plt
 
@@ -50,7 +50,7 @@ def label(x, y, s, *, size=8.5, color=HI, font=SANS, weight="normal", ha="center
 
 
 def accent(x, y, h, color):
-    """2px left status border — the design system's core structural device."""
+    """2px left status border: the design system's core structural device."""
     ax.add_patch(FancyBboxPatch((x, y), 0.32, h, boxstyle="round,pad=0,rounding_size=0.16",
                                 facecolor=color, edgecolor="none", zorder=4))
 
@@ -76,7 +76,7 @@ def node(x, y, w, h, title, subtitle="", *, color=BLUE, fill=PANEL, tsize=8.6, s
 # ══════════════════════════════════════════════════════ title
 label(4, 109.6, "ATLAS", size=19, color=HI, font=SANS, weight="bold", ha="left")
 label(20.5, 109.4, "Autonomous Assurance Fleet", size=11, color=MID, ha="left")
-label(4, 105.6, "gemini-3.5-flash  ·  Google ADK 2  ·  Cloud Run  ·  Firestore  ·  Pub/Sub  ·  Model Armor  ·  Cloud Trace",
+label(4, 105.6, "ADK LlmAgent roles  ·  async coordinator  ·  Cloud Run  ·  Firestore  ·  Pub/Sub  ·  Model Armor  ·  Cloud Trace",
       size=8, color=LO, font=MONO, ha="left")
 ax.plot([4, 156], [103.2, 103.2], color=BORDER, lw=1, zorder=1)
 
@@ -84,13 +84,13 @@ ax.plot([4, 156], [103.2, 103.2], color=BORDER, lw=1, zorder=1)
 label(4, 99.6, "ACTORS", size=7.4, color=LO, font=MONO, ha="left")
 node(4, 92.6, 22, 5.8, "Priya · Compliance", "reads posture, answers handoffs", color=GREEN, tsize=8.2, ssize=6.4)
 node(28, 92.6, 22, 5.8, "Alex · Auditor", "verifies chain of custody", color=CYAN, tsize=8.2, ssize=6.4)
-node(52, 92.6, 22, 5.8, "Dev · Engineer", "one Slack nudge, max", color=AMBER, tsize=8.2, ssize=6.4)
+node(52, 92.6, 22, 5.8, "Dev · Engineer", "one open handoff per control", color=AMBER, tsize=8.2, ssize=6.4)
 
 # ══════════════════════════════════════════════════════ 2. console
 box(4, 82.0, 70, 8.2, fill=PANEL, edge=BORDERS)
 accent(4.5, 82.7, 6.8, GREEN)
 label(7.4, 87.2, "ATLAS Console", size=9.6, color=HI, weight="medium", ha="left")
-label(7.4, 84.1, "FastAPI + HTML/Tailwind  ·  SSE live stream  ·  Cloud Run (public)",
+label(7.4, 84.1, "FastAPI + HTML/native CSS  ·  SSE live stream  ·  private Cloud Run service",
       size=7.2, color=LO, font=MONO, ha="left")
 label(71.6, 86.0, "one container", size=6.8, color=GREEN, font=MONO, ha="right")
 
@@ -100,21 +100,21 @@ for x in (15, 39, 63):
 # right column: cross-department discovery
 box(80, 82.0, 76, 16.4, fill=PANEL, edge=BORDER)
 label(83, 95.6, "AGENT REGISTRY", size=7.4, color=LO, font=MONO, ha="left")
-label(83, 92.4, "Central catalog · versioned · runtime endpoint resolution", size=7.6, color=MID, ha="left")
-for i, (dept, cnt) in enumerate([("Security", "11 agents"), ("IT", "6 agents"), ("Legal", "3 agents")]):
+label(83, 92.4, "In-project catalog · versioned cards · name/capability search", size=7.6, color=MID, ha="left")
+for i, (dept, cnt) in enumerate([("Security", "11 roles"), ("IT", "5 roles"), ("Legal", "3 roles")]):
     bx = 83 + i * 24
     box(bx, 84.0, 21, 6.2, fill=RAISED, edge=BORDER)
     label(bx + 10.5, 88.0, dept, size=8, color=HI, weight="medium")
     label(bx + 10.5, 85.6, cnt, size=6.8, color=GREEN, font=MONO)
-label(153, 79.6, "agents resolved by name, never by URL", size=6.6, color=LO, font=MONO, ha="right")
+label(153, 79.6, "catalog powers the console and /api/agents", size=6.6, color=LO, font=MONO, ha="right")
 
 # ══════════════════════════════════════════════════════ 3. orchestrator
 box(4, 69.8, 152, 9.0, fill=PANEL, edge=BORDERS)
 accent(4.5, 70.5, 7.6, BLUE)
 label(7.4, 75.8, "Orchestrator", size=10, color=HI, weight="medium", ha="left")
-label(7.4, 72.6, "ADK LlmAgent · gemini-3.5-flash · plans the 9-week window, fans out, arbitrates, enforces budget",
+label(7.4, 72.6, "Python async coordinator · plans each sweep, fans out domains, applies verdicts, enforces budget",
       size=7.4, color=LO, font=MONO, ha="left")
-for i, (pat, desc) in enumerate([("PARALLEL", "5 hunters"), ("SEQUENTIAL", "hunt→judge→act"), ("LOOP", "chase→escalate")]):
+for i, (pat, desc) in enumerate([("ASYNC FAN-OUT", "domain buckets"), ("ORDERED", "hunt→judge→act"), ("SCHEDULED", "sweep→recheck")]):
     bx = 96 + i * 20
     box(bx, 71.4, 18.6, 5.8, fill=RAISED, edge=BORDER)
     label(bx + 9.3, 75.0, pat, size=6.8, color=BLUE, font=MONO, weight="bold")
@@ -122,27 +122,27 @@ for i, (pat, desc) in enumerate([("PARALLEL", "5 hunters"), ("SEQUENTIAL", "hunt
 
 arrow(39, 82.0, 39, 78.8, color=BORDERS, lw=1.3)
 label(41, 80.4, "REST + SSE", size=6.6, color=LO, font=MONO, ha="left")
-arrow(118, 82.0, 118, 78.8, color=BORDERS, lw=1.1, rad=0.0)
-label(120, 80.4, "resolve()", size=6.6, color=LO, font=MONO, ha="left")
+arrow(118, 78.8, 118, 82.0, color=BORDERS, lw=1.1, rad=0.0)
+label(120, 80.4, "record()", size=6.6, color=LO, font=MONO, ha="left")
 
 # ══════════════════════════════════════════════════════ 4. gateway bar
 box(4, 63.2, 152, 4.6, fill="#16100F", edge="#4a2733", lw=1.2)
 accent(4.5, 63.7, 3.6, PINK)
-label(7.4, 65.5, "Agent Gateway", size=8.6, color=HI, weight="medium", ha="left")
-label(30, 65.5, "policy enforcement  ·  protocol mediation  ·  A2A + MCP routing", size=7.2, color=MID, ha="left")
-label(153, 66.4, "MODEL ARMOR", size=7.2, color=PINK, font=MONO, weight="bold", ha="right")
-label(153, 64.2, "ingress: prompt-injection.v2   egress: pii.redact", size=6.4, color=LO, font=MONO, ha="right")
+label(7.4, 65.5, "Application policy boundary", size=8.6, color=HI, weight="medium", ha="left")
+label(36, 65.5, "connector scope guards  ·  untrusted ingress screening  ·  package egress check", size=7.2, color=MID, ha="left")
+label(153, 66.4, "MODEL ARMOR / LOCAL FALLBACK", size=7.2, color=PINK, font=MONO, weight="bold", ha="right")
+label(153, 64.2, "managed attempt in cloud mode  ·  deterministic detector on fallback", size=6.4, color=LO, font=MONO, ha="right")
 arrow(39, 69.8, 39, 67.8, color=BORDERS, lw=1.3)
 
 # ══════════════════════════════════════════════════════ 5. the fleet
-label(4, 59.4, "THE FLEET  ·  each agent holds a distinct SPIFFE identity with least-privilege scopes",
+label(4, 59.4, "11 REGISTERED ROLES  ·  SPIFFE-format labels + application-enforced scope allowlists",
       size=7.4, color=LO, font=MONO, ha="left")
 
 hunters = [
     ("hunter/iam",    "gcp.iam.read",     BLUE),
     ("hunter/sdlc",   "github.read",      BLUE),
     ("hunter/infra",  "gcp.asset.read",   BLUE),
-    ("hunter/hr",     "hris.read.redact", BLUE),
+    ("hunter/hr",     "hris.read.redacted", BLUE),
     ("hunter/vendor", "drive.read",       PINK),
 ]
 for i, (name, scope, col) in enumerate(hunters):
@@ -153,9 +153,9 @@ for i, (name, scope, col) in enumerate(hunters):
 others = [
     ("control-judge", "ledger.read",   VIOLET),
     ("chaser",        "slack.write",   AMBER),
-    ("drift-sentinel","pubsub.publish",GREEN),
+    ("sentinel",      "pubsub.publish",GREEN),
     ("assembler",     "storage.write", CYAN),
-    ("redactor",      "gemma-3 · none",PINK),
+    ("redactor",      "gemma-3 helper",PINK),
 ]
 for i, (name, scope, col) in enumerate(others):
     x = 96 + i * 12.4
@@ -169,26 +169,26 @@ label(4, 46.6, "separation of duties: hunters collect and never rule  ·  the ju
 # ══════════════════════════════════════════════════════ 6. runtime + memory
 box(4, 37.4, 74, 7.4, fill=PANEL, edge=BORDER)
 accent(4.5, 38.0, 6.2, BLUE)
-label(7.4, 42.2, "Agent Runtime", size=8.6, color=HI, weight="medium", ha="left")
-label(7.4, 39.4, "long-running async execution · checkpointed · crash-resumable", size=6.8, color=LO, font=MONO, ha="left")
+label(7.4, 42.2, "Scheduled execution", size=8.6, color=HI, weight="medium", ha="left")
+label(7.4, 39.4, "scheduled HTTP sweeps · persisted task keys · no in-progress lease recovery yet", size=6.8, color=LO, font=MONO, ha="left")
 
 box(82, 37.4, 74, 7.4, fill=PANEL, edge=BORDER)
 accent(82.5, 38.0, 6.2, GREEN)
-label(85.4, 42.2, "Memory Bank", size=8.6, color=HI, weight="medium", ha="left")
-label(85.4, 39.4, "cross-session + cross-audit beliefs · recalled BEFORE every ruling", size=6.8, color=LO, font=MONO, ha="left")
+label(85.4, 42.2, "In-project memory", size=8.6, color=HI, weight="medium", ha="left")
+label(85.4, 39.4, "Firestore/in-memory beliefs · retrieved before Judge rulings", size=6.8, color=LO, font=MONO, ha="left")
 
 for x in (40, 118):
     arrow(x, 49.6, x, 44.8, color=BORDER, lw=0.9)
 
 # ══════════════════════════════════════════════════════ 7. infrastructure
-label(4, 34.0, "GOOGLE CLOUD INFRASTRUCTURE", size=7.4, color=LO, font=MONO, ha="left")
+label(4, 34.0, "GOOGLE CLOUD DEPLOYED  ·  PRIVATE  ·  SCALE TO ZERO  ·  SCHEDULER PAUSED", size=7.4, color=GREEN, font=MONO, ha="left")
 infra = [
     ("Firestore",       "ledger · evidence\nhandoffs · tasks"),
-    ("Pub/Sub",         "event bus\n+ DLQ (5 attempts)"),
+    ("Pub/Sub",         "event copies\n→ atlas-events"),
     ("Cloud Scheduler", "weekly drift sweep\n→ /internal/sweep"),
-    ("Cloud Tasks",     "retries with\nexponential backoff"),
-    ("Cloud Storage",   "evidence package\n+ SHA-256 manifest"),
-    ("Vertex AI",       "gemini-3.5-flash\n+ gemma-3"),
+    ("Model Armor",     "managed screening\n+ local fallback"),
+    ("Cloud Storage",   "manifest.json\n+ SHA-256 root"),
+    ("Vertex AI",       "managed Gemini\n+ Gemma helper"),
 ]
 for i, (name, sub) in enumerate(infra):
     x = 4 + i * 25.4
@@ -202,13 +202,13 @@ for i, (name, sub) in enumerate(infra):
 box(4, 13.6, 152, 6.4, fill=PANEL, edge=BORDER)
 accent(4.5, 14.2, 5.2, VIOLET)
 label(7.4, 17.8, "Agent Observability", size=8.6, color=HI, weight="medium", ha="left")
-label(7.4, 15.2, "OpenTelemetry → Cloud Trace + Cloud Logging  ·  every prompt, tool call and model decision  ·  exposed in the UI as a product surface",
+label(7.4, 15.2, "OpenTelemetry → Cloud Trace  ·  operation spans + selected metadata  ·  recent spans exposed in Trace Explorer",
       size=6.9, color=LO, font=MONO, ha="left")
 label(153, 16.6, "the auditor audits us", size=7.0, color=VIOLET, font=MONO, ha="right")
 
 # ══════════════════════════════════════════════════════ 9. chain of custody
 label(4, 10.0, "CHAIN OF CUSTODY", size=7.4, color=LO, font=MONO, ha="left")
-hops = ["source system", "agent identity", "Model Armor", "SHA-256", "immutable store", "auditor package"]
+hops = ["source label", "role identity", "armor status", "SHA-256", "ledger record", "manifest entry"]
 for i, hop in enumerate(hops):
     x = 4 + i * 25.4
     box(x, 3.2, 21.4, 5.2, fill=RAISED, edge=BORDER)
@@ -216,10 +216,10 @@ for i, hop in enumerate(hops):
     if i < len(hops) - 1:
         arrow(x + 21.4, 5.8, x + 25.4, 5.8, color=GREEN, lw=1.1)
 
-ax.text(153, 0.6, "verifiable without trusting ATLAS", fontsize=6.8, color=GREEN,
+ax.text(153, 0.6, "manifest integrity can be checked independently", fontsize=6.8, color=GREEN,
         family=MONO, ha="right", va="bottom")
 
 plt.tight_layout(pad=0.3)
-plt.savefig("/home/user/atlas/docs/architecture.png", facecolor=BG, dpi=170,
-            bbox_inches="tight", pad_inches=0.28)
-print("wrote docs/architecture.png")
+output = Path(__file__).resolve().parents[1] / "docs" / "architecture.png"
+plt.savefig(output, facecolor=BG, dpi=170, bbox_inches="tight", pad_inches=0.28)
+print(f"wrote {output}")

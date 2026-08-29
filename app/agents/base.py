@@ -2,9 +2,10 @@
 
 Two things matter here:
 
-1. Every agent is a real `google.adk.agents.LlmAgent` backed by
-   `gemini-3.5-flash`. Orchestration uses ADK's Sequential/Parallel/Loop
-   primitives rather than hand-rolled control flow.
+1. The five hunters and Control Judge can run as
+   `google.adk.agents.LlmAgent` roles backed by `gemini-3.5-flash`.
+   Coordination uses explicit Python async control flow so the implementation
+   matches the task ledger and idempotency checks in this repository.
 
 2. The fleet degrades instead of dying. If no model credentials are present
    (a judge running `docker run` with no env), `invoke` falls back to a

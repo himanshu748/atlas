@@ -183,6 +183,11 @@ class ArmorVerdict(BaseModel):
     action: ArmorAction
     matched_policy: str = ""
     confidence: float = 0.0
+    backend: Literal[
+        "model-armor",
+        "model-armor+deterministic",
+        "deterministic-fallback",
+    ] = "deterministic-fallback"
     excerpt: str = ""                        # sanitised, for the UI
     at: datetime = Field(default_factory=now)
     trace_id: str = ""

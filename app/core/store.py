@@ -14,6 +14,7 @@ import asyncio
 import logging
 from collections import defaultdict
 from typing import Any, Iterable, TypeVar
+from urllib.parse import quote
 
 from app.config import settings
 from app.core.models import (
@@ -67,6 +68,11 @@ _KEY_FOR = {
     AGENTS: "name",
     RUNS: "run_id",
 }
+
+
+def _firestore_doc_key(key: object) -> str:
+    """Encode logical keys so names such as ``hunter/iam`` stay one document ID."""
+    return quote(str(key), safe="")
 
 
 class MemoryStore:
@@ -124,11 +130,11 @@ class FirestoreStore:
 
     async def put(self, coll: str, obj: Any) -> Any:
         key = getattr(obj, _KEY_FOR[coll])
-        await self._col(coll).document(key).set(obj.model_dump(mode="json"))
+        await self._col(coll).document(_firestore_doc_key(key)).set(obj.model_dump(mode="json"))
         return obj
 
     async def get(self, coll: str, key: str) -> Any | None:
-        snap = await self._col(coll).document(key).get()
+        snap = await self._col(coll).document(_firestore_doc_key(key)).get()
         return _MODEL_FOR[coll](**snap.to_dict()) if snap.exists else None
 
     async def list(self, coll: str, limit: int = 1000) -> list[Any]:
@@ -146,7 +152,7 @@ class FirestoreStore:
         return await self.put(coll, obj)
 
     async def delete(self, coll: str, key: str) -> None:
-        await self._col(coll).document(key).delete()
+        await self._col(coll).document(_firestore_doc_key(key)).delete()
 
     async def count(self, coll: str) -> int:
         return len(await self.list(coll, limit=5000))
