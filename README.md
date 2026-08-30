@@ -69,7 +69,7 @@ ATLAS models that job as eleven registered fleet roles. The five hunters and Con
 2. **Judges:** a separate Control Judge rules `SATISFIED` / `INSUFFICIENT` / `NEEDS_HUMAN` against criterion text and cites filed artifacts after recalling relevant organisation memory.
 3. **Chases:** when a ruling needs a policy decision, the Chaser keeps one open handoff per control and walks an escalation ladder.
 4. **Watches:** the Drift Sentinel recomputes freshness SLAs during scheduled sweeps and reopens stale controls.
-5. **Ships:** the Assembler returns per-control entries, a SHA-256 manifest, a root hash and a gap register. The standalone verifier checks internal manifest integrity.
+5. **Ships:** the Assembler returns per-control entries, a SHA-256 manifest, a root hash over both the evidence and the verdicts, and a gap register. The standalone verifier checks internal manifest integrity.
 
 **Autonomy is a measured, first-class metric.** The API derives it from the live ledger as `verified controls with human_touches == 0 / all verified controls`. Readiness is `verified controls / all controls`. The percentages change as sweeps and handoffs update the ledger, so the documentation does not hardcode a result.
 
@@ -181,13 +181,15 @@ Gemini can write the briefing from live ledger state. With the optional Cloud Te
 
 `scripts/verify_manifest.py` imports nothing from `app/`. It checks manifest structure, re-derives the root hash and can re-hash artifact files when they are supplied.
 
+The root hash covers the judged outcome, not just the evidence. Each control contributes its id, status, verdict and human-touch count to the hashed input alongside every artifact `sha256`, so a rewritten ruling breaks the root the same way a corrupted artifact does. The verifier also recounts the entries and rejects a `controls_verified` or `controls_total` that disagrees with them.
+
 ```bash
 curl -sS -X POST http://localhost:8080/api/package \
   -H 'content-type: application/json' -d '{}' -o manifest.json
 python scripts/verify_manifest.py manifest.json
 ```
 
-The command prints `PACKAGE VERIFIED` when the manifest is internally consistent. Pass `--artifacts ./evidence` to re-hash files from disk as well. Changing a declared artifact hash without recomputing the root produces `VERIFICATION FAILED`.
+The command prints `PACKAGE VERIFIED` when the manifest is internally consistent and exits non-zero when it is not. Pass `--artifacts ./evidence` to re-hash files from disk as well. Changing a declared artifact hash, flipping a control verdict to `SATISFIED`, zeroing a human-touch count or inflating `controls_verified` each produce `VERIFICATION FAILED`.
 
 ---
 
