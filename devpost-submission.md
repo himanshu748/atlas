@@ -18,7 +18,7 @@ The deployed proof read real IAM bindings and two real Cloud Storage buckets thr
 
 ## Why This Matters
 
-ATLAS reduces high-volume audit preparation while keeping the consequential judgment inspectable. Every filed record carries source, collector identity, screening state and a SHA-256 hash. Human involvement is measured rather than hidden, and the independent manifest verifier re-derives internal hashes and reports evidence gaps.
+ATLAS reduces high-volume audit preparation while keeping the consequential judgment inspectable. Every filed record carries source, collector identity, screening state and a SHA-256 hash. Human involvement is measured rather than hidden, and the independent manifest verifier re-derives internal hashes and reports evidence gaps. The root hash covers the judged outcome as well as the evidence, so a rewritten ruling fails verification exactly as a corrupted artifact does.
 
 ## How We Used AI
 
@@ -41,7 +41,7 @@ Codex helped turn the initial prototype into a deployable product. It audited pr
 - Human escalation inbox and measurable autonomy
 - Managed Model Armor plus a labelled deterministic second layer
 - OpenTelemetry traces exported to Cloud Trace
-- Verifiable manifest with per-artifact hashes, a root hash and a gap register
+- Verifiable manifest with per-artifact hashes, a root hash binding every control verdict, and a gap register
 - Private Cloud Run deployment with scale-to-zero and a paused Scheduler job
 
 ## Architecture
@@ -133,7 +133,7 @@ Final timestamped run sheet: `docs/DEMO_SCRIPT.md`
 - The deployed proof uses live Cloud Asset IAM and bucket data. SDLC is a fixture in this deployment, with an optional GitHub adapter in code. HR and vendor remain fixture-only in this revision.
 - Per-role SPIFFE-format identities and scopes are application controls. The Cloud Run container executes under one runtime service account.
 - Managed Model Armor returned clean for the seeded injection. The labelled deterministic second layer quarantined it.
-- The verifier checks manifest integrity and provenance fields but does not cryptographically authenticate package origin.
+- The verifier checks manifest integrity and provenance fields, covering artifact hashes and control verdicts, but does not cryptographically authenticate package origin.
 - The Google Cloud budget is an alert, not a hard spending cap.
 
 ## Official Form Fields
