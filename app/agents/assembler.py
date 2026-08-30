@@ -24,9 +24,19 @@ from app.core.telemetry import span
 log = logging.getLogger("atlas.assembler")
 
 
-def _root_hash(hashes: list[str]) -> str:
-    """Deterministic root over sorted artifact hashes."""
-    joined = "".join(sorted(hashes)).encode()
+def _control_leaf(control_id: str, status: str, verdict: str | None, human_touches: int) -> str:
+    """One hashable line binding a control to the verdict recorded against it."""
+    return f"control:{control_id}:{status}:{verdict or 'none'}:{human_touches}"
+
+
+def _root_hash(hashes: list[str], control_leaves: list[str]) -> str:
+    """Deterministic root over sorted artifact hashes and control verdicts.
+
+    Artifact hashes alone would let a rewritten ruling keep a valid root, so the
+    judged outcome of every control is hashed alongside the evidence it cites.
+    scripts/verify_manifest.py duplicates this and must stay identical.
+    """
+    joined = "".join(sorted(hashes + control_leaves)).encode()
     return hashlib.sha256(joined).hexdigest()
 
 
@@ -79,6 +89,12 @@ async def build_package(run_id: str, trace_id: str) -> dict[str, Any]:
                     )
 
             all_hashes = [a.sha256 for a in evidence if a.sha256]
+            control_leaves = [
+                _control_leaf(
+                    e["control"], e["status"], e["verdict"], e["human_touches"]
+                )
+                for e in entries
+            ]
             manifest = {
                 "package": f"atlas-{settings.framework}-{now():%Y}-{run_id}",
                 "generated_at": now().isoformat(),
@@ -89,9 +105,9 @@ async def build_package(run_id: str, trace_id: str) -> dict[str, Any]:
                     1 for c in controls if c.status is ControlStatus.VERIFIED
                 ),
                 "artifacts": len(evidence),
-                "root_hash": _root_hash(all_hashes),
+                "root_hash": _root_hash(all_hashes, control_leaves),
                 "signed_by": identity.get("assembler").spiffe_id,
-                "verify": "atlas verify --manifest manifest.json",
+                "verify": "python scripts/verify_manifest.py manifest.json",
                 "entries": entries,
                 "gap_register": gaps,
             }

@@ -24,9 +24,14 @@ BOLD = "\033[1m"
 OFF = "\033[0m"
 
 
-def root_hash(hashes: list[str]) -> str:
+def control_leaf(control_id: str, status: str, verdict: str | None, human_touches: int) -> str:
+    """Must match app/agents/assembler.py::_control_leaf exactly."""
+    return f"control:{control_id}:{status}:{verdict or 'none'}:{human_touches}"
+
+
+def root_hash(hashes: list[str], control_leaves: list[str]) -> str:
     """Must match app/agents/assembler.py::_root_hash exactly."""
-    return hashlib.sha256("".join(sorted(hashes)).encode()).hexdigest()
+    return hashlib.sha256("".join(sorted(hashes + control_leaves)).encode()).hexdigest()
 
 
 def main() -> int:
@@ -70,11 +75,36 @@ def main() -> int:
 
     # 3. root hash must re-derive
     declared = manifest.get("root_hash", "")
-    derived = root_hash([a["sha256"] for a in artifacts if a.get("sha256")])
+    leaves = [
+        control_leaf(
+            e.get("control", ""),
+            e.get("status", ""),
+            e.get("verdict"),
+            e.get("human_touches", 0),
+        )
+        for e in entries
+    ]
+    derived = root_hash([a["sha256"] for a in artifacts if a.get("sha256")], leaves)
     if declared != derived:
         problems.append(f"root hash mismatch (declared {declared[:16]}… derived {derived[:16]}…)")
     elif not args.quiet:
-        print(f"  {GREEN}OK{OFF}  root hash re-derived: {derived[:32]}...")
+        print(f"  {GREEN}OK{OFF}  root hash re-derived over evidence and verdicts: {derived[:32]}...")
+
+    # 3b. declared counts must agree with the entries they summarise
+    declared_total = manifest.get("controls_total")
+    declared_verified = manifest.get("controls_verified")
+    counted_verified = sum(1 for e in entries if e.get("status") == "verified")
+    if declared_total != len(entries):
+        problems.append(
+            f"controls_total {declared_total} does not match {len(entries)} entries"
+        )
+    if declared_verified != counted_verified:
+        problems.append(
+            f"controls_verified {declared_verified} does not match "
+            f"{counted_verified} verified entries"
+        )
+    if not problems and not args.quiet:
+        print(f"  {GREEN}OK{OFF}  declared counts agree with the entries")
 
     # 4. every artifact must have passed Model Armor
     unscreened = [a["name"] for a in artifacts if a.get("armor") not in ("pass", "redacted")]
