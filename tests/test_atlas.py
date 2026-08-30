@@ -216,3 +216,39 @@ async def test_package_api_download_is_independently_verifiable(monkeypatch, tmp
     )
     assert verified.returncode == 0, verified.stdout + verified.stderr
     assert "PACKAGE VERIFIED" in verified.stdout
+
+
+@pytest.mark.asyncio
+async def test_manifest_verifier_rejects_tampered_control_verdict(monkeypatch, tmp_path):
+    import app.core.store as store_module
+    from app.api.routes import package
+    from seed.seed_data import seed_all
+
+    monkeypatch.setattr(store_module, "_store", store_module.MemoryStore())
+    await seed_all()
+
+    response = await package()
+    manifest = json.loads(response.body)
+    original_root = manifest["root_hash"]
+    manifest["entries"][0]["verdict"] = "tampered-verdict"
+    assert manifest["root_hash"] == original_root
+
+    manifest_path = tmp_path / "tampered-manifest.json"
+    manifest_path.write_text(json.dumps(manifest))
+    repo_root = Path(__file__).resolve().parents[1]
+    verified = subprocess.run(
+        [
+            sys.executable,
+            str(repo_root / "scripts" / "verify_manifest.py"),
+            str(manifest_path),
+            "--quiet",
+        ],
+        cwd=repo_root,
+        capture_output=True,
+        text=True,
+        check=False,
+    )
+
+    assert verified.returncode == 1
+    assert "VERIFICATION FAILED" in verified.stdout
+    assert "root hash mismatch" in verified.stdout
