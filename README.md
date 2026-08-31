@@ -85,7 +85,7 @@ ATLAS models that job as eleven registered fleet roles. The five hunters and Con
 | Cloud Run service | `atlas-console` |
 | Ready revision | `atlas-console-00004-2n6`, receiving 100% of traffic |
 | Private URL | `https://atlas-console-jguwjegiqq-uc.a.run.app` |
-| Public judge service | `atlas-public-demo`, revision `atlas-public-demo-00003-rmr` |
+| Public judge service | `atlas-public-demo`, revision `atlas-public-demo-00004-gc9` |
 | Public judge URL | `https://atlas-public-demo-jguwjegiqq-uc.a.run.app` |
 | Public judge boundary | Labelled fixtures, two sanitised Gemini rulings captured from the verified private run, no live model calls, read-only routes and no direct project IAM role bindings |
 | Runtime | `cloud` |
