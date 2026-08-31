@@ -421,6 +421,7 @@ kbd { font-family: var(--mono); font-size: 9.5px; background: var(--bg-raised); 
 
 .verdict { border: 1px solid var(--border); border-radius: var(--radius); padding: 11px; background: var(--bg-void); }
 .verdict.satisfied { border-left: 2px solid var(--st-verified); }
+.verdict.needs-human { border-left: 2px solid var(--st-waiting); }
 .verdict.insufficient { border-left: 2px solid var(--st-failed); }
 .verdict-meta { display: flex; align-items: center; gap: 7px; flex-wrap: wrap; }
 .ruling-provenance { color: var(--text-lo); }

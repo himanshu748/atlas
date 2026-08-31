@@ -142,6 +142,13 @@ async def fleet_state(request: Request):
         for c in controls
         if c.ruling and c.ruling.provenance == "recorded-private-run"
     )
+    deterministic_fixture_rulings = sum(
+        1
+        for c in controls
+        if c.ruling
+        and c.ruling.model == "deterministic-fallback"
+        and c.ruling.provenance == "seeded-fixture"
+    )
 
     return {
         "run_id": summary.run_id,
@@ -159,6 +166,7 @@ async def fleet_state(request: Request):
         "controls_verified": summary.controls_verified,
         "controls_autonomous": summary.controls_autonomous,
         "recorded_model_rulings": recorded_rulings,
+        "deterministic_fixture_rulings": deterministic_fixture_rulings,
         "handoffs_open": summary.handoffs_open,
         "cost_usd": summary.cost_usd,
         "budget_usd": summary.budget_usd,
@@ -176,7 +184,7 @@ async def fleet_state(request: Request):
             else {**h.model_dump(mode="json"), "hours_remaining": round(h.hours_remaining, 1)}
             for h in handoffs
             if h.is_open
-        ][:5],
+        ][: 10 if runtime_settings.public_demo else 5],
     }
 
 
@@ -254,7 +262,10 @@ async def get_control(request: Request, control_id: str):
                     "hop": "public snapshot sha256",
                     "value": (first["sha256"][:16] + "…") if first else "—",
                 },
-                {"hop": "public proof fixture", "value": "recorded" if first else "—"},
+                {
+                    "hop": "public proof provenance",
+                    "value": control.ruling.provenance if first and control.ruling else "—",
+                },
             ],
         }
 

@@ -204,7 +204,7 @@ function pageCommand(){
   const verifiedCount = Number(fleet.controls_verified ?? verified);
   const autonomousCount = Number(fleet.controls_autonomous ?? Math.round(verifiedCount * autonomy / 100));
   const autonomyLabel = publicDemo
-    ? `${autonomousCount}/${verifiedCount} verified controls closed with zero human touches · deterministic seed 7`
+    ? `${autonomousCount}/${verifiedCount} verified controls closed with zero human touches · fixture seed 7`
     : `closed with no human touch, ${HANDOFFS.length} handoffs open`;
   return `
   <div class="page-head">
@@ -595,17 +595,32 @@ function openControl(id){
   const isGeminiRuling = normalizedRulingModel.includes('gemini');
   const isFallbackRuling = normalizedRulingModel === 'deterministic-fallback';
   const isRecordedRuling = ruling?.provenance === 'recorded-private-run';
+  const isSeededRuling = ruling?.provenance === 'seeded-fixture';
   const engineLabel = isGeminiRuling
     ? rulingModel.toUpperCase()
     : isFallbackRuling
       ? 'DETERMINISTIC FALLBACK'
       : 'UNKNOWN ENGINE';
   const engineClass = isGeminiRuling ? 'engine-gemini' : isFallbackRuling ? 'engine-fallback' : '';
-  const provenanceLabel = isRecordedRuling ? 'RECORDED PRIVATE RUN · 2026-08-29' : 'RUNTIME DECISION';
+  const provenanceLabel = isRecordedRuling
+    ? 'RECORDED PRIVATE RUN · 2026-08-29'
+    : isSeededRuling
+      ? 'SEEDED FIXTURE · SEED 7'
+      : 'RUNTIME DECISION';
+  const verdictClass = ruling?.verdict === 'SATISFIED'
+    ? 'satisfied'
+    : ruling?.verdict === 'NEEDS_HUMAN'
+      ? 'needs-human'
+      : 'insufficient';
+  const verdictChipClass = ruling?.verdict === 'SATISFIED'
+    ? 'verified'
+    : ruling?.verdict === 'NEEDS_HUMAN'
+      ? 'waiting'
+      : 'failed';
   const rulingBlock = ruling ? `
-    <div class="verdict ${ruling.verdict==='SATISFIED'?'satisfied':'insufficient'}">
+    <div class="verdict ${verdictClass}">
       <div class="verdict-meta">
-        <span class="chip ${ruling.verdict==='SATISFIED'?'verified':'failed'}">${escapeHtml(ruling.verdict)}</span>
+        <span class="chip ${verdictChipClass}">${escapeHtml(ruling.verdict)}</span>
         <span class="chip chip-mono ${engineClass}">${escapeHtml(engineLabel)}</span>
         <span class="chip chip-mono ruling-provenance">${escapeHtml(provenanceLabel)}</span>
         <span class="mono verdict-confidence">confidence ${Number(ruling.confidence || 0).toFixed(2)}</span></div>

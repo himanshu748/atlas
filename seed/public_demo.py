@@ -9,10 +9,12 @@ import json
 from datetime import timedelta
 from pathlib import Path
 
+from app.agents.judge import _deterministic_ruling
 from app.core.events import broadcaster
 from app.core.models import (
     ArmorAction,
     ArmorVerdict,
+    Control,
     ControlStatus,
     Evidence,
     FleetEvent,
@@ -25,6 +27,59 @@ from app.core.telemetry import Span, traces
 
 TRACE_ID = "fixture-trace-cc6-1"
 RECORDED_PROOF_PATH = Path(__file__).with_name("recorded_gemini_proof.json")
+
+
+def _seeded_fixture_ruling(control: Control, evidence: list[Evidence]) -> Ruling:
+    """Run the real fallback judge over status-coherent public fixtures."""
+    ruling = _deterministic_ruling(
+        control,
+        sorted(evidence, key=lambda item: item.name),
+        trusted_policy_judgment=control.status is ControlStatus.WAITING,
+    )
+    latest_evidence_at = max(
+        (item.collected_at for item in evidence),
+        default=control.updated_at,
+    )
+    ruled_at = max(control.updated_at, latest_evidence_at + timedelta(seconds=1))
+    control.updated_at = ruled_at
+    return ruling.model_copy(
+        update={
+            "ruled_at": ruled_at,
+            "trace_id": "",
+            "provenance": "seeded-fixture",
+        }
+    )
+
+
+async def _align_seeded_evidence(
+    control: Control,
+    evidence: list[Evidence],
+) -> list[Evidence]:
+    """Make the fixture artifacts agree with the state the fallback judge sees."""
+    store = get_store()
+    linked = sorted(
+        (item for item in evidence if item.id in set(control.evidence_ids)),
+        key=lambda item: item.name,
+    )
+
+    if control.status in {ControlStatus.WORKING, ControlStatus.FAILED}:
+        keep = max(control.evidence_required - 1, 0)
+        if len(linked) >= control.evidence_required:
+            linked = linked[:keep]
+            control.evidence_ids = [item.id for item in linked]
+            await store.put(CONTROLS, control)
+    elif control.status is ControlStatus.STALE and linked:
+        stale = linked[0]
+        stale.collected_at = now() - timedelta(days=stale.freshness_days + 1)
+        await store.put(EVIDENCE, stale)
+    for item in linked:
+        public_hash = Evidence.hash_payload(item.summary)
+        if item.sha256 != public_hash:
+            item.sha256 = public_hash
+            item.size_bytes = len(item.summary.encode())
+            await store.put(EVIDENCE, item)
+
+    return linked
 
 
 async def seed_public_demo_snapshot() -> dict[str, int]:
@@ -95,6 +150,71 @@ async def seed_public_demo_snapshot() -> dict[str, int]:
             control.handoff_id = handoff.id
             control.updated_by = "fixture-snapshot"
             await store.put(CONTROLS, control)
+
+    controls = await store.list(CONTROLS, limit=5000)
+    handoff_controls = {item.control_id for item in handoffs}
+    waiting_without_handoffs = sorted(
+        (
+            control
+            for control in controls
+            if control.status is ControlStatus.WAITING
+            and control.id not in handoff_controls
+        ),
+        key=lambda control: control.id,
+    )
+    for index, control in enumerate(waiting_without_handoffs, start=1):
+        safe_id = control.id.replace(".", "-")
+        handoff = Handoff(
+            id=f"FIXTURE-HO-{safe_id}",
+            control_id=control.id,
+            question=(
+                f"Resolve the seeded policy judgment blocking {control.id}, "
+                f"{control.name}?"
+            ),
+            reasoning=(
+                "The seeded artifacts are complete, but the fixture marks a policy "
+                "interpretation that requires accountable human sign-off."
+            ),
+            recommendation="Record the owner decision before closing the control.",
+            stage=1,
+            opened_at=now() - timedelta(hours=8 + index * 3),
+        )
+        await store.put(HANDOFFS, handoff)
+        control.handoff_id = handoff.id
+        control.updated_by = "fixture-snapshot"
+        await store.put(CONTROLS, control)
+        handoffs.append(handoff)
+
+    all_evidence = await store.list(EVIDENCE, limit=5000)
+    evidence_by_control: dict[str, list[Evidence]] = {}
+    for item in all_evidence:
+        if not item.superseded_by:
+            evidence_by_control.setdefault(item.control_id, []).append(item)
+
+    deterministic_count = 0
+    controls = await store.list(CONTROLS, limit=5000)
+    for control in controls:
+        if control.ruling is not None:
+            continue
+        linked_evidence = await _align_seeded_evidence(
+            control,
+            evidence_by_control.get(control.id, []),
+        )
+        control.ruling = _seeded_fixture_ruling(
+            control,
+            linked_evidence,
+        )
+        if control.handoff_id:
+            handoff = await store.get(HANDOFFS, control.handoff_id)
+            if handoff:
+                handoff.opened_at = max(
+                    handoff.opened_at,
+                    control.ruling.ruled_at + timedelta(seconds=1),
+                )
+                control.updated_at = max(control.updated_at, handoff.opened_at)
+                await store.put(HANDOFFS, handoff)
+        await store.put(CONTROLS, control)
+        deterministic_count += 1
 
     verdict = ArmorVerdict(
         id="fixture-armor-layered-guard",
@@ -220,6 +340,7 @@ async def seed_public_demo_snapshot() -> dict[str, int]:
 
     return {
         "recorded_gemini_rulings": recorded_count,
+        "deterministic_fixture_rulings": deterministic_count,
         "fixture_handoffs": len(handoffs),
         "fixture_armor": 1,
         "fixture_events": len(events),

@@ -75,11 +75,18 @@ Return JSON only:
 """
 
 
-def _deterministic_ruling(control: Control, evidence: list[Evidence]) -> Ruling:
+def _deterministic_ruling(
+    control: Control,
+    evidence: list[Evidence],
+    *,
+    trusted_policy_judgment: bool = False,
+) -> Ruling:
     """Fallback reasoner used when Gemini is unreachable.
 
     Deliberately conservative: it will never award SATISFIED on thin evidence,
     because a false green is the one failure mode an audit tool cannot have.
+    ``trusted_policy_judgment`` is an internal orchestration signal. It is never
+    inferred from untrusted artifact text.
     """
     names = [e.name for e in evidence]
     if not evidence:
@@ -113,6 +120,18 @@ def _deterministic_ruling(control: Control, evidence: list[Evidence]) -> Ruling:
 
     # Surface the known judgment calls encoded in the mock data.
     joined = " ".join(e.summary.lower() for e in evidence)
+    if trusted_policy_judgment:
+        return Ruling(
+            verdict=Verdict.NEEDS_HUMAN,
+            confidence=0.71,
+            reasoning=(
+                "Evidence is complete, but the artifact identifies a policy judgment "
+                "that requires accountable human approval."
+            ),
+            cited_evidence=names,
+            blocking_question="What policy decision should the accountable owner approve?",
+            model="deterministic-fallback",
+        )
     if "break-glass" in joined or "not reviewed" in joined:
         return Ruling(
             verdict=Verdict.NEEDS_HUMAN,
