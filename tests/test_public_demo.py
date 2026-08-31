@@ -237,6 +237,22 @@ def test_public_lifespan_seeds_a_representative_labelled_snapshot(
     fixture_by_control = {
         proof["control_id"]: proof for proof in recorded_fixture["proofs"]
     }
+    assert recorded_fixture["source"]["data_profiles"] == {
+        "sanitised-live-gcp": 2,
+        "labelled-fixture": 3,
+    }
+    assert len(fixture_by_control) == 5
+    profile_counts: dict[str, int] = {}
+    for proof in fixture_by_control.values():
+        profile = proof["data_profile"]
+        profile_counts[profile] = profile_counts.get(profile, 0) + 1
+        assert proof["generation_revision"] == "atlas-console-00004-2n6"
+        if profile == "labelled-fixture":
+            assert all(
+                item["source_system"].startswith("demo.")
+                for item in proof["evidence"]
+            )
+    assert profile_counts == recorded_fixture["source"]["data_profiles"]
 
     with TestClient(create_app(public_settings)) as client:
         fleet = client.get("/api/fleet").json()
@@ -262,8 +278,8 @@ def test_public_lifespan_seeds_a_representative_labelled_snapshot(
 
     assert len(fleet["handoffs"]) == fleet["handoffs_open"] == 6
     assert fleet["model_backend"] == "deterministic-fallback"
-    assert fleet["recorded_model_rulings"] == 2
-    assert fleet["deterministic_fixture_rulings"] == 62
+    assert fleet["recorded_model_rulings"] == 5
+    assert fleet["deterministic_fixture_rulings"] == 59
     assert all(item["id"].startswith("FIXTURE-") for item in fleet["handoffs"])
     assert len(controls) == 64
     assert all(item["ruling"] is not None for item in controls)
@@ -273,14 +289,21 @@ def test_public_lifespan_seeds_a_representative_labelled_snapshot(
         if item["ruling"]["provenance"] == "recorded-private-run"
     ]
     assert {item["id"] for item in recorded_controls} == set(fixture_by_control)
+    assert {item["domain"] for item in recorded_controls} == {
+        "hr",
+        "iam",
+        "infra",
+        "sdlc",
+        "vendor",
+    }
     deterministic_controls = [
         item
         for item in controls
         if item["ruling"]["provenance"] == "seeded-fixture"
     ]
-    assert len(deterministic_controls) == 62
+    assert len(deterministic_controls) == 59
     verified_controls = [item for item in controls if item["status"] == "verified"]
-    assert len(verified_controls) == fleet["controls_verified"] == 41
+    assert len(verified_controls) == fleet["controls_verified"] == 38
     assert all(
         item["ruling"]["verdict"] == "SATISFIED"
         and item["ruling"]["model"] == "deterministic-fallback"
@@ -342,7 +365,9 @@ def test_public_lifespan_seeds_a_representative_labelled_snapshot(
         control_id = item["control"]["id"]
         expected = fixture_by_control[control_id]
         ruling = item["control"]["ruling"]
-        evidence = item["evidence"][0]
+        evidence_by_name = {
+            evidence["name"]: evidence for evidence in item["evidence"]
+        }
         for key in (
             "verdict",
             "confidence",
@@ -357,12 +382,19 @@ def test_public_lifespan_seeds_a_representative_labelled_snapshot(
             "hop": "public proof provenance",
             "value": "recorded-private-run",
         }
-        assert evidence["name"] == expected["evidence"]["name"]
-        assert evidence["sha256"] == store_module.Evidence.hash_payload(
-            evidence["summary"]
-        )
-        assert "payload_ref" not in evidence
-        assert "size_bytes" not in evidence
+        assert set(evidence_by_name) == set(ruling["cited_evidence"])
+        assert set(evidence_by_name) == {
+            evidence["name"] for evidence in expected["evidence"]
+        }
+        for expected_evidence in expected["evidence"]:
+            evidence = evidence_by_name[expected_evidence["name"]]
+            assert evidence["source_system"] == expected_evidence["source_system"]
+            assert evidence["summary"] == expected_evidence["summary"]
+            assert evidence["sha256"] == store_module.Evidence.hash_payload(
+                evidence["summary"]
+            )
+            assert "payload_ref" not in evidence
+            assert "size_bytes" not in evidence
         assert "memories_used" not in ruling
         assert "trace_id" not in ruling
     deterministic_ruling = deterministic_detail["control"]["ruling"]
@@ -383,7 +415,8 @@ def test_public_lifespan_seeds_a_representative_labelled_snapshot(
     assert len(events) >= 4
     assert sum(item["meta"].get("fixture") is True for item in events) >= 4
     recorded_event = next(item for item in events if item["meta"].get("recorded_proof"))
-    assert recorded_event["at"] == "2026-08-29T11:11:42+00:00"
+    assert recorded_event["at"] == "2026-08-29T11:11:56+00:00"
+    assert "five controls across five hunter domains" in recorded_event["message"]
     assert "trace_id" not in recorded_event
     assert "id" not in recorded_event
     assert traces and traces[0]["trace_id"].startswith("fixture-")

@@ -1,25 +1,34 @@
 {
   "source": {
     "service": "atlas-console",
-    "revision": "atlas-console-00004-2n6",
+    "capture_revision": "atlas-console-00004-2n6",
     "captured_on": "2026-08-31",
     "capture_method": "Authenticated read-only GET /api/controls/{control_id}",
-    "sanitisation": "Verdict, confidence, reasoning, cited filenames and model are copied from the private ledger. Principals, resource names, private hashes, byte counts, memory IDs, trace IDs and payload locations are omitted. Public evidence hashes are recomputed over the sanitised summaries."
+    "capture_scope": "One already-recorded Gemini 3.5 Flash ruling per hunter domain. No new model call was made for this expansion.",
+    "data_profiles": {
+      "sanitised-live-gcp": 2,
+      "labelled-fixture": 3
+    },
+    "sanitisation": "Gemini verdicts, confidence, reasoning, cited filenames and model labels are copied from the private ledger. Live principals, resource names, private hashes, byte counts, memory IDs, trace IDs and payload locations are omitted. SDLC, HR and vendor inputs are explicitly relabelled as fixtures. Public evidence hashes are recomputed over the sanitised summaries."
   },
   "proofs": [
     {
       "control_id": "CC6.105",
-      "evidence": {
-        "id": "recorded-ev-cc6-105-iam",
-        "name": "cc6-105-iam-bindings-2026-08-29.json",
-        "kind": "json",
-        "source_system": "gcp.iam",
-        "collected_by": "hunter/iam",
-        "agent_identity": "spiffe://atlas.dev/agent/hunter-iam",
-        "collected_at": "2026-08-29T11:11:38Z",
-        "freshness_days": 90,
-        "summary": "Sanitised metadata from the recorded private run: live GCP IAM bindings were collected, but the artifact did not prove that a quarterly access recertification was performed or signed off."
-      },
+      "data_profile": "sanitised-live-gcp",
+      "generation_revision": "atlas-console-00004-2n6",
+      "evidence": [
+        {
+          "id": "recorded-ev-cc6-105-iam",
+          "name": "cc6-105-iam-bindings-2026-08-29.json",
+          "kind": "json",
+          "source_system": "gcp.iam",
+          "collected_by": "hunter/iam",
+          "agent_identity": "spiffe://atlas.dev/agent/hunter-iam",
+          "collected_at": "2026-08-29T11:11:38Z",
+          "freshness_days": 90,
+          "summary": "Sanitised metadata from the recorded private run: live GCP IAM bindings were collected, but the artifact did not prove that a quarterly access recertification was performed or signed off."
+        }
+      ],
       "ruling": {
         "verdict": "INSUFFICIENT",
         "confidence": 1.0,
@@ -35,17 +44,21 @@
     },
     {
       "control_id": "A1.3",
-      "evidence": {
-        "id": "recorded-ev-a1-3-assets",
-        "name": "a1-3-cloud-asset-buckets-2026-08-29.json",
-        "kind": "json",
-        "source_system": "gcp.asset",
-        "collected_by": "hunter/infra",
-        "agent_identity": "spiffe://atlas.dev/agent/hunter-infra",
-        "collected_at": "2026-08-29T11:11:37Z",
-        "freshness_days": 365,
-        "summary": "Sanitised metadata from the recorded private run: Cloud Asset Inventory listed two Storage buckets, but the artifact did not prove that recovery procedures were tested."
-      },
+      "data_profile": "sanitised-live-gcp",
+      "generation_revision": "atlas-console-00004-2n6",
+      "evidence": [
+        {
+          "id": "recorded-ev-a1-3-assets",
+          "name": "a1-3-cloud-asset-buckets-2026-08-29.json",
+          "kind": "json",
+          "source_system": "gcp.asset",
+          "collected_by": "hunter/infra",
+          "agent_identity": "spiffe://atlas.dev/agent/hunter-infra",
+          "collected_at": "2026-08-29T11:11:37Z",
+          "freshness_days": 365,
+          "summary": "Sanitised metadata from the recorded private run: Cloud Asset Inventory listed two Storage buckets, but the artifact did not prove that recovery procedures were tested."
+        }
+      ],
       "ruling": {
         "verdict": "INSUFFICIENT",
         "confidence": 1.0,
@@ -54,6 +67,120 @@
           "a1-3-cloud-asset-buckets-2026-08-29.json"
         ],
         "blocking_question": "Please provide evidence demonstrating that recovery plan procedures supporting system recovery have been tested within the last 365 days.",
+        "ruled_at": "2026-08-29T11:11:42Z",
+        "model": "gemini-3.5-flash",
+        "provenance": "recorded-private-run"
+      }
+    },
+    {
+      "control_id": "CC1.3",
+      "data_profile": "labelled-fixture",
+      "generation_revision": "atlas-console-00004-2n6",
+      "evidence": [
+        {
+          "id": "recorded-ev-cc1-3-training",
+          "name": "cc1-3-security-training-completion.json",
+          "kind": "json",
+          "source_system": "demo.hris",
+          "collected_by": "hunter/hr",
+          "agent_identity": "spiffe://atlas.dev/agent/hunter-hr",
+          "collected_at": "2026-08-29T11:11:40Z",
+          "freshness_days": 365,
+          "summary": "Labelled fixture from the recorded private run: all 48 employees completed the SEC-101 2026 training course, but the artifact did not document organisational structure, reporting lines or established authorities."
+        },
+        {
+          "id": "recorded-ev-cc1-3-offboarding",
+          "name": "cc1-3-offboarding-sla-2026-08-29.csv",
+          "kind": "csv",
+          "source_system": "demo.hris",
+          "collected_by": "hunter/hr",
+          "agent_identity": "spiffe://atlas.dev/agent/hunter-hr",
+          "collected_at": "2026-08-29T11:11:40Z",
+          "freshness_days": 365,
+          "summary": "Labelled fixture from the recorded private run: offboarding data showed three timely access revocations and one delayed revocation, but it did not document organisational structure, reporting lines or assigned authorities."
+        }
+      ],
+      "ruling": {
+        "verdict": "INSUFFICIENT",
+        "confidence": 1.0,
+        "reasoning": "The provided evidence consists of a security training completion report and an offboarding SLA tracking CSV. Neither of these artifacts documents the organization's structure, reporting lines, or defined authorities and responsibilities, which are the core requirements of CC1.3.",
+        "cited_evidence": [
+          "cc1-3-security-training-completion.json",
+          "cc1-3-offboarding-sla-2026-08-29.csv"
+        ],
+        "blocking_question": "Please provide documentation demonstrating the established organisational structure, reporting lines and authorities, such as an organisational chart, job descriptions or an employee handbook outlining these structures.",
+        "ruled_at": "2026-08-29T11:11:44Z",
+        "model": "gemini-3.5-flash",
+        "provenance": "recorded-private-run"
+      }
+    },
+    {
+      "control_id": "CC8.102",
+      "data_profile": "labelled-fixture",
+      "generation_revision": "atlas-console-00004-2n6",
+      "evidence": [
+        {
+          "id": "recorded-ev-cc8-102-branch-protection",
+          "name": "cc8-102-branch-protection-2026-08-29.json",
+          "kind": "json",
+          "source_system": "demo.github",
+          "collected_by": "hunter/sdlc",
+          "agent_identity": "spiffe://atlas.dev/agent/hunter-sdlc",
+          "collected_at": "2026-08-29T11:11:51Z",
+          "freshness_days": 90,
+          "summary": "Labelled fixture from the recorded private run: branch protection required one or two peer reviews across four repositories, but the artifact did not provide release approval evidence for the data platform."
+        },
+        {
+          "id": "recorded-ev-cc8-102-secret-scanning",
+          "name": "cc8-102-secret-scanning-alerts.json",
+          "kind": "json",
+          "source_system": "demo.github",
+          "collected_by": "hunter/sdlc",
+          "agent_identity": "spiffe://atlas.dev/agent/hunter-sdlc",
+          "collected_at": "2026-08-29T11:11:52Z",
+          "freshness_days": 90,
+          "summary": "Labelled fixture from the recorded private run: push protection was enabled with zero open secret-scanning alerts and three resolved alerts, but the artifact did not provide release approval evidence for the data platform."
+        }
+      ],
+      "ruling": {
+        "verdict": "INSUFFICIENT",
+        "confidence": 1.0,
+        "reasoning": "The provided evidence does not address the control requirement. The artifact 'cc8-102-branch-protection-2026-08-29.json' shows branch protection configurations for several repositories (atlas-api, atlas-web, billing, infra-tf), and 'cc8-102-secret-scanning-alerts.json' contains secret scanning alerts. Neither of these artifacts provides release approval evidence for the data platform on the documented cadence.",
+        "cited_evidence": [
+          "cc8-102-branch-protection-2026-08-29.json",
+          "cc8-102-secret-scanning-alerts.json"
+        ],
+        "blocking_question": "Please provide release approval evidence for the data platform, such as approved pull requests, change request approvals or release sign-offs covering the documented cadence within the audit period.",
+        "ruled_at": "2026-08-29T11:11:56Z",
+        "model": "gemini-3.5-flash",
+        "provenance": "recorded-private-run"
+      }
+    },
+    {
+      "control_id": "CC3.93",
+      "data_profile": "labelled-fixture",
+      "generation_revision": "atlas-console-00004-2n6",
+      "evidence": [
+        {
+          "id": "recorded-ev-cc3-93-dpa",
+          "name": "cc3-93-northwind-dpa.pdf",
+          "kind": "pdf",
+          "source_system": "demo.drive",
+          "collected_by": "hunter/vendor",
+          "agent_identity": "spiffe://atlas.dev/agent/hunter-vendor",
+          "collected_at": "2026-08-29T11:11:38Z",
+          "freshness_days": 180,
+          "summary": "Labelled fixture from the recorded private run: the vendor Data Processing Addendum had expired and remained unsigned for renewal, so it did not prove that a current sub-processor review was completed."
+        }
+      ],
+      "ruling": {
+        "verdict": "INSUFFICIENT",
+        "confidence": 1.0,
+        "reasoning": "The only evidence provided, cc3-93-northwind-dpa.pdf, is an expired Data Processing Addendum (expired March 1, 2026) that remains unsigned for renewal as of August 9, 2026. Consequently, there is no active, signed agreement or evidence demonstrating that a sub-processor review for Northwind Analytics, Inc. was successfully completed for the current audit period.",
+        "cited_evidence": [
+          "cc3-93-northwind-dpa.pdf"
+        ],
+        "blocking_question": "Please provide an executed current Data Processing Addendum or documented sub-processor review for Northwind Analytics, Inc. covering the current audit period.",
         "ruled_at": "2026-08-29T11:11:42Z",
         "model": "gemini-3.5-flash",
         "provenance": "recorded-private-run"

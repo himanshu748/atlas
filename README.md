@@ -85,9 +85,9 @@ ATLAS models that job as eleven registered fleet roles. The five hunters and Con
 | Cloud Run service | `atlas-console` |
 | Ready revision | `atlas-console-00004-2n6`, receiving 100% of traffic |
 | Private URL | `https://atlas-console-jguwjegiqq-uc.a.run.app` |
-| Public judge service | `atlas-public-demo`, revision `atlas-public-demo-00005-f2d` |
+| Public judge service | `atlas-public-demo`, revision `atlas-public-demo-00006-954` |
 | Public judge URL | `https://atlas-public-demo-jguwjegiqq-uc.a.run.app` |
-| Public judge boundary | All 64 controls have labelled rulings: 62 seeded deterministic decisions plus two sanitised Gemini rulings captured from the verified private run. No live model calls, mutation routes or direct project IAM role bindings |
+| Public judge boundary | All 64 controls have labelled rulings: 59 seeded deterministic decisions plus five sanitised Gemini rulings captured from the verified private run, one per hunter domain. Two use live GCP metadata and three use labelled fixtures. No live model calls, mutation routes or direct project IAM role bindings |
 | Runtime | `cloud` |
 | Inference | Vertex AI, `gemini-3.5-flash`, location `us` |
 | Capacity | Scale to zero, minimum 0, maximum 1, concurrency 1 |
@@ -106,7 +106,7 @@ gcloud run services proxy atlas-console \
 | Concern | Service |
 |---|---|
 | Console + API + SSE | Private Cloud Run service `atlas-console`, revision `atlas-console-00004-2n6` |
-| Public judge console | Separate Cloud Run service `atlas-public-demo`; fixture-only GET allowlist with 62 seeded deterministic rulings, two recorded private-run Gemini rulings and no live model, cloud-data, upload, stream or mutation access |
+| Public judge console | Separate Cloud Run service `atlas-public-demo`; GET-only allowlist with 59 seeded deterministic rulings, five recorded private-run Gemini rulings and no live model, cloud-data, upload, stream or mutation access |
 | Ledger, evidence, handoffs, tasks | Firestore (native), verified with persisted live records |
 | Event copies | Pub/Sub (`atlas-events`), verified |
 | Long-horizon execution | Cloud Scheduler → `POST /internal/sweep` |
@@ -280,7 +280,7 @@ Interactive docs at `/docs`.
 ## Known limitations in this revision
 
 - **Live-data boundary:** the verified deployment used Cloud Asset Inventory for actual IAM bindings and two actual Cloud Storage buckets. SDLC uses a representative fixture in this deployment, with an optional GitHub adapter when configured. HR and vendor have fixture-only collectors. Do not present fixture results as live integrations.
-- **Public access:** the live workflow service `atlas-console` remains private. Judges receive a separate [read-only public console](https://atlas-public-demo-jguwjegiqq-uc.a.run.app) where every control has a visible, model-labelled ruling: 62 seeded deterministic decisions plus two sanitised rulings captured from the verified private Gemini run. Its runtime makes no model calls and has no direct project IAM role bindings. That public service exposes no mutation, upload, SSE, briefing, docs or internal-sweep route. The GitHub repository and final 2:00 [YouTube demo](https://www.youtube.com/watch?v=ZbEzvKVPXIU) are public.
+- **Public access:** the live workflow service `atlas-console` remains private. Judges receive a separate [read-only public console](https://atlas-public-demo-jguwjegiqq-uc.a.run.app) where every control has a visible, model-labelled ruling: 59 seeded deterministic decisions plus five sanitised Gemini rulings captured from the verified private run, one per hunter domain. Two use live GCP metadata and three use labelled fixtures. Its runtime makes no model calls and has no direct project IAM role bindings. That public service exposes no mutation, upload, SSE, briefing, docs or internal-sweep route. The GitHub repository and final 2:00 [YouTube demo](https://www.youtube.com/watch?v=ZbEzvKVPXIU) are public.
 - **Scheduler state:** one authenticated manual execution reached the private `/internal/sweep` endpoint and returned HTTP 200 on August 29, 2026. `atlas-weekly-sweep` is paused after that validation and remains paused unless explicitly resumed.
 - **Spend reporting:** the billing alert is not a hard cap and billing data can be delayed. The API's `cost_usd` is an application estimate, not an observed Google Cloud charge. No actual billing cost is claimed.
 - **Dispatch and orchestration:** Agent Registry and Memory use in-project implementations. A best-effort remote registry adapter exists, but the coordinator calls in-process Python functions and does not use it for dispatch. Pub/Sub receives event copies; the application does not dispatch control work through Pub/Sub workers or Cloud Tasks. Coordination uses Python async control flow rather than ADK `ParallelAgent`, `SequentialAgent` or `LoopAgent` primitives.

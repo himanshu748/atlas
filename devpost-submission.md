@@ -64,7 +64,7 @@ uvicorn app.main:app --port 8080
 
 Open http://localhost:8080. Local mode needs no Google Cloud credentials and uses an in-memory ledger, clearly labelled fixtures and a deterministic reasoning fallback. The current repository test suite passes without cloud credentials.
 
-The verified workflow deployment is private Cloud Run service `atlas-console`, revision `atlas-console-00004-2n6`, in project `atlas-agentic-hack-2026-v2`. A separate public Cloud Run service provides a safe read-only console where every control has a visible, model-labelled ruling: 62 seeded deterministic decisions plus two sanitised rulings captured from the verified private Gemini run. The public runtime makes no live model calls and has no direct project IAM role bindings.
+The verified workflow deployment is private Cloud Run service `atlas-console`, revision `atlas-console-00004-2n6`, in project `atlas-agentic-hack-2026-v2`. A separate public Cloud Run service provides a safe read-only console where every control has a visible, model-labelled ruling: 59 seeded deterministic decisions plus five sanitised Gemini rulings captured from the verified private run, one per hunter domain. Two use live GCP metadata and three use labelled fixtures. The public runtime makes no live model calls and has no direct project IAM role bindings.
 
 ## Public Demo Link
 

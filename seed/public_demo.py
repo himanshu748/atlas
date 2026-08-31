@@ -20,6 +20,7 @@ from app.core.models import (
     FleetEvent,
     Handoff,
     Ruling,
+    Verdict,
     now,
 )
 from app.core.store import ARMOR, CONTROLS, EVIDENCE, EVENTS, HANDOFFS, get_store
@@ -97,19 +98,46 @@ async def seed_public_demo_snapshot() -> dict[str, int]:
         control = await store.get(CONTROLS, proof["control_id"])
         if not control:
             continue
-        evidence_data = proof["evidence"]
-        public_summary = evidence_data["summary"]
-        evidence = Evidence(
-            **evidence_data,
-            control_id=proof["control_id"],
-            sha256=Evidence.hash_payload(public_summary),
-            size_bytes=len(public_summary.encode()),
-            payload_ref=f"recorded://public-snapshot/{proof['control_id']}",
-        )
-        await store.put(EVIDENCE, evidence)
-        control.evidence_ids = [evidence.id]
+        ruling = Ruling(**proof["ruling"])
+        if ruling.verdict is not Verdict.INSUFFICIENT:
+            raise ValueError(
+                f"recorded public proof {proof['control_id']} must be INSUFFICIENT"
+            )
+        evidence_ids: list[str] = []
+        public_evidence_names: set[str] = set()
+        for evidence_data in proof["evidence"]:
+            source_system = evidence_data["source_system"]
+            if proof["data_profile"] == "labelled-fixture" and not source_system.startswith(
+                "demo."
+            ):
+                raise ValueError(
+                    f"fixture proof {proof['control_id']} has unlabelled source {source_system}"
+                )
+            public_summary = evidence_data["summary"]
+            evidence = Evidence(
+                **evidence_data,
+                control_id=proof["control_id"],
+                sha256=Evidence.hash_payload(public_summary),
+                size_bytes=len(public_summary.encode()),
+                payload_ref=(
+                    f"recorded://public-snapshot/{proof['control_id']}/"
+                    f"{evidence_data['id']}"
+                ),
+            )
+            if evidence.collected_at > ruling.ruled_at:
+                raise ValueError(
+                    f"proof {proof['control_id']} has evidence newer than its ruling"
+                )
+            await store.put(EVIDENCE, evidence)
+            evidence_ids.append(evidence.id)
+            public_evidence_names.add(evidence.name)
+        if set(ruling.cited_evidence) != public_evidence_names:
+            raise ValueError(
+                f"proof {proof['control_id']} must expose every cited artifact"
+            )
+        control.evidence_ids = evidence_ids
         control.status = ControlStatus.FAILED
-        control.ruling = Ruling(**proof["ruling"])
+        control.ruling = ruling
         control.handoff_id = None
         control.human_touches = 0
         control.updated_at = control.ruling.ruled_at
@@ -242,10 +270,9 @@ async def seed_public_demo_snapshot() -> dict[str, int]:
             agent="judge",
             kind="ruled",
             message=(
-                "recorded private run, gemini-3.5-flash ruled CC6.105 INSUFFICIENT "
-                "from live IAM inventory"
+                "recorded private run, Gemini 3.5 Flash ruled on five controls "
+                "across five hunter domains"
             ),
-            control_id="CC6.105",
             severity="warn",
             trace_id="",
             meta={"fixture": True, "recorded_proof": True, "model": "gemini-3.5-flash"},
