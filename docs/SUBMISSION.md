@@ -30,13 +30,13 @@ ATLAS presents eleven registered fleet roles across collection, judgment, handof
 - **A Drift Sentinel** sweeps weekly, recomputes freshness SLAs and reopens controls that silently regressed.
 - **A Package Assembler** returns `manifest.json` with per-control entries, artifact hashes, a root hash and a gap register.
 
-Autonomy is a measured, first-class metric. The live API calculates `verified controls with human_touches == 0 / all verified controls`. Readiness is `verified controls / all controls`. Both values change with the ledger, so the demo should read the values on screen instead of claiming a fixed percentage.
+Autonomy is a measured, first-class metric. The live API calculates `verified controls with human_touches == 0 / all verified controls`. Readiness is `verified controls / all controls`. The public fixture displays the numerator and denominator and names its deterministic `seed=7`, so the demo should read the values on screen instead of claiming a fixed percentage.
 
 ## How I built it
 
 The live application is packaged as one container for the API, SSE stream and console. The verified workflow deployment is private Cloud Run service `atlas-console` in project `atlas-agentic-hack-2026-v2`. Revision `atlas-console-00004-2n6` receives 100% of traffic at `https://atlas-console-jguwjegiqq-uc.a.run.app` and requires authenticated Cloud Run access.
 
-Judges can explore a separate public Cloud Run service at `https://atlas-public-demo-jguwjegiqq-uc.a.run.app`. Revision `atlas-public-demo-00003-rmr` is visibly labelled, fixture-only and read-only. It runs deterministic inference under an identity with no project IAM roles and exposes no mutation, upload, SSE, briefing, docs or internal-sweep route.
+Judges can explore a separate public Cloud Run service at `https://atlas-public-demo-jguwjegiqq-uc.a.run.app`. It is visibly labelled and read-only, with deterministic fixtures plus two sanitised, model-labelled rulings captured from the verified private Gemini run. Its runtime makes no model calls, has no direct project IAM role bindings and exposes no mutation, upload, SSE, briefing, docs or internal-sweep route.
 
 - **Gemini 3.5 Flash** through Vertex AI in location `us` for hunting summaries, judgment with structured output and vision-based evidence parsing. The validation run recorded `runtime_mode=cloud` and `model_backend=vertex-ai`.
 - **Google ADK 2** constructs `LlmAgent` instances for the five hunters and Control Judge. The coordinator uses `asyncio.gather` plus ordinary awaited Python calls; it does not instantiate ADK `ParallelAgent`, `SequentialAgent` or `LoopAgent`.
@@ -108,9 +108,9 @@ None for the required submission fields. Optional blog and social bonus entries 
 - [x] Private Cloud Run deployment verified in the dedicated disposable project
 - [x] Vertex AI, Cloud Asset, Firestore, Pub/Sub, Cloud Storage, Cloud Trace and the layered Armor path captured
 - [x] Private Cloud Run URL labelled as authenticated deployment proof
-- [x] Separate zero-role public judge service deployed and verified read-only
+- [x] Separate public judge service deployed with no direct project IAM role bindings and verified read-only
 - [x] `docs/architecture.png` present locally
-- [x] Current suite passes 40 tests; the fully resolved dependency lock has no known vulnerabilities
+- [x] Current suite passes; the fully resolved dependency lock has no known vulnerabilities
 - [x] Existing Devpost project linked to the All Things Agentic Hackathon entry
 - [x] Attached `docs/architecture.png` to the Devpost entry
 - [x] Public video playback verified at 2:00 with the verified cloud proof

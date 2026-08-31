@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Deploy an isolated, zero-role, read-only judge demo with no production secrets.
+# Deploy an isolated, read-only judge demo with no direct project IAM role bindings or production secrets.
 set -euo pipefail
 
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -37,7 +37,8 @@ PROJECT_ROLES="$(gcloud projects get-iam-policy "${PROJECT}" \
   || die "refusing public runtime identity with project IAM roles: ${PROJECT_ROLES//$'\n'/, }"
 
 # Limit act-as permission to this one identity. The runtime itself receives no
-# project IAM roles, credentials, secrets, production data or cloud connectors.
+# direct project IAM role bindings, credentials, secrets, production data or
+# cloud connectors.
 ACCOUNT="$(active_account)"
 DEPLOYER="$(principal_for_account "${ACCOUNT}")"
 gcloud iam service-accounts add-iam-policy-binding "${PUBLIC_RUNTIME_SA}" \
@@ -82,7 +83,7 @@ URL="$(gcloud run services describe "${PUBLIC_SERVICE}" \
 cat <<EOF
 Public judge demo deployed.
   Cloud Run: ${URL} (public, fixture-only, read-only)
-  Runtime:   ${PUBLIC_RUNTIME_SA} (no project IAM roles)
+  Runtime:   ${PUBLIC_RUNTIME_SA} (no direct project IAM role bindings)
   Capacity:  min 0, max 1, concurrency 8, 30 second timeout
 
 The private atlas-console service and its Scheduler were not changed.

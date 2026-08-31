@@ -8,7 +8,7 @@
 - **Playback:** Public playback verified
 - **Narration:** Deepgram Aura-2
 
-The final video is a concise judge-facing proof film assembled from captures of the authenticated ATLAS deployment and its Google Cloud resources. The Cloud Run service itself remains private, so the video is the public deployment proof rather than a public live-console link.
+The final video is a concise judge-facing proof film assembled from captures of the authenticated ATLAS deployment and its Google Cloud resources. The workflow service remains private. Judges can also use the separate read-only console at https://atlas-public-demo-jguwjegiqq-uc.a.run.app, which exposes labelled fixtures and recorded Gemini proof without production access.
 
 ## Final run of show
 
@@ -91,4 +91,4 @@ The final video is a concise judge-facing proof film assembled from captures of 
 ## Devpost status
 
 - `docs/architecture.png` is attached to the Devpost entry.
-- The hackathon entry remains a draft and has not been finally sent.
+- The hackathon entry is submitted with the hosted public judge URL.

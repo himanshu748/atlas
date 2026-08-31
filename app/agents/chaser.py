@@ -21,14 +21,24 @@ from app.core.models import (
     ControlStatus,
     Handoff,
     Ruling,
+    Task,
+    TaskState,
     Verdict,
     now,
 )
-from app.core.store import CONTROLS, EVIDENCE, HANDOFFS, get_store
+from app.core.store import CONTROLS, EVIDENCE, HANDOFFS, TASKS, get_store
 from app.core.telemetry import span
 from app.config import settings
 
 log = logging.getLogger("atlas.chaser")
+
+
+async def _reopen_completed_hunt(store, run_id: str, control_id: str) -> None:
+    """Let the orchestrator recollect evidence after Sentinel finds drift."""
+    key = Task.make_key(run_id, control_id, "hunt")
+    task: Task | None = await store.get(TASKS, key)
+    if task is not None and task.state == TaskState.DONE:
+        await store.delete(TASKS, key)
 
 
 # ------------------------------------------------------------------ chaser
@@ -193,12 +203,22 @@ async def sweep(run_id: str, trace_id: str) -> dict[str, int]:
     store = get_store()
     controls: list[Control] = await store.list(CONTROLS, limit=5000)
     all_evidence = {e.id: e for e in await store.list(EVIDENCE, limit=5000)}
+    approved_controls = {
+        handoff.control_id
+        for handoff in await store.list(HANDOFFS, limit=5000)
+        if not handoff.is_open and handoff.answer == "approved"
+    }
 
     went_stale = 0
     regressed = 0
 
     with identity.assume("sentinel"):
         for control in controls:
+            human_approved = (
+                control.id in approved_controls
+                and control.updated_by == "human"
+                and control.human_touches > 0
+            )
             evidence = [all_evidence[i] for i in control.evidence_ids if i in all_evidence]
             if not evidence:
                 continue
@@ -207,6 +227,7 @@ async def sweep(run_id: str, trace_id: str) -> dict[str, int]:
                 control.status = ControlStatus.STALE
                 control.updated_at = now()
                 control.updated_by = "sentinel"
+                await _reopen_completed_hunt(store, run_id, control.id)
                 await store.put(CONTROLS, control)
                 went_stale += 1
                 await emit(
@@ -221,8 +242,10 @@ async def sweep(run_id: str, trace_id: str) -> dict[str, int]:
                 control.status == ControlStatus.VERIFIED
                 and control.ruling
                 and control.ruling.verdict is not Verdict.SATISFIED
+                and not human_approved
             ):
                 control.status = ControlStatus.FAILED
+                await _reopen_completed_hunt(store, run_id, control.id)
                 await store.put(CONTROLS, control)
                 regressed += 1
 

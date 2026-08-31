@@ -5,19 +5,62 @@ without copying production data, mounting secrets or invoking cloud services.
 """
 from __future__ import annotations
 
+import json
 from datetime import timedelta
+from pathlib import Path
 
 from app.core.events import broadcaster
-from app.core.models import ArmorAction, ArmorVerdict, ControlStatus, FleetEvent, Handoff, now
-from app.core.store import ARMOR, CONTROLS, EVENTS, HANDOFFS, get_store
+from app.core.models import (
+    ArmorAction,
+    ArmorVerdict,
+    ControlStatus,
+    Evidence,
+    FleetEvent,
+    Handoff,
+    Ruling,
+    now,
+)
+from app.core.store import ARMOR, CONTROLS, EVIDENCE, EVENTS, HANDOFFS, get_store
 from app.core.telemetry import Span, traces
 
 TRACE_ID = "fixture-trace-cc6-1"
+RECORDED_PROOF_PATH = Path(__file__).with_name("recorded_gemini_proof.json")
 
 
 async def seed_public_demo_snapshot() -> dict[str, int]:
     """Install a deterministic fixture snapshot once per public process."""
     store = get_store()
+
+    # The proof fixture is checked in separately so the captured text and the
+    # sanitisation boundary are reviewable without reading application code.
+    recorded_proofs = json.loads(RECORDED_PROOF_PATH.read_text(encoding="utf-8"))["proofs"]
+    recorded_event_at = max(
+        Ruling(**proof["ruling"]).ruled_at for proof in recorded_proofs
+    )
+    recorded_count = 0
+    for proof in recorded_proofs:
+        control = await store.get(CONTROLS, proof["control_id"])
+        if not control:
+            continue
+        evidence_data = proof["evidence"]
+        public_summary = evidence_data["summary"]
+        evidence = Evidence(
+            **evidence_data,
+            control_id=proof["control_id"],
+            sha256=Evidence.hash_payload(public_summary),
+            size_bytes=len(public_summary.encode()),
+            payload_ref=f"recorded://public-snapshot/{proof['control_id']}",
+        )
+        await store.put(EVIDENCE, evidence)
+        control.evidence_ids = [evidence.id]
+        control.status = ControlStatus.FAILED
+        control.ruling = Ruling(**proof["ruling"])
+        control.handoff_id = None
+        control.human_touches = 0
+        control.updated_at = control.ruling.ruled_at
+        control.updated_by = "recorded-private-run"
+        await store.put(CONTROLS, control)
+        recorded_count += 1
 
     handoffs = [
         Handoff(
@@ -73,6 +116,20 @@ async def seed_public_demo_snapshot() -> dict[str, int]:
     await store.put(ARMOR, verdict)
 
     events = [
+        FleetEvent(
+            id="fixture-event-recorded-gemini",
+            at=recorded_event_at,
+            agent="judge",
+            kind="ruled",
+            message=(
+                "recorded private run, gemini-3.5-flash ruled CC6.105 INSUFFICIENT "
+                "from live IAM inventory"
+            ),
+            control_id="CC6.105",
+            severity="warn",
+            trace_id="",
+            meta={"fixture": True, "recorded_proof": True, "model": "gemini-3.5-flash"},
+        ),
         FleetEvent(
             id="fixture-event-armor",
             at=now() - timedelta(minutes=38),
@@ -162,6 +219,7 @@ async def seed_public_demo_snapshot() -> dict[str, int]:
             traces.add(trace_span)
 
     return {
+        "recorded_gemini_rulings": recorded_count,
         "fixture_handoffs": len(handoffs),
         "fixture_armor": 1,
         "fixture_events": len(events),

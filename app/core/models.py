@@ -110,6 +110,7 @@ class Ruling(BaseModel):
     ruled_at: datetime = Field(default_factory=now)
     trace_id: str = ""
     model: str = ""
+    provenance: Literal["runtime", "recorded-private-run"] = "runtime"
 
 
 class Control(BaseModel):

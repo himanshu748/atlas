@@ -24,6 +24,13 @@ from app.core.telemetry import span
 
 log = logging.getLogger("atlas.hunter")
 
+
+def _evidence_profile(evidence: Evidence) -> tuple[bool, str, str]:
+    """Identify the source and provenance tier an artifact can replace."""
+    is_demo = evidence.source_system.startswith("demo.")
+    source = evidence.source_system.removeprefix("demo.") if is_demo else evidence.source_system
+    return is_demo, source, evidence.kind
+
 _INSTRUCTION = """You are an evidence hunter for a SOC 2 audit, scoped to the {domain} domain.
 
 You receive raw artifacts pulled from company systems. For each artifact,
@@ -46,6 +53,7 @@ async def hunt(control: Control, run_id: str, trace_id: str) -> list[Evidence]:
     collector = COLLECTORS[control.domain]
     store = get_store()
     filed: list[Evidence] = []
+    previous_evidence_ids = list(control.evidence_ids)
 
     with identity.assume(agent_name):
         with span(f"{agent_name}.collect", agent=agent_name, trace_id=trace_id,
@@ -131,7 +139,26 @@ async def hunt(control: Control, run_id: str, trace_id: str) -> list[Evidence]:
             filed.append(ev)
 
         if filed:
-            control.evidence_ids = sorted({*control.evidence_ids, *[e.id for e in filed]})
+            active_evidence_ids = [e.id for e in filed]
+            for evidence_id in previous_evidence_ids:
+                previous: Evidence | None = await store.get(EVIDENCE, evidence_id)
+                if previous is None:
+                    continue
+                replacement = next(
+                    (
+                        current
+                        for current in filed
+                        if _evidence_profile(current) == _evidence_profile(previous)
+                    ),
+                    None,
+                )
+                if replacement is None:
+                    active_evidence_ids.append(previous.id)
+                    continue
+                previous.superseded_by = replacement.id
+                await store.put(EVIDENCE, previous)
+
+            control.evidence_ids = sorted(set(active_evidence_ids))
             control.updated_by = agent_name
             await store.put(CONTROLS, control)
             await emit(

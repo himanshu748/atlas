@@ -1,0 +1,63 @@
+{
+  "source": {
+    "service": "atlas-console",
+    "revision": "atlas-console-00004-2n6",
+    "captured_on": "2026-08-31",
+    "capture_method": "Authenticated read-only GET /api/controls/{control_id}",
+    "sanitisation": "Verdict, confidence, reasoning, cited filenames and model are copied from the private ledger. Principals, resource names, private hashes, byte counts, memory IDs, trace IDs and payload locations are omitted. Public evidence hashes are recomputed over the sanitised summaries."
+  },
+  "proofs": [
+    {
+      "control_id": "CC6.105",
+      "evidence": {
+        "id": "recorded-ev-cc6-105-iam",
+        "name": "cc6-105-iam-bindings-2026-08-29.json",
+        "kind": "json",
+        "source_system": "gcp.iam",
+        "collected_by": "hunter/iam",
+        "agent_identity": "spiffe://atlas.dev/agent/hunter-iam",
+        "collected_at": "2026-08-29T11:11:38Z",
+        "freshness_days": 90,
+        "summary": "Sanitised metadata from the recorded private run: live GCP IAM bindings were collected, but the artifact did not prove that a quarterly access recertification was performed or signed off."
+      },
+      "ruling": {
+        "verdict": "INSUFFICIENT",
+        "confidence": 1.0,
+        "reasoning": "The provided evidence 'cc6-105-iam-bindings-2026-08-29.json' contains only a list of active GCP IAM bindings. It does not contain any evidence of a quarterly access recertification review being performed, signed off, or completed by authorized personnel as required by the control.",
+        "cited_evidence": [
+          "cc6-105-iam-bindings-2026-08-29.json"
+        ],
+        "blocking_question": "Please provide evidence of the completed quarterly access recertification review showing that the active access list was reviewed and approved by authorized managers within the last 90 days.",
+        "ruled_at": "2026-08-29T11:11:42Z",
+        "model": "gemini-3.5-flash",
+        "provenance": "recorded-private-run"
+      }
+    },
+    {
+      "control_id": "A1.3",
+      "evidence": {
+        "id": "recorded-ev-a1-3-assets",
+        "name": "a1-3-cloud-asset-buckets-2026-08-29.json",
+        "kind": "json",
+        "source_system": "gcp.asset",
+        "collected_by": "hunter/infra",
+        "agent_identity": "spiffe://atlas.dev/agent/hunter-infra",
+        "collected_at": "2026-08-29T11:11:37Z",
+        "freshness_days": 365,
+        "summary": "Sanitised metadata from the recorded private run: Cloud Asset Inventory listed two Storage buckets, but the artifact did not prove that recovery procedures were tested."
+      },
+      "ruling": {
+        "verdict": "INSUFFICIENT",
+        "confidence": 1.0,
+        "reasoning": "The only artifact provided, 'a1-3-cloud-asset-buckets-2026-08-29.json', merely lists Google Cloud Storage buckets in a GCP project. It contains no evidence of recovery testing procedures, disaster recovery tabletop exercises, backup restoration tests, or any other proof that system recovery plans are tested.",
+        "cited_evidence": [
+          "a1-3-cloud-asset-buckets-2026-08-29.json"
+        ],
+        "blocking_question": "Please provide evidence demonstrating that recovery plan procedures supporting system recovery have been tested within the last 365 days.",
+        "ruled_at": "2026-08-29T11:11:42Z",
+        "model": "gemini-3.5-flash",
+        "provenance": "recorded-private-run"
+      }
+    }
+  ]
+}

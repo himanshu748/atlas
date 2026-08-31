@@ -2,6 +2,7 @@
 from __future__ import annotations
 
 import asyncio
+import json
 
 import pytest
 from fastapi.testclient import TestClient
@@ -211,6 +212,7 @@ def test_public_fleet_read_does_not_persist_summary(
     assert payload["data_profile"] == "seeded-fixtures"
     assert payload["runtime_mode"] == "local"
     assert payload["model_backend"] == "deterministic-fallback"
+    assert payload["recorded_model_rulings"] == 0
     assert payload["cloud_location"] is None
     after = asyncio.run(store.get(store_module.RUNS, "run-2026-q3"))
     assert (after.model_dump(mode="json") if after else None) == before_dump
@@ -228,21 +230,83 @@ def test_public_lifespan_seeds_a_representative_labelled_snapshot(
     monkeypatch.setattr(events_module.broadcaster, "_recent", [])
     monkeypatch.setattr(telemetry_module.traces, "_traces", {})
     monkeypatch.setattr(telemetry_module.traces, "_order", [])
+    recorded_fixture = json.loads(
+        (WEB_DIR.parent / "seed" / "recorded_gemini_proof.json").read_text()
+    )
+    fixture_by_control = {
+        proof["control_id"]: proof for proof in recorded_fixture["proofs"]
+    }
 
     with TestClient(create_app(public_settings)) as client:
         fleet = client.get("/api/fleet").json()
         armor = client.get("/api/armor").json()
         events = client.get("/api/events").json()
         traces = client.get("/api/traces").json()
+        controls = client.get("/api/controls").json()
+        recorded_details = [
+            client.get(f"/api/controls/{control_id}").json()
+            for control_id in fixture_by_control
+        ]
 
     assert len(fleet["handoffs"]) == 2
+    assert fleet["model_backend"] == "deterministic-fallback"
+    assert fleet["recorded_model_rulings"] == 2
     assert all(item["id"].startswith("FIXTURE-") for item in fleet["handoffs"])
+    recorded_controls = [item for item in controls if item["ruling"]]
+    assert {item["id"] for item in recorded_controls} == set(fixture_by_control)
+    for item in recorded_details:
+        control_id = item["control"]["id"]
+        expected = fixture_by_control[control_id]
+        ruling = item["control"]["ruling"]
+        evidence = item["evidence"][0]
+        assert ruling["verdict"] == expected["ruling"]["verdict"]
+        assert ruling["reasoning"] == expected["ruling"]["reasoning"]
+        assert ruling["model"] == "gemini-3.5-flash"
+        assert ruling["provenance"] == "recorded-private-run"
+        assert evidence["name"] == expected["evidence"]["name"]
+        assert evidence["sha256"] == store_module.Evidence.hash_payload(
+            evidence["summary"]
+        )
+        assert "payload_ref" not in evidence
+        assert "size_bytes" not in evidence
+        assert "memories_used" not in ruling
+        assert "trace_id" not in ruling
     assert armor["counts"]["blocked"] == 1
     assert armor["verdicts"][0]["artifact"].startswith("fixture:")
     assert armor["verdicts"][0]["backend"] == "model-armor+deterministic"
     assert len(events) >= 4
     assert sum(item["meta"].get("fixture") is True for item in events) >= 4
+    recorded_event = next(item for item in events if item["meta"].get("recorded_proof"))
+    assert recorded_event["at"] == "2026-08-29T11:11:42+00:00"
+    assert "trace_id" not in recorded_event
+    assert "id" not in recorded_event
     assert traces and traces[0]["trace_id"].startswith("fixture-")
+
+    public_payload = json.dumps(
+        {
+            "fleet": fleet,
+            "controls": controls,
+            "recorded_details": recorded_details,
+            "events": events,
+        }
+    )
+    for forbidden in (
+        "atlas-agentic-hack-2026-v2",
+        "atlas-console-00004-2n6",
+        "@atlas-agentic-hack-2026-v2.iam.gserviceaccount.com",
+        "gs://",
+        "local://",
+        "recorded://",
+    ):
+        assert forbidden not in public_payload
+
+
+def test_public_ui_labels_unknown_ruling_engines_without_inventing_attribution() -> None:
+    app_js = (WEB_DIR / "static" / "app.js").read_text()
+
+    assert "normalizedRulingModel === 'deterministic-fallback'" in app_js
+    assert "UNKNOWN ENGINE" in app_js
+    assert 'data-control="CC6.105"' in app_js
 
 
 def test_public_ui_escapes_fixture_text_and_exposes_no_event_stream() -> None:
@@ -255,3 +319,6 @@ def test_public_ui_escapes_fixture_text_and_exposes_no_event_stream() -> None:
     assert "if (window.__atlasPublicDemo)" in live_js
     assert "if (workingCount)" in live_js
     assert "document.body.dataset.publicDemo === 'true'" in app_js
+    assert "Open recorded Gemini ruling" in app_js
+    assert "RECORDED PRIVATE RUN" in app_js
+    assert "DETERMINISTIC FALLBACK" in app_js

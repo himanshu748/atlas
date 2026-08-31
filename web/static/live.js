@@ -146,7 +146,7 @@
     }
     if (publicDemo) {
       if (connectionLabel) connectionLabel.textContent = 'READ-ONLY JUDGE DEMO';
-      if (environmentLabel) environmentLabel.textContent = 'zero-role / fixture only';
+      if (environmentLabel) environmentLabel.textContent = 'no direct project IAM bindings';
       if (workingLabel) workingLabel.textContent = 'fixture snapshot';
       if (publicDemoBanner) publicDemoBanner.hidden = false;
       if (demoAvatar) {

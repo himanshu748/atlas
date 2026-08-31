@@ -201,25 +201,30 @@ function pageCommand(){
   const budget = Number(fleet.budget_usd ?? 50).toFixed(0);
   const publicDemo = Boolean(window.__atlasPublicDemo);
   const costLabel = publicDemo ? `fixture estimate $${cost}` : `$${cost} / $${budget} budget`;
+  const verifiedCount = Number(fleet.controls_verified ?? verified);
+  const autonomousCount = Number(fleet.controls_autonomous ?? Math.round(verifiedCount * autonomy / 100));
+  const autonomyLabel = publicDemo
+    ? `${autonomousCount}/${verifiedCount} verified controls closed with zero human touches · deterministic seed 7`
+    : `closed with no human touch, ${HANDOFFS.length} handoffs open`;
   return `
   <div class="page-head">
     <div><h1 class="page-title">Fleet Command</h1>
     <div class="page-sub">Seeded SOC 2 Type II audit window, 2026-07-01 to 2026-09-30. Auditor: Schellman & Co.</div></div>
     <div class="page-actions">
-      <button class="btn" type="button" data-route="trace">${icon('trace',13)} ${publicDemo ? 'Open recorded proof trace' : 'Open latest trace'}</button>
+      <button class="btn" type="button" ${publicDemo ? 'data-control="CC6.105"' : 'data-route="trace"'}>${icon(publicDemo ? 'ledger' : 'trace',13)} ${publicDemo ? 'Open recorded Gemini ruling' : 'Open latest trace'}</button>
       <button class="btn btn-primary" type="button" id="runNow" ${publicDemo ? 'disabled aria-disabled="true" title="State-changing actions are disabled in the public judge demo"' : ''}>${publicDemo ? 'Sweep disabled in read-only demo' : 'Run evidence sweep'}</button>
     </div>
   </div>
 
   <div class="card-grid" style="margin-bottom:12px">
-    <div class="card kpi"><div class="kpi-label">AUDIT READINESS</div>
+    <div class="card kpi"><div class="kpi-label">${publicDemo ? 'SEEDED READINESS' : 'AUDIT READINESS'}</div>
       <div class="kpi-value" id="kpiReady">${readiness}<span style="font-size:15px;color:var(--text-lo)">%</span></div>
       <div class="bar"><i style="width:${readiness}%;background:var(--st-verified)"></i></div>
       <div class="kpi-meta"><span class="delta-up">+12 this week</span><span>${verified}/${controls.length} controls</span></div></div>
-    <div class="card kpi"><div class="kpi-label">AUTONOMY</div>
+    <div class="card kpi"><div class="kpi-label">${publicDemo ? 'SEEDED AUTONOMY' : 'AUTONOMY'}</div>
       <div class="kpi-value" id="kpiAuto">${autonomy}<span style="font-size:15px;color:var(--text-lo)">%</span></div>
       <div class="bar"><i style="width:${autonomy}%;background:var(--st-working)"></i></div>
-      <div class="kpi-meta">closed with no human touch, ${HANDOFFS.length} handoffs open</div></div>
+      <div class="kpi-meta">${escapeHtml(autonomyLabel)}</div></div>
     <div class="card kpi"><div class="kpi-label">FLEET HEALTH</div>
       <div class="kpi-value" style="font-size:22px;padding-top:6px">${agentCount} <span style="font-size:13px;color:var(--text-lo)">agents</span> / <span style="color:var(--st-verified)">${dlqDepth}</span> <span style="font-size:13px;color:var(--text-lo)">DLQ</span></div>
       <div class="kpi-meta" style="margin-top:11px"><span class="mono">${costLabel}</span><span class="mono">p95 span 1.4s</span></div></div>
@@ -585,10 +590,25 @@ function openControl(id){
       <span class="chip ${item.armor_verdict==='blocked'?'blocked':'verified'}" style="align-self:center">${escapeHtml(item.armor_verdict || 'unknown')}</span></div>`).join('')
     || '<div class="empty">No evidence is attached to this control yet.</div>')
     : `<div class="empty"><strong>${window.__atlasConnected ? 'Live detail unavailable.' : 'Offline control sample.'}</strong><br>${window.__atlasConnected ? 'Retry opening the control.' : 'Connect the backend to inspect evidence, rulings and custody.'}</div>`;
+  const rulingModel = String(ruling?.model || 'recorded ruling');
+  const normalizedRulingModel = rulingModel.toLowerCase();
+  const isGeminiRuling = normalizedRulingModel.includes('gemini');
+  const isFallbackRuling = normalizedRulingModel === 'deterministic-fallback';
+  const isRecordedRuling = ruling?.provenance === 'recorded-private-run';
+  const engineLabel = isGeminiRuling
+    ? rulingModel.toUpperCase()
+    : isFallbackRuling
+      ? 'DETERMINISTIC FALLBACK'
+      : 'UNKNOWN ENGINE';
+  const engineClass = isGeminiRuling ? 'engine-gemini' : isFallbackRuling ? 'engine-fallback' : '';
+  const provenanceLabel = isRecordedRuling ? 'RECORDED PRIVATE RUN · 2026-08-29' : 'RUNTIME DECISION';
   const rulingBlock = ruling ? `
     <div class="verdict ${ruling.verdict==='SATISFIED'?'satisfied':'insufficient'}">
-      <div style="display:flex;align-items:center;gap:7px;flex-wrap:wrap"><span class="chip ${ruling.verdict==='SATISFIED'?'verified':'failed'}">${escapeHtml(ruling.verdict)}</span>
-        <span class="mono" style="color:var(--text-lo)">confidence ${Number(ruling.confidence || 0).toFixed(2)} / ${escapeHtml(ruling.model || 'recorded ruling')}</span></div>
+      <div class="verdict-meta">
+        <span class="chip ${ruling.verdict==='SATISFIED'?'verified':'failed'}">${escapeHtml(ruling.verdict)}</span>
+        <span class="chip chip-mono ${engineClass}">${escapeHtml(engineLabel)}</span>
+        <span class="chip chip-mono ruling-provenance">${escapeHtml(provenanceLabel)}</span>
+        <span class="mono verdict-confidence">confidence ${Number(ruling.confidence || 0).toFixed(2)}</span></div>
       <div class="verdict-body">${escapeHtml(ruling.reasoning || 'No reasoning was recorded.')}${handoff ? ` Escalated as <span class="cite">${escapeHtml(handoff.id)}</span>.` : ''}</div>
     </div>` : '<div class="empty">No ruling is recorded for this control.</div>';
   const custodyBlock = custody.length ? `<div class="custody">${custody.map((hop, index) =>
@@ -791,7 +811,7 @@ document.getElementById('tmPlay').addEventListener('click', () => {
 if (window.__atlasPublicDemo) {
   document.getElementById('publicDemoBanner').hidden = false;
   document.getElementById('connectionLabel').textContent = 'READ-ONLY JUDGE DEMO';
-  document.getElementById('environmentLabel').textContent = 'zero-role / fixture only';
+  document.getElementById('environmentLabel').textContent = 'no direct project IAM bindings';
   document.querySelector('.tick-working').textContent = 'fixture snapshot';
   const demoAvatar = document.getElementById('demoAvatar');
   demoAvatar.textContent = 'JD';

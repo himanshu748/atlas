@@ -62,15 +62,15 @@ pytest -q
 uvicorn app.main:app --port 8080
 ```
 
-Open http://localhost:8080. Local mode needs no Google Cloud credentials and uses an in-memory ledger, clearly labelled fixtures and a deterministic reasoning fallback. The recorded anonymous clean-clone validation at historical commit `cd679d0` passed all 25 tests.
+Open http://localhost:8080. Local mode needs no Google Cloud credentials and uses an in-memory ledger, clearly labelled fixtures and a deterministic reasoning fallback. The current repository test suite passes without cloud credentials.
 
-The verified cloud deployment is private Cloud Run service `atlas-console`, revision `atlas-console-00004-2n6`, in project `atlas-agentic-hack-2026-v2`. The public demo shows captures from that authenticated deployment together with Cloud Run, Vertex AI and Cloud Trace proof.
+The verified workflow deployment is private Cloud Run service `atlas-console`, revision `atlas-console-00004-2n6`, in project `atlas-agentic-hack-2026-v2`. A separate public Cloud Run service provides a safe read-only console with labelled fixtures plus two sanitised rulings captured from the verified private Gemini run. The public runtime makes no live model calls and has no direct project IAM role bindings.
 
 ## Public Demo Link
 
-No anonymous hosted demo is required by the official rules. The verified Cloud Run URL is private and requires Google Cloud IAM. Local testing is available through the public repository.
+Public judge console: https://atlas-public-demo-jguwjegiqq-uc.a.run.app
 
-Private deployment proof URL: https://atlas-console-jguwjegiqq-uc.a.run.app
+Private workflow proof URL: https://atlas-console-jguwjegiqq-uc.a.run.app
 
 ## Public Repository Link
 

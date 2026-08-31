@@ -200,8 +200,8 @@ class Orchestrator:
         """
         while True:
             try:
-                await self.run_sweep()
                 await chaser.sweep(self.run_id, new_trace_id())
+                await self.run_sweep()
             except asyncio.CancelledError:
                 raise
             except Exception:  # pragma: no cover

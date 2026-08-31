@@ -7,13 +7,25 @@ from __future__ import annotations
 import json
 import subprocess
 import sys
+from datetime import timedelta
 from pathlib import Path
 
 import pytest
 
 from app.core import identity
 from app.core.armor import _screen_local
-from app.core.models import ArmorAction, Control, ControlStatus, Domain, Evidence, Task
+from app.core.models import (
+    ArmorAction,
+    Control,
+    ControlStatus,
+    Domain,
+    Evidence,
+    Ruling,
+    Task,
+    TaskState,
+    Verdict,
+    now,
+)
 
 
 # --------------------------------------------------------------- config
@@ -53,6 +65,15 @@ def test_iam_hunter_cannot_read_hr():
         identity.require_scope("gcp.iam.read")  # granted
         with pytest.raises(identity.ScopeDenied):
             identity.require_scope("hris.read.redacted")  # not granted
+
+
+@pytest.mark.asyncio
+async def test_judge_cannot_run_an_evidence_collector():
+    from app.connectors.sources import collect_iam
+
+    with identity.assume("judge"):
+        with pytest.raises(identity.ScopeDenied, match="gcp.iam.read"):
+            await collect_iam("CC6.1")
 
 
 def test_spiffe_format():
@@ -120,6 +141,336 @@ async def test_claim_task_is_idempotent():
     await complete_task(first)
     third = await claim_task("runX", "CC6.1", "hunt", "orchestrator")
     assert third is None
+
+
+@pytest.mark.asyncio
+async def test_chaser_deduplicates_open_handoffs_per_control(monkeypatch):
+    import app.core.store as store_module
+    from app.agents import chaser
+    from app.core.store import HANDOFFS
+
+    store = store_module.MemoryStore()
+    monkeypatch.setattr(store_module, "_store", store)
+    monkeypatch.setattr(chaser.settings, "slack_token", "")
+    control = Control(
+        id="CC6.9",
+        group="CC6",
+        name="Human approval",
+        domain=Domain.IAM,
+    )
+    ruling = Ruling(
+        verdict=Verdict.NEEDS_HUMAN,
+        reasoning="The exception needs an accountable owner.",
+        blocking_question="Approve the documented exception?",
+    )
+    follow_up_ruling = ruling.model_copy(
+        update={"blocking_question": "Provide a second approval?"}
+    )
+
+    first = await chaser.open_handoff(control, ruling, "trace-dedupe")
+    duplicate = await chaser.open_handoff(control, follow_up_ruling, "trace-dedupe")
+
+    handoffs = await store.list(HANDOFFS)
+    persisted = await store.get(store_module.CONTROLS, control.id)
+    assert first is not None
+    assert duplicate is None
+    assert len(handoffs) == 1
+    assert handoffs[0].control_id == "CC6.9"
+    assert handoffs[0].is_open
+    assert persisted is not None and persisted.handoff_id == first.id
+
+
+@pytest.mark.asyncio
+async def test_sentinel_preserves_an_approved_handoff_disposition(monkeypatch):
+    import app.core.store as store_module
+    from app.agents import chaser
+    from app.core.store import CONTROLS, EVIDENCE, HANDOFFS
+
+    store = store_module.MemoryStore()
+    monkeypatch.setattr(store_module, "_store", store)
+    monkeypatch.setattr(chaser.settings, "slack_token", "")
+    evidence = Evidence(
+        id="ev-human-approved",
+        control_id="CC6.7",
+        name="access-exception.json",
+        source_system="gcp.iam",
+        collected_by="hunter/iam",
+        agent_identity=identity.get("hunter/iam").spiffe_id,
+    )
+    ruling = Ruling(
+        verdict=Verdict.NEEDS_HUMAN,
+        reasoning="The documented exception requires risk acceptance.",
+        cited_evidence=[evidence.name],
+        blocking_question="Approve this access exception?",
+    )
+    control = Control(
+        id="CC6.7",
+        group="CC6",
+        name="Access exception",
+        domain=Domain.IAM,
+        evidence_ids=[evidence.id],
+        evidence_required=1,
+        ruling=ruling,
+    )
+    await store.put(EVIDENCE, evidence)
+    await store.put(CONTROLS, control)
+    opened = await chaser.open_handoff(control, ruling, "trace-human-approved")
+    assert opened is not None
+
+    await chaser.answer_handoff(opened.id, "approved", "Accepted by the control owner.")
+    drift = await chaser.sweep("run-human-approved", "trace-after-approval")
+
+    persisted = await store.get(CONTROLS, control.id)
+    handoffs = await store.list(HANDOFFS)
+    assert drift["regressed"] == 0
+    assert persisted is not None and persisted.status == ControlStatus.VERIFIED
+    assert len(handoffs) == 1
+    assert handoffs[0].answer == "approved"
+    assert not handoffs[0].is_open
+
+
+@pytest.mark.asyncio
+async def test_rejected_handoff_remains_non_passing(monkeypatch):
+    import app.core.store as store_module
+    from app.agents import chaser
+    from app.core.store import CONTROLS, EVIDENCE
+
+    store = store_module.MemoryStore()
+    monkeypatch.setattr(store_module, "_store", store)
+    monkeypatch.setattr(chaser.settings, "slack_token", "")
+    evidence = Evidence(
+        id="ev-human-rejected",
+        control_id="CC6.8",
+        name="access-exception.json",
+        source_system="gcp.iam",
+        collected_by="hunter/iam",
+        agent_identity=identity.get("hunter/iam").spiffe_id,
+    )
+    ruling = Ruling(
+        verdict=Verdict.NEEDS_HUMAN,
+        blocking_question="Approve this access exception?",
+    )
+    control = Control(
+        id="CC6.8",
+        group="CC6",
+        name="Rejected access exception",
+        domain=Domain.IAM,
+        evidence_ids=[evidence.id],
+        evidence_required=1,
+        ruling=ruling,
+    )
+    await store.put(EVIDENCE, evidence)
+    await store.put(CONTROLS, control)
+    opened = await chaser.open_handoff(control, ruling, "trace-human-rejected")
+    assert opened is not None
+
+    await chaser.answer_handoff(opened.id, "rejected", "Exception is outside policy.")
+    await chaser.sweep("run-human-rejected", "trace-after-rejection")
+
+    persisted = await store.get(CONTROLS, control.id)
+    assert persisted is not None and persisted.status == ControlStatus.FAILED
+
+
+@pytest.mark.asyncio
+@pytest.mark.parametrize("drift_kind", ["stale", "regressed"])
+async def test_sentinel_reopens_completed_hunt_for_next_orchestrator_sweep(
+    monkeypatch, drift_kind
+):
+    import app.agents.orchestrator as orchestrator_module
+    import app.core.store as store_module
+    from app.agents import chaser
+    from app.agents.orchestrator import Orchestrator
+    from app.core.store import CONTROLS, EVIDENCE, TASKS, claim_task, complete_task
+
+    store = store_module.MemoryStore()
+    monkeypatch.setattr(store_module, "_store", store)
+    run_id = f"run-drift-{drift_kind}"
+    control_id = f"CC7.{1 if drift_kind == 'stale' else 2}"
+    evidence = Evidence(
+        id=f"ev-{drift_kind}",
+        control_id=control_id,
+        name="access-review.json",
+        source_system="gcp.iam",
+        collected_by="hunter/iam",
+        agent_identity=identity.get("hunter/iam").spiffe_id,
+        collected_at=now() - timedelta(days=2 if drift_kind == "stale" else 0),
+        freshness_days=1,
+    )
+    control = Control(
+        id=control_id,
+        group="CC7",
+        name="Drift-sensitive control",
+        domain=Domain.IAM,
+        status=ControlStatus.VERIFIED,
+        evidence_ids=[evidence.id],
+        evidence_required=1,
+        ruling=Ruling(
+            verdict=(
+                Verdict.SATISFIED
+                if drift_kind == "stale"
+                else Verdict.INSUFFICIENT
+            )
+        ),
+    )
+    await store.put(EVIDENCE, evidence)
+    await store.put(CONTROLS, control)
+    completed = await claim_task(run_id, control.id, "hunt", "orchestrator")
+    assert completed is not None
+    await complete_task(completed)
+
+    drift = await chaser.sweep(run_id, "trace-drift")
+
+    expected_status = (
+        ControlStatus.STALE if drift_kind == "stale" else ControlStatus.FAILED
+    )
+    drifted = await store.get(CONTROLS, control.id)
+    assert drift[drift_kind] == 1
+    assert drifted is not None and drifted.status == expected_status
+    assert await store.get(TASKS, completed.key) is None
+
+    async def refreshed_hunt(control, run_id, trace_id):
+        return []
+
+    async def satisfied_ruling(control, run_id, trace_id):
+        return Ruling(verdict=Verdict.SATISFIED, trace_id=trace_id)
+
+    monkeypatch.setattr(orchestrator_module.hunters, "hunt", refreshed_hunt)
+    monkeypatch.setattr(orchestrator_module, "rule", satisfied_ruling)
+
+    await Orchestrator(run_id=run_id).run_sweep(limit_per_domain=1)
+
+    processed = await store.get(CONTROLS, control.id)
+    next_task = await store.get(TASKS, completed.key)
+    assert processed is not None and processed.status == ControlStatus.VERIFIED
+    assert next_task is not None and next_task.state == TaskState.DONE
+
+
+@pytest.mark.asyncio
+async def test_rehunt_replaces_stale_links_and_second_sentinel_sweep_stays_green(
+    monkeypatch,
+):
+    import app.agents.orchestrator as orchestrator_module
+    import app.core.store as store_module
+    from app.agents import chaser, hunters
+    from app.agents.orchestrator import Orchestrator
+    from app.core.store import CONTROLS, EVIDENCE, claim_task, complete_task
+
+    store = store_module.MemoryStore()
+    monkeypatch.setattr(store_module, "_store", store)
+    monkeypatch.setattr(hunters, "model_available", lambda: False)
+    run_id = "run-stale-refresh"
+    old_evidence = Evidence(
+        id="ev-expired",
+        control_id="CC6.1",
+        name="expired-access-review.json",
+        source_system="demo.gcp.iam",
+        collected_by="hunter/iam",
+        agent_identity=identity.get("hunter/iam").spiffe_id,
+        collected_at=now() - timedelta(days=2),
+        freshness_days=1,
+    )
+    control = Control(
+        id="CC6.1",
+        group="CC6",
+        name="Logical access",
+        domain=Domain.IAM,
+        status=ControlStatus.VERIFIED,
+        evidence_ids=[old_evidence.id],
+        evidence_required=1,
+        freshness_days=1,
+        ruling=Ruling(verdict=Verdict.SATISFIED),
+    )
+    await store.put(EVIDENCE, old_evidence)
+    await store.put(CONTROLS, control)
+    completed = await claim_task(run_id, control.id, "hunt", "orchestrator")
+    assert completed is not None
+    await complete_task(completed)
+
+    first_drift = await chaser.sweep(run_id, "trace-first-drift")
+    assert first_drift["stale"] == 1
+
+    async def satisfied_ruling(control, run_id, trace_id):
+        return Ruling(verdict=Verdict.SATISFIED, trace_id=trace_id)
+
+    monkeypatch.setattr(orchestrator_module, "rule", satisfied_ruling)
+    await Orchestrator(run_id=run_id).run_sweep(limit_per_domain=1)
+
+    refreshed = await store.get(CONTROLS, control.id)
+    historical = await store.get(EVIDENCE, old_evidence.id)
+    assert refreshed is not None and refreshed.status == ControlStatus.VERIFIED
+    assert refreshed.evidence_ids
+    assert old_evidence.id not in refreshed.evidence_ids
+    assert historical is not None and historical.superseded_by in refreshed.evidence_ids
+    active_evidence = [await store.get(EVIDENCE, item) for item in refreshed.evidence_ids]
+    assert all(item is not None and not item.is_stale for item in active_evidence)
+
+    second_drift = await chaser.sweep(run_id, "trace-second-drift")
+    after_second_sweep = await store.get(CONTROLS, control.id)
+    assert second_drift["stale"] == 0
+    assert after_second_sweep is not None
+    assert after_second_sweep.status == ControlStatus.VERIFIED
+
+
+@pytest.mark.asyncio
+async def test_demo_fallback_cannot_supersede_live_evidence(monkeypatch):
+    import app.core.store as store_module
+    from app.agents import chaser, hunters
+    from app.connectors.sources import Artifact
+    from app.core.store import CONTROLS, EVIDENCE
+
+    store = store_module.MemoryStore()
+    monkeypatch.setattr(store_module, "_store", store)
+    monkeypatch.setattr(hunters, "model_available", lambda: False)
+
+    async def demo_collector(control_id):
+        return [
+            Artifact.make(
+                f"{control_id}-demo-iam.json",
+                "json",
+                "demo.gcp.iam",
+                {"bindings": []},
+                summary="Deterministic demo IAM fixture.",
+            )
+        ]
+
+    monkeypatch.setitem(hunters.COLLECTORS, Domain.IAM, demo_collector)
+    live = Evidence(
+        id="ev-live-iam",
+        control_id="CC6.2",
+        name="live-iam-bindings.json",
+        source_system="gcp.iam",
+        collected_by="hunter/iam",
+        agent_identity=identity.get("hunter/iam").spiffe_id,
+        collected_at=now() - timedelta(days=2),
+        freshness_days=1,
+    )
+    control = Control(
+        id="CC6.2",
+        group="CC6",
+        name="Live IAM posture",
+        domain=Domain.IAM,
+        status=ControlStatus.VERIFIED,
+        evidence_ids=[live.id],
+        evidence_required=1,
+        freshness_days=1,
+        ruling=Ruling(verdict=Verdict.SATISFIED),
+    )
+    await store.put(EVIDENCE, live)
+    await store.put(CONTROLS, control)
+
+    filed = await hunters.hunt(control, "run-demo-fallback", "trace-demo-fallback")
+
+    persisted_live = await store.get(EVIDENCE, live.id)
+    refreshed = await store.get(CONTROLS, control.id)
+    assert len(filed) == 1 and filed[0].source_system == "demo.gcp.iam"
+    assert persisted_live is not None and persisted_live.superseded_by is None
+    assert refreshed is not None
+    assert set(refreshed.evidence_ids) == {live.id, filed[0].id}
+
+    drift = await chaser.sweep("run-demo-fallback", "trace-after-demo-fallback")
+    after_sweep = await store.get(CONTROLS, control.id)
+    assert drift["stale"] == 1
+    assert after_sweep is not None and after_sweep.status == ControlStatus.STALE
 
 
 # --------------------------------------------------------------- memory

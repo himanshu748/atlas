@@ -19,7 +19,7 @@ from app.config import settings
 from app.core import registry
 from app.core.events import broadcaster, sse_stream
 from app.core.memory import memory_bank
-from app.core.models import Control, Evidence, Handoff
+from app.core.models import Control, Evidence, FleetEvent, Handoff
 from app.core.store import (
     AGENTS,
     ARMOR,
@@ -38,6 +38,92 @@ router = APIRouter()
 RUN_ID = "run-2026-q3"
 
 
+def _public_ruling(control: Control) -> dict | None:
+    """Return only the ruling fields intended for the anonymous proof view."""
+    ruling = control.ruling
+    if ruling is None:
+        return None
+    return {
+        "verdict": ruling.verdict.value,
+        "confidence": ruling.confidence,
+        "reasoning": ruling.reasoning,
+        "cited_evidence": ruling.cited_evidence,
+        "blocking_question": ruling.blocking_question,
+        "ruled_at": ruling.ruled_at.isoformat(),
+        "model": ruling.model,
+        "provenance": ruling.provenance,
+    }
+
+
+def _public_control_row(control: Control) -> dict:
+    """Stable public control DTO, deliberately independent of the ledger model."""
+    return {
+        "id": control.id,
+        "group": control.group,
+        "name": control.name,
+        "domain": control.domain.value,
+        "owner": control.owner,
+        "status": control.status.value,
+        "evidence_required": control.evidence_required,
+        "evidence_count": control.evidence_count,
+        "coverage": round(control.coverage, 3),
+        "closed_autonomously": control.closed_autonomously,
+        "updated_at": control.updated_at.isoformat(),
+        "ruling": _public_ruling(control),
+    }
+
+
+def _public_control_detail(control: Control) -> dict:
+    """Add criterion text to the public list DTO without leaking ledger fields."""
+    return {**_public_control_row(control), "text": control.text}
+
+
+def _public_evidence(evidence: Evidence) -> dict:
+    """Expose the sanitized proof record, not its private storage metadata."""
+    return {
+        "name": evidence.name,
+        "kind": evidence.kind,
+        "source_system": evidence.source_system,
+        "collected_by": evidence.collected_by,
+        "agent_identity": evidence.agent_identity,
+        "summary": evidence.summary,
+        "sha256": evidence.sha256,
+        "armor_verdict": evidence.armor_verdict.value,
+        "age_days": evidence.age_days,
+        "is_stale": evidence.is_stale,
+    }
+
+
+def _public_handoff(handoff: Handoff) -> dict:
+    """Expose only the seeded handoff fields used by the judge console."""
+    return {
+        "id": handoff.id,
+        "control_id": handoff.control_id,
+        "question": handoff.question,
+        "reasoning": handoff.reasoning,
+        "recommendation": handoff.recommendation,
+        "stage": handoff.stage,
+        "hours_remaining": round(handoff.hours_remaining, 1),
+    }
+
+
+def _public_event(event: FleetEvent) -> dict:
+    """Return the fixture activity fields without internal event identifiers."""
+    return {
+        "at": event.at.isoformat(),
+        "agent": event.agent,
+        "kind": event.kind,
+        "message": event.message,
+        "control_id": event.control_id,
+        "severity": event.severity,
+        "meta": {
+            key: event.meta[key]
+            for key in ("fixture", "recorded_proof", "model")
+            if key in event.meta
+        },
+    }
+
+
 # ------------------------------------------------------------------ fleet
 @router.get("/api/fleet")
 async def fleet_state(request: Request):
@@ -51,6 +137,11 @@ async def fleet_state(request: Request):
     by_status: dict[str, int] = {}
     for c in controls:
         by_status[c.status.value] = by_status.get(c.status.value, 0) + 1
+    recorded_rulings = sum(
+        1
+        for c in controls
+        if c.ruling and c.ruling.provenance == "recorded-private-run"
+    )
 
     return {
         "run_id": summary.run_id,
@@ -66,6 +157,8 @@ async def fleet_state(request: Request):
         "uptime_seconds": summary.uptime_seconds,
         "controls_total": summary.controls_total,
         "controls_verified": summary.controls_verified,
+        "controls_autonomous": summary.controls_autonomous,
+        "recorded_model_rulings": recorded_rulings,
         "handoffs_open": summary.handoffs_open,
         "cost_usd": summary.cost_usd,
         "budget_usd": summary.budget_usd,
@@ -78,15 +171,22 @@ async def fleet_state(request: Request):
             {"id": c.id, "group": c.group, "status": c.status.value} for c in sorted(controls, key=lambda x: x.id)
         ],
         "handoffs": [
-            {**h.model_dump(mode="json"), "hours_remaining": round(h.hours_remaining, 1)}
-            for h in handoffs if h.is_open
+            _public_handoff(h)
+            if runtime_settings.public_demo
+            else {**h.model_dump(mode="json"), "hours_remaining": round(h.hours_remaining, 1)}
+            for h in handoffs
+            if h.is_open
         ][:5],
     }
 
 
 @router.get("/api/events")
-async def recent_events(limit: int = Query(40, le=200)):
-    return [e.model_dump(mode="json") for e in broadcaster.recent[:limit]]
+async def recent_events(request: Request, limit: int = Query(40, le=200)):
+    recent = broadcaster.recent[:limit]
+    runtime_settings = getattr(request.app.state, "settings", settings)
+    if runtime_settings.public_demo:
+        return [_public_event(event) for event in recent]
+    return [event.model_dump(mode="json") for event in recent]
 
 
 @router.get("/api/stream")
@@ -100,10 +200,13 @@ async def stream():
 
 # --------------------------------------------------------------- controls
 @router.get("/api/controls")
-async def list_controls(status: str | None = None):
+async def list_controls(request: Request, status: str | None = None):
     controls: list[Control] = await get_store().list(CONTROLS, limit=5000)
     if status and status != "all":
         controls = [c for c in controls if c.status.value == status]
+    runtime_settings = getattr(request.app.state, "settings", settings)
+    if runtime_settings.public_demo:
+        return [_public_control_row(c) for c in sorted(controls, key=lambda x: x.id)]
     return [
         {
             **c.model_dump(mode="json"),
@@ -116,7 +219,7 @@ async def list_controls(status: str | None = None):
 
 
 @router.get("/api/controls/{control_id}")
-async def get_control(control_id: str):
+async def get_control(request: Request, control_id: str):
     store = get_store()
     control: Control | None = await store.get(CONTROLS, control_id)
     if control is None:
@@ -125,6 +228,35 @@ async def get_control(control_id: str):
     all_evidence: list[Evidence] = await store.list(EVIDENCE, limit=5000)
     evidence = [e for e in all_evidence if e.id in set(control.evidence_ids)]
     handoff = await store.get(HANDOFFS, control.handoff_id) if control.handoff_id else None
+
+    runtime_settings = getattr(request.app.state, "settings", settings)
+    if runtime_settings.public_demo:
+        public_evidence = [_public_evidence(e) for e in evidence]
+        first = public_evidence[0] if public_evidence else None
+        return {
+            "control": _public_control_detail(control),
+            "evidence": public_evidence,
+            "handoff": (
+                {
+                    "id": handoff.id,
+                    "control_id": handoff.control_id,
+                    "stage": handoff.stage,
+                    "hours_remaining": round(handoff.hours_remaining, 1),
+                }
+                if handoff
+                else None
+            ),
+            "custody": [
+                {"hop": "source system", "value": first["source_system"] if first else "—"},
+                {"hop": "agent identity", "value": first["agent_identity"] if first else "—"},
+                {"hop": "armor verdict", "value": first["armor_verdict"] if first else "—"},
+                {
+                    "hop": "public snapshot sha256",
+                    "value": (first["sha256"][:16] + "…") if first else "—",
+                },
+                {"hop": "public proof fixture", "value": "recorded" if first else "—"},
+            ],
+        }
 
     return {
         "control": control.model_dump(mode="json"),
@@ -309,8 +441,8 @@ async def visual_evidence(control_id: str, file: UploadFile = File(...)):
 @router.post("/internal/sweep")
 async def internal_sweep():
     """Cloud Scheduler target. Replaces keeping an instance warm for 9 weeks."""
-    summary = await get_orchestrator().run_sweep()
     sweep_result = await chaser.sweep(RUN_ID, new_trace_id())
+    summary = await get_orchestrator().run_sweep()
     return {"readiness_pct": summary.readiness_pct, **sweep_result}
 
 
